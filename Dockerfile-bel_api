@@ -1,0 +1,16 @@
+FROM python:3.6
+MAINTAINER  William Hayes whayes@openbel.org
+
+EXPOSE 8000
+
+RUN groupadd -g 1000 api && useradd api -u 1000 -g 1000 && mkdir /app && chown -R api:api /app
+
+WORKDIR /app
+
+COPY requirements.txt /app/requirements.txt
+RUN pip install -r /app/requirements.txt
+
+USER api
+
+# https://sebest.github.io/post/protips-using-gunicorn-inside-a-docker-image/
+CMD gunicorn --config /app/gunicorn.conf --log-config /app/logging.conf -b 0.0.0.0:8000 app:api

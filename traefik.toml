@@ -1,0 +1,42 @@
+defaultEntryPoints = ["http", "https"]
+
+# logLevel = "DEBUG"
+
+[web]
+  address = ":8088"
+  [web.statistics]
+
+[entryPoints]
+[entryPoints.http]
+address = ":80"
+# might need to disable following two lines to get first Let's Encrypt certs
+# [entryPoints.http.redirect]
+# entryPoint = "https"
+
+[entryPoints.https]
+address = ":443"
+[entryPoints.https.tls]
+
+
+################################################################
+# Docker configuration backend
+################################################################
+[docker]
+
+endpoint = "unix:///var/run/docker.sock"
+domain = "docker.localhost"
+watch = true
+
+# Expose containers by default in traefik
+exposedbydefault = false
+
+# Use Swarm Mode services as data provider
+swarmmode = false
+
+# Let's Encrypt settings
+# [acme]
+# email = "whayes@openbel.org"
+# storage = "acme.json"
+# entryPoint = "https"
+# onDemand = true
+# OnHostRule = true

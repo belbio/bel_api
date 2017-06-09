@@ -1,0 +1,16 @@
+FROM python:3.6
+MAINTAINER  William Hayes whayes@openbel.org
+
+EXPOSE 8000
+
+RUN groupadd -g 1000 api && useradd api -u 1000 -g 1000 && mkdir /app && chown -R api:api /app
+
+COPY requirements-ops.txt /app/requirements-ops.txt
+COPY requirements.txt /app/requirements-api.txt
+RUN pip install -r /app/requirements-ops.txt
+RUN pip install -r /app/requirements-api.txt
+
+WORKDIR /app
+USER api
+
+CMD /bin/bash
