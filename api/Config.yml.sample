@@ -1,0 +1,17 @@
+---
+# YAML configuration file for BEL API
+#   this can be overridden by environment variables
+
+# Put all secrets here - all of the configuration except for what is in the secrets section
+# will be presented in the authenticated status endpoint result
+secrets:
+  shared_secret: testme  # shared secret to validate JWT
+  mail_user: test
+  mail_pw: XXX
+
+# Should we require authentication in API?
+authenticated: false
+
+api_log_fn: api.log
+log_level: DEBUG
+

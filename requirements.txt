@@ -5,3 +5,4 @@ PyJWT==1.4.2
 itsdangerous==0.24
 passlib==1.7.1
 json-logging-py==0.2
+layeredconfig==0.3.2

@@ -2,7 +2,7 @@ import falcon
 import logging
 from Config import config
 from common.authentication import jwt_validate
-from bson.json_util import dumps, loads
+import json
 
 logger = logging.getLogger('root.falcon_middleware')
 
@@ -11,7 +11,7 @@ class AuthMiddleware(object):
 
     def process_request(self, req, resp):
 
-        if not config['authenticated']:  # Skip if authentication disabled
+        if not config.authenticated:  # Skip if authentication disabled
             return
 
         # Don't authenticate following routes
@@ -80,7 +80,7 @@ class JSONTranslator(object):
                                         'A valid JSON document is required.')
 
         try:
-            req.context['doc'] = loads(body.decode('utf-8'))
+            req.context['doc'] = json.loads(body.decode('utf-8'))
 
         except (ValueError, UnicodeDecodeError):
             raise falcon.HTTPError(falcon.HTTP_753,
@@ -93,7 +93,7 @@ class JSONTranslator(object):
         if 'result' not in req.context:
             return
 
-        resp.body = dumps(req.context['result'])
+        resp.body = json.dumps(req.context['result'])
 
 
 class RequireHTTPS(object):
@@ -112,7 +112,7 @@ class RequireHTTPS(object):
     """
 
     def process_request(self, req, resp):
-        if req.protocol == "http" and not config['DEBUG']:
+        if req.protocol == "http" and not config.DEBUG:
             raise falcon.HTTPBadRequest(title="Client error. HTTP Not Allowed",
                                         description="API connections over HTTPS only.",
-                                        href=config['apiDocUrl'])
+                                        href=config.apiDocUrl)

@@ -10,7 +10,7 @@ from resources.status import SimpleStatusResource, StatusResource
 
 from services.custom_logger import setup_custom_logger
 logger = setup_custom_logger('root')
-logger.setLevel(config['log_level'])
+logger.setLevel(config.log_level)
 
 api = application = falcon.API(middleware=[AuthMiddleware(), RequireJSON(), JSONTranslator(), ])
 
