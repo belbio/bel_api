@@ -1,0 +1,8 @@
+FROM nginx:1.13
+MAINTAINER  William Hayes whayes@adsworks.com
+
+EXPOSE 80
+
+RUN mkdir -p /web/main && mkdir -p /web/docs/api && mkdir /web/static
+
+CMD ["nginx", "-g", "daemon off;"]

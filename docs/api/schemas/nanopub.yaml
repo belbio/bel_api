@@ -1,0 +1,105 @@
+$schema: http://json-schema.org/draft-04/schema#
+id: http://json.schemastore.org/nanopub-1.0.0.json
+description: A nanopub file is either a single nanopub, an array of nanopubs or uses
+  the JSON Lines (http://jsonlines.org/) format with a nanopub per line.
+oneOf:
+- $ref: '#/definitions/nanopub'
+- type: array
+  items:
+    $ref: '#/definitions/nanopub'
+definitions:
+  nanopub:
+    id: /properties/nanopub
+    description: Smallest unit of relational knowledge with context (see http://nanopub.org/)
+    type: object
+    required:
+      - nanopub
+    properties:
+      nanopub:
+        type: object
+        required:
+          - type
+          - citation
+          - edge
+        properties:
+          id:
+            type: string
+            description: ID of nanopub
+          schema:
+            type: string
+            format: url
+            description: JSON Schema definition
+          type:
+            description: 'Type of nanopub: BEL version 2.0, PEL, Legal, etc'
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of Nanopub type, e.g. BEL
+              version:
+                type: string
+                description: Version of Nanopub type, e.g. 1.0.0
+          context:
+            id: /nanopub/properties/annotations
+            description: Context of the edge (e.g for BEL nanopubs, the species, tissue, disease)
+              state, ...
+            type: object
+          citation:
+            id: /nanopub/properties/citation
+            description: Reference to the source. The specific type of nanopub may have
+              specific objects required for citations (e.g. BEL citations).
+            oneOf:
+            - type: string
+            - type: object
+          edge:
+            id: /nanopub/properties/edge
+            type: object
+            required:
+              - subject
+            properties:
+              subject:
+                id: /nanopub/properties/edge/properties/subject
+                type: string
+              relation:
+                id: /nanopub/properties/edge/properties/relation
+                type: string
+              object:
+                id: /nanopub/properties/edge/properties/object
+                type: string
+          evidence:
+            id: /nanopub/properties/evidence
+            description: Any specific summary text that serves as a basis for this edge and context.
+            type: string
+          metadata:
+            id: /nanopub/properties/metadata
+            description: |
+              Optional metadata elements - Creator information, creation date, additional notes, etc
+              Any additional metadata elements can be added as needed.
+            type: object
+            properties:
+              creation_date:
+                type: string
+                format: date
+              modification_date:
+                type: string
+                format: date
+              nanopub_collection:
+                type: string
+                description: Name of a set of nanopubs if applicable, used to group nanopubs into sets
+              author_name:
+                type: string
+              author_email:
+                type: string
+                format: email
+              reviewer_name:
+                type: string
+              reviewer_email:
+                type: string
+                format: email
+              status:
+                type: string
+                description: Status of nanopub - review means flagged to be reviewed
+                enum:
+                - draft
+                - review
+                - published

@@ -31,6 +31,7 @@ Add hostnames to /etc/hosts (unix'ish machines) or /windows/system32/drivers/etc
     127.0.0.1 swagger_ui.belapi.test
     127.0.0.1 swagger_edit.belapi.test
     127.0.0.1 arangodb.belapi.test
+    127.0.0.1 docs.belapi.test
 
 Run following commands to start development:
 
@@ -50,5 +51,10 @@ You should now be able to access the following services via your browser:
 * Swagger Editor: http://swagger_edit.belapi.test/
 * Swagger UI: http://swagger_ui.belapi.test/
 * Traefik:  http://localhost:8088/
+* API docs: http://docs.belapi.test  (e.g. http://docs.belapi.test/docs/openapi.yaml)
+
+You can enter this url for the Swagger/OpenAPI spec in Swagger UI
+
+    http://docs.belapi.test/docs/openapi.yaml
 
 

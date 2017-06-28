@@ -108,6 +108,29 @@ services:
     environment:
       - PYTHONPATH=/app/api
 
+  # Host docs for OAS (Swagger) - need web uri's for external Definitions when using Swagger Editor/UI
+  # e.g. http://belapi.test/docs/api/openapi.yaml
+  bel_docs:
+    container_name: bel_docs
+    image: bel_docs
+    build:
+      context: .
+      dockerfile: Dockerfile-docs
+    ports:
+      - "8888:80"
+    expose:
+      - "80"
+    volumes:
+      - ./docs/api:/www/docs
+      - ./docs/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./docs/nginx.cors.conf:/etc/nginx/nginx.cors.conf
+    labels:
+      - traefik.enable=true
+      - traefik.backend=web
+      - traefik.frontend.rule=Host:docs.belapi.test
+      - traefik.port=80
+    restart: always
+
   # Optional for viewing Elasticsearch terminology search service
   # http://localhost:5601
   bel_kibana:
