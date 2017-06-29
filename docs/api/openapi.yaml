@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   description: |
     BEL Bio REST API specification
-  version: "1.0.0"
+  version: "0.1.0"
   title: "BEL Bio API Specification"
   contact:
     email: "support@bel.bio"
