@@ -34,10 +34,10 @@ docker-compose build
 docker-compose create
 
 
-echo "To start the docker containers: "
-echo "  cd bel_api"
-echo "  docker-compose start or docker-compose up\n"
+echo $'\n\n\nTo start the docker containers: '
+echo $'  cd bel_api'
+echo $'  docker-compose start or docker-compose up\n'
 
 if [ config_flag ]; then
-    printf "\n\nNOTE!!! Remember to update the config file: api/Config.yml\n\n"
+    printf $'\n\nNOTE!!! Remember to update the config file: api/Config.yml\n\n'
 fi
