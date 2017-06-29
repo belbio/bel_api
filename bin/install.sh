@@ -26,7 +26,7 @@ git pull;
 
 if [ ! -f "$HOME/api/Config.yml" ]; then
     cp $HOME/api/Config.yml.sample $HOME/api/Config.yml
-    printf "\n\nNOTE!!! Remember to update the config file: api/Config.yml\n\n"
+    config_flag = 1
 fi
 
 echo "Starting to build the docker containers\n\n"
@@ -38,3 +38,6 @@ echo "To start the docker containers: "
 echo "  cd bel_api"
 echo "  docker-compose start or docker-compose up\n"
 
+if [ config_flag ]; then
+    printf "\n\nNOTE!!! Remember to update the config file: api/Config.yml\n\n"
+fi
