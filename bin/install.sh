@@ -24,8 +24,8 @@ HOME=$(pwd)
 
 git pull;
 
-if [ ! -f "$HOME/api/config.yml" ]; then
-    cp $HOME/api/config.yml.example $HOME/api/config.yml
+if [ ! -f "$HOME/api/Config.yml" ]; then
+    cp $HOME/api/Config.yml.sample $HOME/api/Config.yml
     printf "Remember to update api/config.yml\n\n"
 fi
 
