@@ -10,7 +10,7 @@ Functionality provided:
 * BEL Edge creation from BEL Nanopubs
 * BEL EdgeStore services
 
-## Installation
+## Installation for Development
 
 The following bash command will do the following:
 
@@ -19,7 +19,7 @@ The following bash command will do the following:
 * download the needed datasets from datasets.openbel.org
 * provide commands to start the docker containers
 
-    bash <(curl -s https://bitbucket.org/pmiworks/bel_api/raw/HEAD/bin/install.sh)
+    bash <(curl -s https://raw.githubusercontent.com/belbio/bel_api/master/bin/install.sh)
 
 
 ###  Post install script
@@ -57,4 +57,16 @@ You can enter this url for the Swagger/OpenAPI spec in Swagger UI
 
     http://docs.belapi.test/docs/openapi.yaml
 
+
+## Notes for Windows users
+
+Install Bash: https://msdn.microsoft.com/en-us/commandline/wsl/about
+
+After installing Bash and setting up your user:
+
+    apt-get install make
+
+These instructions may help you get docker working with Bash for Windows:
+
+    https://blog.jayway.com/2017/04/19/running-docker-on-bash-on-windows/
 

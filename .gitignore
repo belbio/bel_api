@@ -1,7 +1,6 @@
 # Project ignores
 
 # Secrets can be stored in here - *.sample files are kept in repository without secrets
-Config.py
 Config.yml
 
 
