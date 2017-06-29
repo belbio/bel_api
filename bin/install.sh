@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# run via: bash <(curl -s https://bitbucket.org/pmiworks/bel_api/raw/HEAD/bin/install.sh)
+# run via: bash <(curl -s https://raw.githubusercontent.com/belbio/bel_api/master/bin/install.sh)
+#
 
 hash docker 2>/dev/null || { echo >&2 "I require docker. Please install.  Aborting."; exit 1; }
 hash docker-compose 2>/dev/null || { echo >&2 "I require docker-compose. Please install.  Aborting."; exit 1; }
@@ -16,6 +17,7 @@ fi
 
 if [ ! -d "bel_api" ]; then
     $clone_cmd
+fi
 
 cd bel_api
 HOME=$(pwd)
@@ -27,11 +29,11 @@ if [ ! -f "$HOME/api/config.yml" ]; then
     printf "Remember to update api/config.yml\n\n"
 fi
 
-echo "Starting to build the docker containers"
+echo "Starting to build the docker containers\n\n"
 docker-compose build
 docker-compose create
 
 
 echo "To start the docker containers: "
-echo "  docker-compose start or docker-compose up"
+echo "  docker-compose start or docker-compose up\n"
 
