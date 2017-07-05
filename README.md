@@ -87,7 +87,8 @@ Note: These instructions were tested for `Docker version 17.06.0-ce, build 02c1d
 		2. On the top menu, click **Actions > New User...**. Set both username and password to "docker" (or whatever you'd like)
 		3. Uncheck **User must change password at next logon** and check **Password never expires**
 		4. Switch to this new account and try to access your main files in **C:/Users/your-username**, which will prompt you to authenticate with your username and password
-		5. Once authenticated, switch back to your main account and try the step above once more.
+		5. Once authenticated, switch back to your main account and try the step above **but using the credentials of the new account** (see image below):
+		<img src="\misc\imgs\docker-share.jpg" style="width:100%;" />
 		6. If issue persists, check the Docker logs by clicking on the **Diagnose and Feedback** tab and selecting **log file**, or open an issue here on Github.
 6. Open a Windows command line and run `bash`. You should now be in a Bash shell
 7. TODO: intermediate step to install docker inside this environment, unless installed already
