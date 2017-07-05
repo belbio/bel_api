@@ -92,7 +92,7 @@ Note: These instructions were tested for `Docker version 17.06.0-ce, build 02c1d
 6. Open a Windows command line and run `bash`. You should now be in a Bash shell
 7. TODO: intermediate step to install docker inside this environment, unless installed already
 8. Run `docker --version` to check your version is `>= 17.06.0`
-9. `cd /mnt/{$DRIVE-LETTER}/Users/{$USERNAME}/Desktop/` where `{$DRIVE-LETTER}` is your harddrive letter and `{$USERNAME}` is your user directory. For example, mine was `/mnt/c/Users/DavidChen/Desktop/`.
+9. If not already in the Desktop directory, `cd /mnt/{$DRIVE-LETTER}/Users/{$USERNAME}/Desktop/` where `{$DRIVE-LETTER}` is your harddrive letter and `{$USERNAME}` is your user directory. For example, mine was `/mnt/c/Users/DavidChen/Desktop/`.
 10. `git clone git@github.com:belbio/bel_api.git`
 11. `cd bel_api/`
 12. `docker-compose start`
