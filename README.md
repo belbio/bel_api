@@ -70,3 +70,11 @@ These instructions may help you get docker working with Bash for Windows:
 
     https://blog.jayway.com/2017/04/19/running-docker-on-bash-on-windows/
 
+## Related projects
+
+* OpenBEL, http://openbel.org
+* PyBEL, http://pybel.readthedocs.io/en/latest/
+
+## Contributors
+
+William Hayes, whayes@adsworks.com, Organization Maintainer
