@@ -72,31 +72,34 @@ These instructions may help you get docker working with Bash for Windows:
 	
 
 ## Further instructions for Windows users (updated July 5, 2017)
-Note: These instructions were tested for `Docker version 17.06.0-ce, build 02c1d87` and `docker-compose version 1.14.0, build c7bdf9e`.
+Note: These instructions were tested for `Docker version 17.05.0-ce, build 89658be` and `docker-compose version 1.14.0, build c7bdf9e`.
 
-1. Install Bash for Windows using the instructions above
-2. Install Docker CE for Windows and run it:
+0. Install Bash for Windows using the instructions above
+0. Install Docker CE for Windows and run it:
  [https://store.docker.com/editions/community/docker-ce-desktop-windows](https://store.docker.com/editions/community/docker-ce-desktop-windows)
 
-3. Right-click on Docker in your system tray, and click on **Settings**.
-4. In the **General** tab, check **Expose daemon on tcp://localhost:2375 without TLS**.
-5. In the **Shared Drives** tab, check on the local drive (usually drive C) and click **Apply**. **If this step fails to save the check for the drive letter, see below. Once resolved, continue these instructions**.
+0. Right-click on Docker in your system tray, and click on **Settings**.
+0. In the **General** tab, check **Expose daemon on tcp://localhost:2375 without TLS**.
+0. In the **Shared Drives** tab, check on the local drive (usually drive C) and click **Apply**. If the settings are not saved after clicking apply, see below. Else, continue.
 	* If your drive simply refuses to be checked, it may have to do with the sharing permissions allowed on your account (this seems to be the problem for Microsoft Azure AD accounts).
 	* A workaround: 
-		1. **Windows Menu > Administrative Tools > Computer Management > System Tools > Local Users and Groups > Users**
-		2. On the top menu, click **Actions > New User...**. Set both username and password to "docker" (or whatever you'd like)
-		3. Uncheck **User must change password at next logon** and check **Password never expires**
-		4. Switch to this new account and try to access your main files in **C:/Users/your-username**, which will prompt you to authenticate with your username and password
-		5. Once authenticated, switch back to your main account and try the step above **but using the credentials of the new account** (see image below):
+		* **Windows Menu > Administrative Tools > Computer Management > System Tools > Local Users and Groups > Users**
+		* On the top menu, click **Actions > New User...**. Set both username and password to "docker" (or whatever you'd like)
+		* Uncheck **User must change password at next logon** and check **Password never expires**
+		* Switch to this new account and try to access your main files in **C:/Users/your-username**, which will prompt you to authenticate with your username and password
+		* Once authenticated, switch back to your main account (do not log out of the docker account) and try the step above **but using the credentials of the new account** (see image below):
+		<br>
 		<img src="\misc\imgs\docker-share.jpg" style="width:100%;" />
-		6. If issue persists, check the Docker logs by clicking on the **Diagnose and Feedback** tab and selecting **log file**, or open an issue here on Github.
-6. Open a Windows command line and run `bash`. You should now be in a Bash shell
-7. TODO: intermediate step to install docker inside this environment, unless installed already
-8. Run `docker --version` to check your version is `>= 17.06.0`
-9. If not already in the Desktop directory, `cd /mnt/{$DRIVE-LETTER}/Users/{$USERNAME}/Desktop/` where `{$DRIVE-LETTER}` is your harddrive letter and `{$USERNAME}` is your user directory. For example, mine was `/mnt/c/Users/DavidChen/Desktop/`.
-10. `git clone git@github.com:belbio/bel_api.git`
-11. `cd bel_api/`
-12. `cp api/Config.yml.sample api/Config.yml` and edit Config.yml if necessary.
-13. `docker-compose start`
-14. The services should now be up and ready.
-15. Run `docker-compose logs -f` to view logs. Run `docker-compose stop` to stop all services.
+		<br>
+		* If issue persists, check the Docker logs by clicking on the **Diagnose and Feedback** tab and selecting **log file**, or open an issue here on Github
+0. Open a Windows command line and run `bash` - you should now be in a Bash shell
+0. Elevate permission to install the newest version of Docker by running `sudo chown -R {$USERNAME} /usr/local/bin` and replace `{$USERNAME}` with your username
+0. Install Docker 17.05.0 using `curl -fsSLO https://get.docker.com/builds/Linux/x86_64/docker-17.05.0-ce.tgz && tar --strip-components=1 -xvzf docker-17.05.0-ce.tgz -C /usr/local/bin`
+0. Run `docker --version` to check your version is `>= 17.05.0` after the above installation
+0. If not already in the Desktop directory, `cd /mnt/{$DRIVE-LETTER}/Users/{$USERNAME}/Desktop/`. For example, mine was `/mnt/c/Users/DavidChen/Desktop/`
+0. `git clone git@github.com:belbio/bel_api.git`
+0. `cd bel_api/`
+0. `cp api/Config.yml.sample api/Config.yml` and edit Config.yml if necessary.
+0. `docker-compose start`
+0. The services should now be up and ready.
+0. Run `docker-compose logs -f` to view logs. Run `docker-compose stop` to stop all services.
