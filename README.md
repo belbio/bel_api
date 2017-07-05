@@ -95,6 +95,7 @@ Note: These instructions were tested for `Docker version 17.06.0-ce, build 02c1d
 9. If not already in the Desktop directory, `cd /mnt/{$DRIVE-LETTER}/Users/{$USERNAME}/Desktop/` where `{$DRIVE-LETTER}` is your harddrive letter and `{$USERNAME}` is your user directory. For example, mine was `/mnt/c/Users/DavidChen/Desktop/`.
 10. `git clone git@github.com:belbio/bel_api.git`
 11. `cd bel_api/`
-12. `docker-compose start`
-13. The services should now be up and ready.
-14. Run `docker-compose logs -f` to view logs. Run `docker-compose stop` to stop all services.
+12. `cp api/Config.yml.sample api/Config.yml` and edit Config.yml if necessary.
+13. `docker-compose start`
+14. The services should now be up and ready.
+15. Run `docker-compose logs -f` to view logs. Run `docker-compose stop` to stop all services.
