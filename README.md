@@ -72,7 +72,7 @@ These instructions may help you get docker working with Bash for Windows:
 	
 
 ## Further instructions for Windows users (updated July 5, 2017)
-Note: These instructions were tested for `Docker version 17.06.0-ce, build 02c1d87`.
+Note: These instructions were tested for `Docker version 17.06.0-ce, build 02c1d87` and `docker-compose version 1.14.0, build c7bdf9e`.
 
 1. Install Bash for Windows using the instructions above
 2. Install Docker CE for Windows and run it:
