@@ -48,8 +48,8 @@ You should now be able to access the following services via your browser:
 * Elasticsearch: http://localhost:9210/
 * Kibana: http://kibana.belapi.test/
 * Arangodb: http://arangodb.belapi.test/
-* Swagger Editor: http://swagger_edit.belapi.test/
-* Swagger UI: http://swagger_ui.belapi.test/
+* Swagger Editor: http://swagger_edit.belapi.test/#/?import=http://docs.belapi.test/docs/openapi.yaml
+* Swagger UI: http://swagger_ui.belapi.test/?url=http://docs.belapi.test/docs/openapi.yaml
 * Traefik:  http://localhost:8088/
 * API docs: http://docs.belapi.test  (e.g. http://docs.belapi.test/docs/openapi.yaml)
 
