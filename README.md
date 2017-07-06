@@ -77,7 +77,7 @@ These instructions may help you get docker working with Bash for Windows:
 
 ## Contributors
 
-William Hayes, whayes@adsworks.com, Organization Maintainer
+William Hayes, whayes@adsworks.com, Organization Maintainer  
 David Chen, dchen@adsworks.com
 
 
@@ -107,6 +107,7 @@ Note: These instructions were tested for `Docker version 17.05.0-ce, build 89658
 0. Open a Windows command line and run `bash` - you should now be in a Bash shell
 0. Elevate permission to install the newest version of Docker by running `sudo chown -R {$USERNAME} /usr/local/bin` and replace `{$USERNAME}` with your username
 0. Install Docker 17.05.0 using `curl -fsSLO https://get.docker.com/builds/Linux/x86_64/docker-17.05.0-ce.tgz && tar --strip-components=1 -xvzf docker-17.05.0-ce.tgz -C /usr/local/bin`
+0. Install docker-compose using `sudo apt install docker-compose`
 0. Run `docker --version` to check your version is `>= 17.05.0` after the above installation
 0. If not already in the Desktop directory, `cd /mnt/{$DRIVE-LETTER}/Users/{$USERNAME}/Desktop/`. For example, mine was `/mnt/c/Users/DavidChen/Desktop/`
 0. `git clone git@github.com:belbio/bel_api.git`
