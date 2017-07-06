@@ -78,6 +78,7 @@ These instructions may help you get docker working with Bash for Windows:
 ## Contributors
 
 William Hayes, whayes@adsworks.com, Organization Maintainer
+David Chen, dchen@adsworks.com
 
 
 ## Further instructions for Windows users (updated July 5, 2017)
@@ -97,9 +98,11 @@ Note: These instructions were tested for `Docker version 17.05.0-ce, build 89658
 		* Uncheck **User must change password at next logon** and check **Password never expires**
 		* Switch to this new account and try to access your main files in **C:/Users/your-username**, which will prompt you to authenticate with your username and password
 		* Once authenticated, switch back to your main account (do not log out of the docker account) and try the step above **but using the credentials of the new account** (see image below):
+		
 		<br>
 		<img src="\misc\imgs\docker-share.jpg" style="width:100%;" />
 		<br>
+		
 		* If issue persists, check the Docker logs by clicking on the **Diagnose and Feedback** tab and selecting **log file**, or open an issue here on Github
 0. Open a Windows command line and run `bash` - you should now be in a Bash shell
 0. Elevate permission to install the newest version of Docker by running `sudo chown -R {$USERNAME} /usr/local/bin` and replace `{$USERNAME}` with your username
