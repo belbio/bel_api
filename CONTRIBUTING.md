@@ -21,3 +21,4 @@ It may be helpful to review your plans with the community before starting work.
 in <repo>:.editorconfig is maintained and all tests pass
 1. Submit a pull request referencing the issue being resolved
 
+* Another example of Github Fork/Flow http://www.asmeurer.com/git-workflow/
