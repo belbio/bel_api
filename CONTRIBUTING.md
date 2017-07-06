@@ -2,7 +2,7 @@
 
 :+1: First off, thanks for taking the time to contribute! :+1:
 
-The following is a set of guidelines for contributing to BEL.bio and its repositories, which are hosted in [BELbio](https://github.com/belbio) on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
+The following is a set of guidelines for contributing to BEL.bio and its repositories, which are hosted in [BELbio](https://github.com/belbio) on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request. If you have any questions, please let us know.
 
 ## Code of Conduct
 
