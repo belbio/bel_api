@@ -69,7 +69,16 @@ After installing Bash and setting up your user:
 These instructions may help you get docker working with Bash for Windows:
 
     https://blog.jayway.com/2017/04/19/running-docker-on-bash-on-windows/
-	
+
+## Related projects
+
+* OpenBEL, http://openbel.org
+* PyBEL, http://pybel.readthedocs.io/en/latest/
+
+## Contributors
+
+William Hayes, whayes@adsworks.com, Organization Maintainer
+
 
 ## Further instructions for Windows users (updated July 5, 2017)
 Note: These instructions were tested for `Docker version 17.05.0-ce, build 89658be` and `docker-compose version 1.14.0, build c7bdf9e`.
@@ -103,3 +112,4 @@ Note: These instructions were tested for `Docker version 17.05.0-ce, build 89658
 0. `docker-compose start`
 0. The services should now be up and ready.
 0. Run `docker-compose logs -f` to view logs. Run `docker-compose stop` to stop all services.
+
