@@ -42,38 +42,40 @@ securityDefinitions:
 
 paths:
 
-  /bel: {}
+  /bel:
+  /bel/language  # endpoint for listing relationships, functions, function signatures, default namespaces
+  /bel/validate/<stmt>
+  /bel/validate/<subj>
+  /bel/validate/<subj>/<rel>/<obj>
+
+  /bel/parse/<stmt>?format=AST,JSON,YAML
+  /bel/components/<stmt>?format=Txt, AST, JSON, ...
+
+  /bel/equivalence/<stmt>?namespaces=<list of namespaces>  # canonicalizing
+  /bels/equivalence  # post with statements and namespaces
+  /bel/orthologize/<stmt>?org=X
 
   /terms: {}
+    # query namespaces
+    # query for terms in namespace
+    # query for terms in any namespace (filter by entity type?)
+    # support autocompletion
+    # load/update/delete term sets
+    # handle orthologs
+    # handle hierarchical queries - child of X
 
-  /nanopubs:
-    get:
-      tags: ['Nanopubs']
-      summary: Get Nanopubs
-      description: Get nanopubs
+    terms - namespace id, desc, entity types, uri_template, terms (entity types, preferred term, synonyms, xref ids)
+
+  /nanopubs/validation
+    post:
       parameters:
-        - $ref: "#/parameters/offsetParam"
-        - $ref: "#/parameters/limitParam"
-        - $ref: "#/parameters/includeParam"
-        - $ref: "#/parameters/excludeParam"
-      responses:
-        200:
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Nanopub'
+        - $ref: "#/parameters/nanopub"
 
-        401:
-          description: Unauthorized, missing or incorrect API token
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-        default:
-          description: Unexpected error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
 
-  /edges: {}
+  # where do we store canonicalization namespaces in edgestore or bel_api
+  /edges:  # query the Edgestore with custom BEL queries
+    get:
+      # Add inbound and outbound namespace canonicalization
 
 
 definitions:
@@ -223,6 +225,11 @@ definitions:
       - message
 
 parameters:
+
+  nanopub:
+    name: nanopub
+    in: body
+    TODO
 
   offsetParam:
     name: offset
