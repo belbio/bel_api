@@ -1,7 +1,7 @@
 elasticsearch==5.1.0
 falcon==1.1.0
 gunicorn==19.6.0
-PyJWT==1.4.2
+PyJWT==1.5.2
 itsdangerous==0.24
 passlib==1.7.1
 json-logging-py==0.2
