@@ -43,14 +43,40 @@ definitions:
             id: /nanopub/properties/annotations
             description: Context of the edge (e.g for BEL nanopubs, the species, tissue, disease)
               state, ...
-            type: object
+            type: array
+            items:
+              type: object
           citation:
             id: /nanopub/properties/citation
-            description: Reference to the source. The specific type of nanopub may have
+            description: |
+              Reference to the source. The specific type of nanopub may have
               specific objects required for citations (e.g. BEL citations).
-            oneOf:
-            - type: string
-            - type: object
+              The following properties are optional.
+            type: object
+            properties:
+              type:
+                type: string
+                description: type of citation - should be a label such as Book, Web, Journal, etc.
+              uri:
+                type: string
+                format: uri
+                description: URL of this citation, e.g. a website cited should have this field
+              authors:
+                type: array
+                items:
+                  type: string
+              title:
+                type: string
+                description: Title of citation (journal article title, web page title, book chapter title)
+              source_name:
+                type: string
+                description: name of journal, book, website
+              date_published:
+                type: string
+                description: ISO Date format, e.g. 20161231 for December 31, 2016
+              citation_string:
+                type: string
+                description: Citation as single unparsed string, e.g. "Tan, Amy. The Joy Luck Club. Penguin, 1989, p. 31."
           edge:
             id: /nanopub/properties/edge
             type: object
