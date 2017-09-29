@@ -49,7 +49,7 @@ services:
   bel_elasticsearch:
     container_name: bel_elasticsearch
     # image: itzg/elasticsearch:5.1.2
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.3  # dies before fully launching
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.1
     ports:
       - "9210:9200"
     volumes:

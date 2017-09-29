@@ -10,9 +10,9 @@ nanopub:
   evidence: Oxidation and nitration of macromolecules, such as proteins, DNA and lipids,
     are prominentin atherosclerotic arteries.
   context:
-    Anatomy: artery
-    Disease: atherosclerosis
-    TextLocation: Review
+    - id: Anatomy:artery
+    - id: Disease:atherosclerosis
+    - id: TextLocation:Review
   citation:
     authors:
     - de Nigris F
