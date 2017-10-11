@@ -10,6 +10,16 @@ Functionality provided:
 * BEL Edge creation from BEL Nanopubs
 * BEL EdgeStore services
 
+## Configuration
+
+Edit the following files to set the configuration:
+
+* api/conf-api.yml
+* api/conf-logging.yml
+* conf-traefik[-dev].toml
+
+There is an example file to work with for the api configuration.
+
 ## Installation for Development
 
 The following bash command will do the following:
@@ -20,6 +30,7 @@ The following bash command will do the following:
 * provide commands to start the docker containers
 
     bash <(curl -s https://raw.githubusercontent.com/belbio/bel_api/master/bin/install.sh)
+
 
 
 ###  Post install script

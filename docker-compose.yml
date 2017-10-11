@@ -12,66 +12,78 @@ volumes:
 services:
 
   # Reverse proxy for BEL API and other web endpoints
-  # http://localhost:8088
+  # http://localhost:8090
   bel_traefik:
     image: traefik:latest
     container_name: bel_traefik
     ports:
       - "80:80"
       - "443:443"
-      - "8088:8088"
+      - "8090:8088"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik-dev.toml:/traefik.toml
+      - ./conf-traefik-dev.toml:/traefik.toml
       - ./tls:/tls
     # network_mode: "host"
 
-  # ArangoDB - document/graph store - core requirement
-  # http://localhost:8529
-  bel_arangodb:
-    container_name: bel_arangodb
-    image: arangodb:3.1.21
-    ports:
-      - "8529:8529"
-    volumes:
-      - bel_arango_data:/var/lib/arangodb3
-    labels:
-      - traefik.enable=true
-      - traefik.backend=bel_arangodb
-      - traefik.frontend.rule=Host:arangodb.belapi.test
-      - traefik.port=8529
-    environment:
-      - ARANGO_NO_AUTH=1
-    restart: always
 
-  # Elasticsearch - terminology search - core requirement
-  # http://localhost:9200
-  bel_elasticsearch:
-    container_name: bel_elasticsearch
-    # image: itzg/elasticsearch:5.1.2
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.3  # dies before fully launching
-    ports:
-      - "9210:9200"
-    volumes:
-      - bel_elasticsearch_data:/usr/share/elasticsearch/data
-      - ./elasticsearch.yml:/conf/elasticsearch.yml
-    # logging:
-    #   driver: none
-    environment:
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - xpack.security.enabled=false
-      - xpack.watcher.enabled=false
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    # deploy:
-    #   resources:
-    #     limits:
-    #       memory: 1g
-    restart: always
+#  ArangoDB and ElasticSearch are setup on api.openbel.org
+#  use ssh tunneling to make them available for local development
+
+# Host belapi-tunnel belauth-tunnel belmgr-tunnel
+#   Hostname api.openbel.org
+#   User ubuntu
+#   LocalForward 9200 127.0.0.1:9200
+#   LocalForward 8529 127.0.0.1:8529
+#   IdentityFile ~/.ssh/ads-pmi-admin1.pem
+
+
+  # # ArangoDB - document/graph store - core requirement
+  # # http://localhost:8529
+  # bel_arangodb:
+  #   container_name: bel_arangodb
+  #   image: arangodb:3.1.21
+  #   ports:
+  #     - "8529:8529"
+  #   volumes:
+  #     - bel_arango_data:/var/lib/arangodb3
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.backend=bel_arangodb
+  #     - traefik.frontend.rule=Host:arangodb.belapi.test
+  #     - traefik.port=8529
+  #   environment:
+  #     - ARANGO_NO_AUTH=1
+  #   restart: always
+
+  # # Elasticsearch - terminology search - core requirement
+  # # http://localhost:9200
+  # bel_elasticsearch:
+  #   container_name: bel_elasticsearch
+  #   # image: itzg/elasticsearch:5.1.2
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:5.4.3  # dies before fully launching
+  #   ports:
+  #     - "9210:9200"
+  #   volumes:
+  #     - bel_elasticsearch_data:/usr/share/elasticsearch/data
+  #     - ./elasticsearch.yml:/conf/elasticsearch.yml
+  #   # logging:
+  #   #   driver: none
+  #   environment:
+  #     - cluster.name=docker-cluster
+  #     - bootstrap.memory_lock=true
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #     - xpack.security.enabled=false
+  #     - xpack.watcher.enabled=false
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #   # deploy:
+  #   #   resources:
+  #   #     limits:
+  #   #       memory: 1g
+  #   restart: always
 
   # BEL API - core requirement
   bel_api:
@@ -82,15 +94,15 @@ services:
       dockerfile: Dockerfile-bel_api
     ports:
       - "8010:8000"
-    depends_on:
-      - bel_elasticsearch
-      - bel_arangodb
+    # depends_on:
+    #   - bel_elasticsearch
+    #   - bel_arangodb
     volumes:
       - ./api:/app
     labels:
       - traefik.enable=true
       - traefik.backend=bel_api
-      - traefik.frontend.rule=Host:belapi.test
+      - traefik.frontend.rule=Host:belapi.test;PathPrefixStrip:/v1
       - traefik.port=8000
     environment:
       - SERVER_MODE=DEV
@@ -116,8 +128,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-docs
-    ports:
-      - "8888:80"
+    # ports:
+    #   - "8088:80"
     expose:
       - "80"
     volumes:
@@ -131,35 +143,37 @@ services:
       - traefik.port=80
     restart: always
 
-  # Optional for viewing Elasticsearch terminology search service
-  # http://localhost:5601
-  bel_kibana:
-    container_name: bel_kibana
-    # image: kibana:5.1.2
-    image: docker.elastic.co/kibana/kibana:5.4.3  # must match elasticsearch image
-    ports:
-      - 5611:5601
-    volumes:
-      - bel_kibana_data:/usr/share/kibana/data
-    labels:
-      - traefik.enable=true
-      - traefik.backend=kibana
-      - traefik.frontend.rule=Host:kibana.belapi.test
-      - traefik.port=5601
-    depends_on:
-      - bel_elasticsearch
-    environment:
-      - ELASTICSEARCH_URL=http://bel_elasticsearch:9200
-      - xpack.security.enabled=false
-    # logging:
-    #   driver: none
-    restart: always
+  # Running on api.openbel.org server -- https://kibana.bel.bio
+
+  # # Optional for viewing Elasticsearch terminology search service
+  # # http://localhost:5601
+  # bel_kibana:
+  #   container_name: bel_kibana
+  #   # image: kibana:5.1.2
+  #   image: docker.elastic.co/kibana/kibana:5.4.3  # must match elasticsearch image
+  #   ports:
+  #     - 5611:5601
+  #   volumes:
+  #     - bel_kibana_data:/usr/share/kibana/data
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.backend=kibana
+  #     - traefik.frontend.rule=Host:kibana.belapi.test
+  #     - traefik.port=5601
+  #   depends_on:
+  #     - bel_elasticsearch
+  #   environment:
+  #     - ELASTICSEARCH_URL=http://bel_elasticsearch:9200
+  #     - xpack.security.enabled=false
+  #   # logging:
+  #   #   driver: none
+  #   restart: always
 
   # Optional - for editing Swagger documents
   # http://localhost:8081
   bel_swagger_edit:
     container_name: bel_swagger_edit
-    image: swaggerapi/swagger-editor
+    image: swaggerapi/swagger-editor:latest
     ports:
         - 8081:8080
     volumes:
@@ -175,7 +189,7 @@ services:
   # http://localhost:8082
   bel_swagger_ui:
     container_name: bel_swagger_ui
-    image: swaggerapi/swagger-ui
+    image: swaggerapi/swagger-ui:latest
     ports:
         - 8082:8080
     volumes:

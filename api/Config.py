@@ -13,7 +13,7 @@ defaults = {
 }
 
 # Create a config object that gets settings from these three sources.
-config = LayeredConfig(Defaults(defaults), YAMLFile("Config.yml"), Environment(prefix="BELAPI_"),)
+config = LayeredConfig(Defaults(defaults), YAMLFile("./conf-api.yml"), Environment(prefix="BELAPI_"),)
 
 
 def main():

@@ -1,0 +1,53 @@
+settings:
+  index.mapping.single_type: true
+mappings:
+  term:
+    properties:
+      completions:
+        type: completion
+        contexts:
+          - name: species
+            type: category
+          - name: entity_types
+            type: category
+          - name: context_types
+            type: category
+      namespace:
+        type: keyword
+      src_id:
+        type: keyword
+      namespace:
+        type: keyword
+      id:
+        type: keyword
+      alt_ids:
+        type: keyword
+      label:
+        type: text
+      name:
+        type: text
+      description:
+        type: text
+      entity_types:
+        type: keyword
+      context_types:
+        type: keyword
+      synonyms:
+        type: text
+      species:
+        type: keyword
+      obsolete_ids:
+        type: keyword
+      taxonomy_rank:
+        type: keyword
+      taxonomy_tree:
+        type: keyword
+      equivalences:
+        type: text
+        index: false
+      children:
+        type: text
+        index: false
+      taxonomy_names:
+        type: object
+        enabled: false

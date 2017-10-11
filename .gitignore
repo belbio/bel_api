@@ -1,8 +1,8 @@
 # Project ignores
 
 # Secrets can be stored in here - *.sample files are kept in repository without secrets
-Config.yml
-
+conf*.yml
+api/conf*yml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

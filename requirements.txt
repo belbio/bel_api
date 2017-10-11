@@ -1,5 +1,8 @@
 elasticsearch==5.1.0
+python-arango==3.11.0
 falcon==1.1.0
+falcon-auth==1.1.0
+falcon-cors==1.1.2
 gunicorn==19.6.0
 PyJWT==1.4.2
 itsdangerous==0.24
