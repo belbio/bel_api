@@ -1,0 +1,47 @@
+$schema: http://json-schema.org/draft-04/schema#
+id: http://json.schemastore.org/bel-taxonomy-1.0.0.json
+description: Taxonomy dataset schema
+type: object
+properties:
+  src_url:
+    type: string
+    format: url
+  url_template:
+    type: string
+    format: url
+    description: Source database url template for taxonomy records - replace <ID> with the tax_id
+  version:
+    type: string
+    description: version of terminology, YYYY-MM-DDTHH:MM:SS
+  records:
+    type: object
+    description: taxonomy records
+    patternProperties:
+      "^\d+$":
+        description: Taxonomy id used as key for these records
+        type: object
+        properties:
+          tax_id:
+            type: number
+            description: Taxonomy record id used in url_template
+          parent_tax_id:
+            type: number
+          rank:
+            type: string
+          scientific_name:
+            type: string
+          label:
+            type: string
+          embl_code:
+            type: string
+          names:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+
+

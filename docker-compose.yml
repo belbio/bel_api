@@ -12,14 +12,14 @@ volumes:
 services:
 
   # Reverse proxy for BEL API and other web endpoints
-  # http://localhost:8090
+  # http://localhost:8088
   bel_traefik:
     image: traefik:latest
     container_name: bel_traefik
     ports:
       - "80:80"
       - "443:443"
-      - "8090:8088"
+      - "8088:8088"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./conf-traefik-dev.toml:/traefik.toml

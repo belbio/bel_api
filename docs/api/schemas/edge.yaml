@@ -1,0 +1,78 @@
+$schema: http://json-schema.org/draft-04/schema#
+# id: http://json.schemastore.org/edge-1.0.0.json
+description: An Edge file is either a single edge, an array of edges or uses
+  the JSON Lines (http://jsonlines.org/) format with am edge per line.
+oneOf:
+- $ref: '#/definitions/edge'
+- type: array
+  items:
+    $ref: '#/definitions/edge'
+definitions:
+  context:
+    type: array
+    items:
+      type: object
+      properties:
+        type:
+          description: |
+            Types of context to use for filtering edges, e.g.
+            Species for BEL Edges, etc
+          type: string
+        id:
+          description: unique identifier, e.g. TAX:9606 for human
+          type: string
+        label:
+          description: User friendly label for this context
+          type: string
+
+  edge:
+    description: Edge
+    type: object
+    required:
+      - edge
+    properties:
+      edge:
+        type: object
+        required:
+          - edge
+        properties:
+          nanopub_id:
+            type: string
+            description: |
+              Source nanopub ID - preferentially an murmur3 128bit hash of
+              citation, context and edge sorted alphanumerically as a JSON string
+          edge:
+            type: object
+            description: Edge to be stored in EdgeStore
+            properties:
+              subject:
+                type: object
+                properties:
+                  subject:
+                    type: string
+                  label:
+                    type: string
+                  context:
+                    $ref: "#/definitions/context"
+              relation:
+                type: object
+                properties:
+                  relation:
+                    type: string
+                  label:
+                    type: string
+                  source:
+                    type: string
+                    description: Source Nanopub ID
+                  context:
+                    $ref: "#/definitions/context"
+              object:
+                type: object
+                properties:
+                  object:
+                    type: string
+                  label:
+                    type: string
+                  context:
+                    $ref: "#/definitions/context"
+
