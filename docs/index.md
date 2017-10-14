@@ -1,3 +1,3 @@
-# BELBio API Documentation</h1>
+# BELBio API Documentation
 
 Test
