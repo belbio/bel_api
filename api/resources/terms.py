@@ -1,29 +1,35 @@
 import falcon
-import models.es
+import services.terms as terms
 
 from Config import config  # Application settings enabled for Dev/Test/Prod
 
 import logging
 log = logging.getLogger(__name__)
 
-es = models.es.es
-
 
 class TermResource(object):
-    """User Profile"""
+    """Term endpoint"""
 
-    def on_get(self, req, resp, term_id):
-        """GET User Profile"""
+    def on_get(self, req, resp, term_id=None):
+        """GET Term using term_id
 
-        pass
+        This will return the record if it finds the term_id in the
+        id field or the alt_ids field.
+        """
 
-    def on_put(self, req, resp, profile):
-        """Update User Profile"""
-        pass
+        if term_id is None:
+            resp.media = {'title': 'Term endpoint Error', 'description': 'Must provide a term id, e.g. /term/HGNC:AKT1'}
+            resp.status = falcon.HTTP_200
+            return
 
-    def on_delete(self, req, resp, userid):
-        """DELETE User"""
-        pass
+        term = terms.get_term(term_id)
+        if term:
+            resp.media = term
+            resp.status = falcon.HTTP_200
+        else:
+            description = 'No term found for {}'.format(term_id)
+            resp.media = {'title': 'No Term', 'description': description}
+            resp.status = falcon.HTTP_404
 
 
 class TermsResource(object):
@@ -33,19 +39,100 @@ class TermsResource(object):
     create new
     """
 
-    def on_get(self, req, resp, query, start, pagesize):
+    def on_get(self, req, resp):
         """GET List of Terms
-            Args:
-                query (str): query string for terms
-                start (int): start page
-                pagesize (int): number of users per page
+
             Results:
-                List[Mapping[str, Any]]: list of users
+                List[Mapping[str, Any]]: list of terms
         """
-        pass
+        resp.media = {'title': 'Terms GET query', 'description': 'To be implemented.'}
+        resp.status = falcon.HTTP_200
 
-    def on_post(self, req, resp):
-        """Create User
 
+class TermEquivalentsResource(object):
+    """User Profile"""
+
+    def on_get(self, req, resp, term_id):
+        """GET User Profile"""
+
+        results = terms.get_equivalents(term_id)
+        resp.media = {'equivalents': results}
+        resp.status = falcon.HTTP_200
+
+
+class TermCanonicalizeResource(object):
+    """User Profile"""
+
+    def on_get(self, req, resp, term_id):
+        """GET User Profile"""
+
+        term_id = terms.canonicalize(term_id)
+        resp.media = {'term_id': term_id}
+        resp.status = falcon.HTTP_200
+
+
+class TermDecanonicalizeResource(object):
+    """User Profile"""
+
+    def on_get(self, req, resp, term_id):
+        """GET User Profile"""
+
+        term_id = terms.decanonicalize(term_id)
+        resp.media = {'term_id': term_id}
+        resp.status = falcon.HTTP_200
+
+
+class TermCompletionsResource(object):
+
+    """Get Users listing based on query - generally by organization
+
+    create new
+    """
+
+    def on_get(self, req, resp, complete_term):
+        """GET List of Terms
+
+            Args:
+                search_term (str): partial term to search for - may be null
+            Results:
+                List[Mapping[str, Any]]: list of terms
         """
-        pass
+
+        size = req.get_param('size', default=10)
+
+        # Can only use 1 context filter at a time
+        cnt = 0
+        context_filter = None
+        for filter_type in ['entity_types', 'context_types', 'species_id']:
+            filter_val = req.get_param(filter_type, default=None)
+            if filter_val:
+                cnt += 1
+                context_filter = {filter_type: filter_val}
+
+        if cnt > 1:
+            resp.media = {
+                "title": "Too many context filters",
+                'description': "Can only use one context filter at a time, you used {}".format(cnt),
+            }
+            resp.status = falcon.HTTP_400
+            return
+
+        completions = terms.get_term_completions(complete_term, size, context_filter)
+
+        resp.media = {'complete_term': complete_term, 'completions': completions}
+        resp.status = falcon.HTTP_200
+
+
+class TermTypesResource(object):
+    """Get Namespaces, Entity Types, and Context Typesin TermStore
+
+    Get facet counts for each.  Only return top 20 species counts
+    """
+
+    def on_get(self, req, resp):
+        """ Get stats """
+
+        resp.media = terms.term_types()
+        resp.status = falcon.HTTP_200
+
+

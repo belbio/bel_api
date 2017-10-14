@@ -16,6 +16,13 @@ defaults = {
 config = LayeredConfig(Defaults(defaults), YAMLFile("./conf-api.yml"), Environment(prefix="BELAPI_"),)
 
 
+def get_canonical_settings():
+
+    dump = config.dump(config)
+    canonical_settings = {'canonical': dump['canonical'], 'decanonical': dump['decanonical']}
+    return canonical_settings
+
+
 def main():
     import yaml
     with open('test_config.yml', 'w') as f:

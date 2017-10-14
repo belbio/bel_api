@@ -11,8 +11,18 @@ import os
 
 from Config import config  # Application settings enabled for Dev/Test/Prod
 
-from resources.status import SimpleStatusResource, StatusResource
-from resources.terms import TermResource, TermsResource
+from resources.status import SimpleStatusResource, StatusResource, VersionResource
+from resources.static import SwaggerResource
+
+from resources.terms import TermResource
+from resources.terms import TermsResource
+from resources.terms import TermCompletionsResource
+from resources.terms import TermEquivalentsResource
+from resources.terms import TermCanonicalizeResource
+from resources.terms import TermDecanonicalizeResource
+from resources.terms import TermTypesResource
+
+from resources.orthology import OrthologResource
 
 # Setup logging
 module_fn = os.path.basename(__file__)
@@ -30,8 +40,6 @@ if config.authenticated:
         # log.info(payload)
         return True
 
-    log.info(config.secrets.shared_secret)
-
     auth_backend = JWTAuthBackend(
         user_loader=user_loader,
         secret_key=config.secrets.shared_secret,
@@ -39,7 +47,7 @@ if config.authenticated:
     )
     auth_middleware = FalconAuthMiddleware(
         auth_backend,
-        exempt_routes=['/simple_status'],
+        exempt_routes=['/simple_status', '/swaggerdoc', '/version'],
         exempt_methods=['HEAD']
     )
 
@@ -48,16 +56,31 @@ if config.authenticated:
 else:
     api = application = falcon.API(middleware=[cors.middleware, ])
 
+
 # Routes  ###############
 # Add routes to skip authentication in common/middleware:AuthMiddleware.skip_routes list
 
 # Term routes
-api.add_route('/terms', TermsResource())  # GET, POST
-api.add_route('/terms/{term_id}', TermResource())  # GET, PUT, DELETE
+api.add_route('/terms', TermsResource())  # GET
+api.add_route('/terms/completions/{complete_term}', TermCompletionsResource())
+
+api.add_route('/term', TermResource())  # GET
+api.add_route('/term/{term_id}', TermResource())  # GET
+api.add_route('/term/{term_id}/equivalents', TermEquivalentsResource())  # GET
+api.add_route('/term/{term_id}/canonicalize', TermCanonicalizeResource())  # GET
+api.add_route('/term/{term_id}/decanonicalize', TermDecanonicalizeResource())  # GET
+api.add_route('/term/types', TermTypesResource())  # GET
+
+# Orthology routes
+api.add_route('/ortholog', OrthologResource())  # GET
+api.add_route('/ortholog/{gene_id}', OrthologResource())  # GET
+api.add_route('/ortholog/{gene_id}/{species}', OrthologResource())  # GET
 
 # Status endpoints - used to check that API is running correctly
 api.add_route('/simple_status', SimpleStatusResource())  # un-authenticated
 api.add_route('/status', StatusResource())  # authenticated
+api.add_route('/version', VersionResource())  # version
+api.add_route('/swaggerdoc', SwaggerResource())  # TODO - not working
 
 # Useful for debugging problems in your API; works with pdb.set_trace()
 if __name__ == '__main__':
