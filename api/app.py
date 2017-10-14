@@ -80,7 +80,6 @@ api.add_route('/ortholog/{gene_id}/{species}', OrthologResource())  # GET
 api.add_route('/simple_status', SimpleStatusResource())  # un-authenticated
 api.add_route('/status', StatusResource())  # authenticated
 api.add_route('/version', VersionResource())  # version
-api.add_route('/swaggerdoc', SwaggerResource())  # TODO - not working
 
 # Useful for debugging problems in your API; works with pdb.set_trace()
 if __name__ == '__main__':
