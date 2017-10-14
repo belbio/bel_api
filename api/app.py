@@ -12,7 +12,6 @@ import os
 from Config import config  # Application settings enabled for Dev/Test/Prod
 
 from resources.status import SimpleStatusResource, StatusResource, VersionResource
-from resources.static import SwaggerResource
 
 from resources.terms import TermResource
 from resources.terms import TermsResource
