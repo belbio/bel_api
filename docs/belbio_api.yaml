@@ -6,7 +6,7 @@ servers:
 
 info:
   title: BELBio REST API
-  description: >
+  description: |
     BEL Bio REST API description
 
     Security - this API can be secured via JSON Web Token passed
@@ -387,6 +387,7 @@ paths:
 
   /belstmt/{stmt}/validate:
     get:
+      # deprecated: true
       summary: Validate
       description: Validate BEL Statement
       tags:
