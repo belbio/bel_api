@@ -6,7 +6,7 @@ servers:
 
 info:
   title: BELBio REST API
-  description: |
+  description: >
     BEL Bio REST API description
 
     Security - this API can be secured via JSON Web Token passed
@@ -17,6 +17,10 @@ info:
     The terminology services and some utility API endpoints have been
     created at this point.  The BEL, Nanopubs and Edges endpoints
     are to be implemented in the future.
+
+    **Note the Endpoints in the TODO section are only documented and
+    not yet implemented**
+
   version: v0.1.0
   contact:
     name: whayes@adsworks.com
@@ -36,9 +40,612 @@ tags:
   description: Edge endpoints
 - name: Utility
   description: Utility endpoints
+- name: TODO
+  description: These endpoints not implemented, only documented
 
 paths:
 
+  /bel/{subject}/{relation}/{object}/validate:
+    get:
+      summary: Validate
+      description: Validate BEL
+      tags:
+      - TODO
+      operationId: getBelValidate
+      parameters:
+      - name: subject
+        in: path
+        required: true
+        description: BEL Subject
+        schema:
+          type: string
+      - name: relation
+        in: path
+        required: true
+        description: BEL Relationship
+        schema:
+          type: string
+      - name: object
+        in: path
+        required: true
+        description: BEL Object
+        schema:
+          type: string
+      - name: ast
+        in: query
+        required: false
+        description: |
+          If AST is requested, the abstract syntax tree of the
+          BEL Edges will be provided in the response.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                  bel:
+                    type: object
+                    properties:
+                      subject:
+                        type: string
+                      relation:
+                        type: string
+                      object:
+                        type: string
+                  ast:
+                    type: object
+                    description: |
+                      If AST is requested (by query param), provide
+                      the AST along with the Edge subject, relation, and
+                      objects.
+                    additionalProperties:
+                      type: object
+                  messages:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+  /bel/{subject}/{relation}/{object}/canonicalize:
+    get:
+      summary: Canonicalize BEL
+      description: Canonicalize BEL
+      tags:
+      - TODO
+      operationId: getBelCanonicalize
+      parameters:
+      - name: subject
+        in: path
+        required: true
+        description: BEL Subject
+        schema:
+          type: string
+      - name: relation
+        in: path
+        required: true
+        description: BEL Relationship
+        schema:
+          type: string
+      - name: object
+        in: path
+        required: true
+        description: BEL Object
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  canonicalized:
+                    type: object
+                    properties:
+                      subject:
+                        type: string
+                      relation:
+                        type: string
+                      object:
+                        type: string
+                  messages:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+  /bel/{subject}/{relation}/{object}/decanonicalize:
+    get:
+      summary: Decanonicalize BEL
+      description: Decanonicalize BEL
+      tags:
+      - TODO
+      operationId: getBelDecanonicalize
+      parameters:
+      - name: subject
+        in: path
+        required: true
+        description: BEL Subject
+        schema:
+          type: string
+      - name: relation
+        in: path
+        required: true
+        description: BEL Relationship
+        schema:
+          type: string
+      - name: object
+        in: path
+        required: true
+        description: BEL Object
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  decanonicalized:
+                    type: object
+                    properties:
+                      subject:
+                        type: string
+                      relation:
+                        type: string
+                      object:
+                        type: string
+                  messages:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+  /bel/{subject}/{relation}/{object}/orthologize/{species_id}:
+    get:
+      summary: Orthologize BEL
+      description: Orthologize BEL
+      tags:
+      - TODO
+      operationId: getBelOrthologize
+      parameters:
+      - name: subject
+        in: path
+        required: true
+        description: BEL Subject
+        schema:
+          type: string
+      - name: relation
+        in: path
+        required: true
+        description: BEL Relationship
+        schema:
+          type: string
+      - name: object
+        in: path
+        required: true
+        description: BEL Object
+        schema:
+          type: string
+      - name: species_id
+        in: path
+        required: true
+        description: |
+          Orthologize BEL into Species ID. Species ID is either TAX:<integer>
+          format from the NCBI Taxonomy namespace or using the
+          common labels:
+            * human
+            * mouse
+            * rat
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orthologized:
+                    type: object
+                    properties:
+                      subject:
+                        type: string
+                      relation:
+                        type: string
+                      object:
+                        type: string
+                  messages:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+  /bel/{subject}/{relation}/{object}/edges:
+    get:
+      summary: BEL Edges
+      description: |
+        Create BEL Edges
+
+        The call will create BEL Edges from the BEL triple which can
+        be loaded into the edge store.
+      tags:
+      - TODO
+      operationId: getBelEdges
+      parameters:
+      - name: subject
+        in: path
+        required: true
+        description: BEL Subject
+        schema:
+          type: string
+      - name: relation
+        in: path
+        required: true
+        description: BEL Relationship
+        schema:
+          type: string
+      - name: object
+        in: path
+        required: true
+        description: BEL Object
+        schema:
+          type: string
+      - name: computed_signatures
+        in: query
+        required: false
+        description: |
+          Default is to create all of the defined computed edges as
+          specified in the BEL Language Specification file.
+
+          You can specify which computed_signature steps will be performed
+          by specifying a comma-delimited list of computed_signature
+          keys. Example:
+
+              computed_signatures=componentOf,degradation,activity
+        schema:
+          type: array
+          items:
+            type: string
+        style: simple
+      - name: ast
+        in: query
+        required: false
+        description: |
+          If AST is requested, the abstract syntax tree of the
+          BEL Edges will be provided in the response.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  edges:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        subject:
+                          type: string
+                        relation:
+                          type: string
+                        object:
+                          type: string
+                        ast:
+                          type: object
+                          description: |
+                            If AST is requested (by query param), provide
+                            the AST along with the Edge subject, relation, and
+                            objects.
+                          additionalProperties:
+                            type: object
+                  messages:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+
+  /belstmt/{stmt}/validate:
+    get:
+      summary: Validate
+      description: Validate BEL Statement
+      tags:
+      - TODO
+      operationId: getBelStmtValidate
+      parameters:
+      - name: stmt
+        in: path
+        required: true
+        description: BEL Statement
+        schema:
+          type: string
+      - name: ast
+        in: query
+        required: false
+        description: |
+          If AST is requested, the abstract syntax tree of the
+          BEL Edges will be provided in the response.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                  messages:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+  /belstmt/{stmt}/canonicalize:
+    get:
+      summary: Canonicalize
+      description: Canonicalize BEL Statement
+      tags:
+      - TODO
+      operationId: getBelStmtCanonicalize
+      parameters:
+      - name: stmt
+        in: path
+        required: true
+        description: BEL Statement
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  canonicalized:
+                    type: object
+                    properties:
+                      subject:
+                        type: string
+                      relation:
+                        type: string
+                      object:
+                        type: string
+                  messages:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+  /belstmt/{stmt}/decanonicalize:
+    get:
+      summary: Decanonicalize
+      description: Decanonicalize BEL Statement
+      tags:
+      - TODO
+      operationId: getBelStmtDecanonicalize
+      parameters:
+      - name: stmt
+        in: path
+        required: true
+        description: BEL Statement
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  decanonicalize:
+                    type: object
+                    properties:
+                      subject:
+                        type: string
+                      relation:
+                        type: string
+                      object:
+                        type: string
+                  messages:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+  /belstmt/{stmt}/orthologize/{species_id}:
+    get:
+      summary: Orthologize
+      description: Orthologize BEL Statement
+      tags:
+      - TODO
+      operationId: getBelStmtOrthologize
+      parameters:
+      - name: stmt
+        in: path
+        required: true
+        description: BEL Statement
+        schema:
+          type: string
+      - name: species_id
+        in: path
+        required: true
+        description: |
+          Orthologize BEL into Species ID. Species ID is either TAX:<integer>
+          format from the NCBI Taxonomy namespace or using the
+          common labels:
+            * human
+            * mouse
+            * rat
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orthologized:
+                    type: object
+                    properties:
+                      subject:
+                        type: string
+                      relation:
+                        type: string
+                      object:
+                        type: string
+                  messages:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+  /belstmt/{stmt}/edges:
+    get:
+      summary: BEL Statement Edges
+      description: |
+        Create BEL Edges
+
+        The call will create BEL Edges from the BEL statement which can
+        be loaded into the edge store.
+      tags:
+      - TODO
+      operationId: getBelStmtEdges
+      parameters:
+      - name: stmt
+        in: path
+        required: true
+        description: BEL Statement
+        schema:
+          type: string
+      - name: computed_signatures
+        in: query
+        required: false
+        description: |
+          Default is to create all of the defined computed edges as
+          specified in the BEL Language Specification file.
+
+          You can specify which computed_signature steps will be performed
+          by specifying a comma-delimited list of computed_signature
+          keys. Example:
+
+              computed_signatures=componentOf,degradation,activity
+        schema:
+          type: array
+          items:
+            type: string
+        style: simple
+      - name: ast
+        in: query
+        required: false
+        description: |
+          If AST is requested, the abstract syntax tree of the
+          BEL Edges will be provided in the response.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+             schema:
+                type: object
+                properties:
+                  edges:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        subject:
+                          type: string
+                        relation:
+                          type: string
+                        object:
+                          type: string
+                        ast:
+                          type: object
+                          description: |
+                            If AST is requested (by query param), provide
+                            the AST along with the Edge subject, relation, and
+                            objects.
+                          additionalProperties:
+                            type: object
+                  messages:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
   /terms:
     get:
       summary: Terms
