@@ -1,0 +1,571 @@
+swagger: '2.0'
+
+info:
+  title: BELBio REST API
+  description: |
+    BEL Bio REST API description
+
+    Security - this API can be secured via JSON Web Token passed
+    in the Authorization header, but it is currently disabled. Since
+    only GETs are allowed at this point, it does not appear necessary
+    to restrict access.
+
+    The terminology services and some utility API endpoints have been
+    created at this point.  The BEL, Nanopubs and Edges endpoints
+    are to be implemented in the future.
+  version: v0.1.0
+  contact:
+    name: whayes@adsworks.com
+    url: https://bel.bio
+
+host: api.bel.bio
+
+schemes:
+  - https
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+basePath: /v1
+
+securityDefinitions:
+  JwtApiKey:
+    description: >
+      For accessing the API, a valid JWT token must be passed
+      in the 'Authorization' header.
+
+      The following syntax must be used for the value of the 'Authorization' header:
+        JWT xxxxxx.yyyyyyy.zzzzzz
+    type: apiKey
+    name: Authorization
+    in: header
+
+security:
+  - JwtApiKey: []
+
+tags:
+  - name: BEL
+    description: "BEL Language endpoints"
+  - name: Terminologies
+    description: "Namespace and Annotation terminology endpoints"
+  - name: Nanopubs
+    description: "Nanopub endpoints"
+  - name: Edges
+    description: "Edge endpoints"
+  - name: Utility
+    description: Utility endpoints
+
+paths:
+  /terms:
+    get:
+      summary: Terms
+      description: Not implemented - will eventually provide term search functionality
+      tags:
+        - Terminologies
+      operationId: 834ff763-757e-4c8e-be27-697b2d08f7d3
+      parameters: []
+      responses:
+        '200':
+          description: Authenticated response with API settings and database content statistics
+          schema:
+            type: object
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /term/{term_id}:
+    get:
+      summary: Get Term record
+      description: Get Term record, example term_id=HGNC:391
+      tags:
+        - Terminologies
+      operationId: 0a709dec-e147-4abe-b026-77f2329c21f4
+      parameters:
+        - name: term_id
+          in: path
+          type: string
+          required: true
+          description: Term ID (or alternate Term ID)
+      responses:
+        '200':
+          description: Authenticated response with API settings and database content statistics
+          schema:
+            $ref: "#/definitions/Term"
+
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /terms/completions/{complete_term}:
+    get:
+      summary: Term Completion
+      description: |
+        Get term completion suggestions filtered by species_id, entity_types
+        or context_types.  You may only use one filter at a time.
+      tags:
+        - Terminologies
+      operationId: 2833c50d-301d-4070-97ba-3101bb378de3
+      parameters:
+      - name: complete_term
+        in: path
+        type: string
+        required: true
+        description: Partial term to complete, example completion 'AKT'
+      - name: species_id
+        type: array
+        items:
+          type: string
+        collectionFormat: csv
+        required: false
+        in: query
+        description: |
+          Species ID, will accept TAX:<integer>, human, mouse or rat
+
+          Example query would be complete_term: AKT and species_id: TAX:9606 or human
+      - name: entity_types
+        type: array
+        items:
+          type: string
+        collectionFormat: csv
+        required: false
+        in: query
+        description: |
+          Entity Types will accept any of the values listed in the /term/types
+          result.
+
+          Example query would be complete_term: apop and entity_type: BiologicalProcess
+      - name: context_types
+        type: array
+        items:
+          type: string
+        collectionFormat: csv
+        required: false
+        in: query
+        description: |
+          Context Types will accept any of the values listed in the /term/types
+          result.
+
+          Example query would be complete_term: scler and entity_type: Disease
+      - type: string
+        default: 10
+        name: size
+        required: false
+        in: query
+        description: Number of completions to return
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: "#/definitions/Completion"
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /term/{term_id}/equivalents:
+    get:
+      summary: Term Equivalences
+      description: Get Term equivalents, example term_id=HGNC:AKT1
+      tags:
+        - Terminologies
+      operationId: 7a0424a3-d75d-465d-912a-408e817516ca
+      parameters:
+        - name: term_id
+          in: path
+          type: string
+          required: true
+          description: Term ID (or alternate Term ID)
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+            example:
+              EG: EG:207
+              UP: UP:P31749
+
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /term/{term_id}/canonicalize:
+    get:
+      summary: Term Canonicalization
+      description: |
+        Canonicalize the term into the standard namespaces used in the
+        EdgeStore. This is to keep duplicate edges from being introduced
+        when equivalent BEL Entities but in different namespaces are
+        used.
+
+        If a canonical term cannot be found, the query term_id will be
+        returned.
+
+        An example term_id to use is HGNC:AKT1 which will result in EG:207
+        being returned.
+
+      tags:
+        - Terminologies
+      operationId: 196c6c81-738b-4b56-8c85-5c51016f97fd
+      parameters:
+        - name: term_id
+          in: path
+          type: string
+          required: true
+          description: Term ID (or alternate Term ID)
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: object
+            properties:
+              term_id:
+                type: string
+            example:
+              term_id: EG:207
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /term/{term_id}/decanonicalize:
+    get:
+      summary: Term Decanonicalization
+      description: |
+        Decanonicalize the term into the human friendly namespaces.
+        This is typically used when extracting a Term from an edge extracted
+        from the EdgeStore.
+
+        If a decanonical term cannot be found, the query term_id will be
+        returned.
+
+        An example term_id to use is EG:207 which will result in HGNC:AKT1
+        being returned.
+      tags:
+        - Terminologies
+      operationId: 974bba45-6943-420c-84b7-be0ca0fc6f61
+      parameters:
+        - name: term_id
+          in: path
+          type: string
+          required: true
+          description: Term ID (or alternate Term ID)
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: object
+            properties:
+              term_id:
+                type: string
+            example:
+              term_id: HGNC:AKT1
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /term/types:
+    get:
+      summary: Term Types
+      description: |
+        Get
+          * term namespaces and associated term counts
+          * entity_types and associated term counts
+          * context_types and associated term counts
+      tags:
+        - Terminologies
+        - Utility
+      operationId: fb716593-1015-484e-ba1a-839fd683be3d
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: object
+            properties:
+              namespaces:
+                type: object
+                additionalProperties:
+                  type: integer
+              entity_types:
+                type: object
+                additionalProperties:
+                  type: integer
+              context_types:
+                type: object
+                additionalProperties:
+                  type: integer
+            example:
+              namespaces:
+                EG: 19725818
+                TAX: 1645046
+                SP: 555594
+                CHEBI: 115240
+                MGI: 56177
+                GO: 44979
+                RGD: 44972
+                HGNC: 41254
+                MESH: 18187
+                DO: 8507
+              entity_types:
+                Gene: 20423815
+                RNA: 20372645
+                Protein: 17852293
+                Abundance: 124989
+                Micro_RNA: 4320
+                BiologicalProcess: 2029
+                Location: 237
+              context_types:
+                Species: 1294116
+                Disease: 4860
+                Anatomy: 1506
+                Cell: 351
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /ortholog/{gene_id}/{species_id}:
+    get:
+      summary: Ortholog
+      description: |
+        Get ortholog for given gene_id from species_id
+
+        Example query gene_id=HGNC:A1BG  species_id: TAX:10090
+        Result: SP:Q19LI2
+      tags:
+        - Terminologies
+      operationId: 368d0bdc-5a71-4f3c-afbc-3f2d45276206
+      parameters:
+        - name: gene_id
+          in: path
+          type: string
+          required: true
+          description: Gene or Protein ID
+        - name: species_id
+          in: path
+          type: string
+          required: true
+          description: Get ortholog from species_id for gene_id
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: object
+            properties:
+              ortholog:
+                type: string
+            example:
+              ortholog: SP:Q19LI2
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /simple_status:
+    get:
+      summary: Simple Status
+      description: Simple unauthenticated status check of API
+      tags:
+        - Utility
+      security: []
+      operationId: 2a1ba0bd-08e4-4a4d-b661-1448d9225bc5
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+            example:
+              message: Simple unauthenticated status API endpoint works
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /status:
+    get:
+      summary: Status (authenticated)
+      description: Authenticated response with API settings and database content statistics
+      tags:
+        - Utility
+      operationId: 3a0d4534-2217-4c09-85ed-a0fddf5c57be
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: object
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /version:
+    get:
+      summary: Version
+      description: Get version of API
+      tags:
+        - Utility
+      security: []
+      operationId: 5e48bf74-c0ac-4c36-b216-e5b9bd9ee2ac
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: object
+            properties:
+              version:
+                type: string
+              example:
+                version: 0.1.0
+
+definitions:
+  Term:
+    type: object
+    properties:
+      namespace:
+        type: string
+      src_id:
+        type: string
+      id:
+        type: string
+      alt_ids:
+        type: array
+        items:
+          type: string
+      label:
+        type: string
+      name:
+        type: string
+      species_id:
+        type: string
+      species_label:
+        type: string
+      description:
+        type: string
+      entity_types:
+        type: array
+        items:
+          type: string
+      context_types:
+        type: array
+        items:
+          type: string
+      equivalences:
+        type: array
+        items:
+          type: string
+      synonyms:
+        type: array
+        items:
+          type: string
+      children:
+        type: array
+        items:
+          type: string
+      obsolete_ids:
+        type: array
+        items:
+          type: string
+    example:
+      namespace: HGNC
+      src_id: '391'
+      id: HGNC:AKT1
+      alt_ids:
+      - HGNC:391
+      label: AKT1
+      name: AKT serine/threonine kinase 1
+      species_id: TAX:9606
+      species_label: human
+      description: ''
+      entity_types:
+      - Gene
+      - RNA
+      - Protein
+      equivalences:
+      - SP:P31749
+      - EG:207
+      synonyms:
+      - RAC
+      - PKB
+      - PRKBA
+      - AKT
+      children: []
+      obsolete_ids: []
+
+  Completion:
+    type: object
+    properties:
+      complete_term:
+        type: string
+      completions:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Term ID with namespace prefix
+            name:
+              type: string
+              description: official name of term
+            label:
+              type: string
+              description: human friendly label for term
+            description:
+              type: string
+            species:
+              type: object
+              properties:
+                id:
+                  type: string
+                label:
+                  type: string
+            match:
+              type: string
+              description: ID or synonym with <em></em> tags wrapping the matched text.
+    example:
+      complete_term: AKT
+      completions:
+      - id: EG:64400
+        name: AKT interacting protein
+        label: AKTIP
+        description: AKT interacting protein
+        species:
+          id: TAX:9606
+          label: human
+        match: <em>AKT<em> interacting protein
+      - id: HGNC:AKTIP
+        name: AKT interacting protein
+        label: AKTIP
+        description: ''
+        species:
+          id: TAX:9606
+          label: human
+        match: <em>AKT<em> interacting protein
+
+  ErrorModel:
+    type: object
+    required:
+    - title
+    - message
+    properties:
+      title:
+        type: string
+      message:
+        type: string
+    example:
+      title: Short descriptive title
+      message: Longer error message with more details on what went wrong
