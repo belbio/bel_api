@@ -72,13 +72,13 @@ def get_term_completions(complete_term, size, context_filter):
 
     """
     search_body = {
-        "_source": ["id", "name", "description", "species_id", "species_label"],
+        "_source": ["id", "name", "label", "description", "species_id", "species_label"],
         "suggest": {
             "term-suggest": {
                 "prefix": complete_term,
                 "completion": {
                     "field": "completions",
-                    "size": 10,
+                    "size": size,
                 }
             }
         }
@@ -100,6 +100,7 @@ def get_term_completions(complete_term, size, context_filter):
         completions.append({
             "id": option['_source']["id"],
             "name": option['_source']['name'],
+            "label": option['_source']['label'],
             "description": option['_source'].get('description', None),
             "species": species,
             "match": match,

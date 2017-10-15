@@ -18,7 +18,7 @@ class TermResource(object):
         """
 
         if term_id is None:
-            resp.media = {'title': 'Term endpoint Error', 'description': 'Must provide a term id, e.g. /term/HGNC:AKT1'}
+            resp.media = {'title': 'Term endpoint Error', 'message': 'Must provide a term id, e.g. /term/HGNC:AKT1'}
             resp.status = falcon.HTTP_200
             return
 
@@ -28,7 +28,7 @@ class TermResource(object):
             resp.status = falcon.HTTP_200
         else:
             description = 'No term found for {}'.format(term_id)
-            resp.media = {'title': 'No Term', 'description': description}
+            resp.media = {'title': 'No Term', 'message': description}
             resp.status = falcon.HTTP_404
 
 
@@ -45,7 +45,7 @@ class TermsResource(object):
             Results:
                 List[Mapping[str, Any]]: list of terms
         """
-        resp.media = {'title': 'Terms GET query', 'description': 'To be implemented.'}
+        resp.media = {'title': 'Terms GET query', 'message': 'To be implemented.'}
         resp.status = falcon.HTTP_200
 
 
@@ -112,7 +112,7 @@ class TermCompletionsResource(object):
         if cnt > 1:
             resp.media = {
                 "title": "Too many context filters",
-                'description': "Can only use one context filter at a time, you used {}".format(cnt),
+                'message': "Can only use one context filter at a time, you used {}".format(cnt),
             }
             resp.status = falcon.HTTP_400
             return

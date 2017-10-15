@@ -19,12 +19,12 @@ class OrthologResource(object):
         tax_id = species
 
         if gene_id is None:
-            resp.media = {'title': 'GET Orthologs', 'description': 'Must provide a gene id in path, e.g. /ortholog/HGNC:AKT1/TAX:10090'}
+            resp.media = {'title': 'GET Orthologs', 'message': 'Must provide a gene id in path, e.g. /ortholog/HGNC:AKT1/TAX:10090'}
             resp.status = falcon.HTTP_200
             return
 
         if tax_id is None:
-            resp.media = {'title': 'GET Orthologs', 'description': 'Must provide species in path, e.g. /ortholog/HGNC:AKT1/TAX:10090'}
+            resp.media = {'title': 'GET Orthologs', 'message': 'Must provide species in path, e.g. /ortholog/HGNC:AKT1/TAX:10090'}
             resp.status = falcon.HTTP_200
             return
 

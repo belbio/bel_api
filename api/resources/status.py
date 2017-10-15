@@ -12,7 +12,7 @@ class SimpleStatusResource(object):
 
     def on_get(self, req, resp):
 
-        resp.media = {"profile": "Simple unauthenticated status API endpoint works"}
+        resp.media = {"message": "Simple unauthenticated status API endpoint works"}
         resp.status = falcon.HTTP_200
 
 

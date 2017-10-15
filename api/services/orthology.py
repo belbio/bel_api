@@ -17,6 +17,9 @@ default_canonical_namespace = 'EG'  # for genes, proteins
 def get_ortholog(gene_id: str, tax_id: str) -> Optional[str]:
     """Get ortholog
 
+    Canonicalize prior to ortholog query and decanonicalize
+    the resulting ortholog
+
     Args:
         gene_id (str): gene_id for which to retrieve ortholog
         species (str): target species for ortholog

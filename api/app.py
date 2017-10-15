@@ -34,6 +34,7 @@ with open(logging_conf_fn, mode='r') as f:
 
 cors = CORS(allow_all_origins=True)
 
+# Allow requiring authentication via JWT
 if config.authenticated:
     def user_loader(payload):
         # log.info(payload)
@@ -46,7 +47,7 @@ if config.authenticated:
     )
     auth_middleware = FalconAuthMiddleware(
         auth_backend,
-        exempt_routes=['/simple_status', '/swaggerdoc', '/version'],
+        exempt_routes=['/simple_status', '/version'],
         exempt_methods=['HEAD']
     )
 
