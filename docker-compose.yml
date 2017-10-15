@@ -27,8 +27,35 @@ services:
     # network_mode: "host"
 
 
+  # BEL API - core requirement
+  bel_api:
+    container_name: bel_api
+    image: bel_api:latest
+    build:
+      context: .
+      dockerfile: Dockerfile-bel_api
+    ports:
+      - "8010:8000"
+    # depends_on:
+    #   - bel_elasticsearch
+    #   - bel_arangodb
+    volumes:
+      - ./api:/app
+    labels:
+      - traefik.enable=true
+      - traefik.backend=bel_api
+      - traefik.frontend.rule=Host:belapi.test;PathPrefixStrip:/v1
+      - traefik.port=8000
+    environment:
+      - SERVER_MODE=DEV
+    restart: always
+
+
 #  ArangoDB and ElasticSearch are setup on api.openbel.org
-#  use ssh tunneling to make them available for local development
+#    since they take up a lot of resources when loaded with
+#    terminologies, orthologies and edges
+#
+#  Use ssh tunneling to make them available for local development
 
 # Host belapi-tunnel belauth-tunnel belmgr-tunnel
 #   Hostname api.openbel.org
@@ -85,63 +112,6 @@ services:
   #   #       memory: 1g
   #   restart: always
 
-  # BEL API - core requirement
-  bel_api:
-    container_name: bel_api
-    image: bel_api:latest
-    build:
-      context: .
-      dockerfile: Dockerfile-bel_api
-    ports:
-      - "8010:8000"
-    # depends_on:
-    #   - bel_elasticsearch
-    #   - bel_arangodb
-    volumes:
-      - ./api:/app
-    labels:
-      - traefik.enable=true
-      - traefik.backend=bel_api
-      - traefik.frontend.rule=Host:belapi.test;PathPrefixStrip:/v1
-      - traefik.port=8000
-    environment:
-      - SERVER_MODE=DEV
-    restart: always
-
-  # Run testing, documentation builds, misc ops and data mgmt (dev data, backups)
-  bel_operations:
-    container_name: bel_operations
-    image: operations:latest
-    build:
-      context: ./
-      dockerfile: Dockerfile-ops
-    volumes:
-      - .:/app
-    environment:
-      - PYTHONPATH=/app/api
-
-  # Host docs for OAS (Swagger) - need web uri's for external Definitions when using Swagger Editor/UI
-  # e.g. http://belapi.test/docs/api/openapi.yaml
-  bel_docs:
-    container_name: bel_docs
-    image: bel_docs
-    build:
-      context: .
-      dockerfile: Dockerfile-docs
-    # ports:
-    #   - "8088:80"
-    expose:
-      - "80"
-    volumes:
-      - ./docs/api:/www/docs
-      - ./docs/nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./docs/nginx.cors.conf:/etc/nginx/nginx.cors.conf
-    labels:
-      - traefik.enable=true
-      - traefik.backend=web
-      - traefik.frontend.rule=Host:docs.belapi.test
-      - traefik.port=80
-    restart: always
 
   # Running on api.openbel.org server -- https://kibana.bel.bio
 
@@ -169,36 +139,4 @@ services:
   #   #   driver: none
   #   restart: always
 
-  # Optional - for editing Swagger documents
-  # http://localhost:8081
-  bel_swagger_edit:
-    container_name: bel_swagger_edit
-    image: swaggerapi/swagger-editor:latest
-    ports:
-        - 8081:8080
-    volumes:
-      - ./docs/oas/oas.json:/app/swagger.json
-    labels:
-      - traefik.enable=true
-      - traefik.backend=swagger_edit
-      - traefik.frontend.rule=Host:swagger_edit.belapi.test
-      - traefik.port=8080
-
-
-  # Optional - for viewing Swagger REST API documentation
-  # http://localhost:8082
-  bel_swagger_ui:
-    container_name: bel_swagger_ui
-    image: swaggerapi/swagger-ui:latest
-    ports:
-        - 8082:8080
-    volumes:
-      - ./docs/oas/oas.json:/app/swagger.json
-    # environment:
-    #   - API_URL=http://generator.swagger.io/api/swagger.json
-    labels:
-      - traefik.enable=true
-      - traefik.backend=swagger_ui
-      - traefik.frontend.rule=Host:swagger_ui.belapi.test
-      - traefik.port=8080
 
