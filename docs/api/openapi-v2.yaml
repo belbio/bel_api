@@ -64,11 +64,11 @@ paths:
       description: Not implemented - will eventually provide term search functionality
       tags:
         - Terminologies
-      operationId: 834ff763-757e-4c8e-be27-697b2d08f7d3
+      operationId: getTerms
       parameters: []
       responses:
         '200':
-          description: Authenticated response with API settings and database content statistics
+          description: Successful response
           schema:
             type: object
         default:
@@ -82,7 +82,7 @@ paths:
       description: Get Term record, example term_id=HGNC:391
       tags:
         - Terminologies
-      operationId: 0a709dec-e147-4abe-b026-77f2329c21f4
+      operationId: getTerm
       parameters:
         - name: term_id
           in: path
@@ -108,7 +108,7 @@ paths:
         or context_types.  You may only use one filter at a time.
       tags:
         - Terminologies
-      operationId: 2833c50d-301d-4070-97ba-3101bb378de3
+      operationId: getTermCompletion
       parameters:
       - name: complete_term
         in: path
@@ -172,7 +172,7 @@ paths:
       description: Get Term equivalents, example term_id=HGNC:AKT1
       tags:
         - Terminologies
-      operationId: 7a0424a3-d75d-465d-912a-408e817516ca
+      operationId: getTermEquivalents
       parameters:
         - name: term_id
           in: path
@@ -212,7 +212,7 @@ paths:
 
       tags:
         - Terminologies
-      operationId: 196c6c81-738b-4b56-8c85-5c51016f97fd
+      operationId: getTermCanonicalization
       parameters:
         - name: term_id
           in: path
@@ -249,7 +249,7 @@ paths:
         being returned.
       tags:
         - Terminologies
-      operationId: 974bba45-6943-420c-84b7-be0ca0fc6f61
+      operationId: getTermDecanonicalization
       parameters:
         - name: term_id
           in: path
@@ -282,7 +282,7 @@ paths:
       tags:
         - Terminologies
         - Utility
-      operationId: fb716593-1015-484e-ba1a-839fd683be3d
+      operationId: getTermTypes
       parameters: []
       responses:
         '200':
@@ -342,7 +342,7 @@ paths:
         Result: SP:Q19LI2
       tags:
         - Terminologies
-      operationId: 368d0bdc-5a71-4f3c-afbc-3f2d45276206
+      operationId: getOrtholog
       parameters:
         - name: gene_id
           in: path
@@ -376,7 +376,7 @@ paths:
       tags:
         - Utility
       security: []
-      operationId: 2a1ba0bd-08e4-4a4d-b661-1448d9225bc5
+      operationId: getSimpleStatus
       parameters: []
       responses:
         '200':
@@ -399,7 +399,7 @@ paths:
       description: Authenticated response with API settings and database content statistics
       tags:
         - Utility
-      operationId: 3a0d4534-2217-4c09-85ed-a0fddf5c57be
+      operationId: getStatus
       parameters: []
       responses:
         '200':
@@ -418,7 +418,7 @@ paths:
       tags:
         - Utility
       security: []
-      operationId: 5e48bf74-c0ac-4c36-b216-e5b9bd9ee2ac
+      operationId: getVersion
       parameters: []
       responses:
         '200':
@@ -428,8 +428,8 @@ paths:
             properties:
               version:
                 type: string
-              example:
-                version: 0.1.0
+            example:
+              version: 0.1.0
 
 definitions:
   Term:
