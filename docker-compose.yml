@@ -23,7 +23,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./conf-traefik-dev.toml:/traefik.toml
-      - ./tls:/tls
+      - ./traefik.acme.json:/acme.json
     # network_mode: "host"
 
 
