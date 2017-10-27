@@ -64,17 +64,16 @@ else:
 api.add_route('/terms', TermsResource())  # GET
 api.add_route('/terms/completions/{complete_term}', TermCompletionsResource())
 
-api.add_route('/term', TermResource())  # GET
-api.add_route('/term/{term_id}', TermResource())  # GET
-api.add_route('/term/{term_id}/equivalents', TermEquivalentsResource())  # GET
-api.add_route('/term/{term_id}/canonicalize', TermCanonicalizeResource())  # GET
-api.add_route('/term/{term_id}/decanonicalize', TermDecanonicalizeResource())  # GET
-api.add_route('/term/types', TermTypesResource())  # GET
+api.add_route('/terms/{term_id}', TermResource())  # GET
+api.add_route('/terms/{term_id}/equivalents', TermEquivalentsResource())  # GET
+api.add_route('/terms/{term_id}/canonicalized', TermCanonicalizeResource())  # GET
+api.add_route('/terms/{term_id}/decanonicalized', TermDecanonicalizeResource())  # GET
+api.add_route('/terms/types', TermTypesResource())  # GET
 
 # Orthology routes
-api.add_route('/ortholog', OrthologResource())  # GET
-api.add_route('/ortholog/{gene_id}', OrthologResource())  # GET
-api.add_route('/ortholog/{gene_id}/{species}', OrthologResource())  # GET
+api.add_route('/orthologs', OrthologResource())  # GET
+api.add_route('/orthologs/{gene_id}', OrthologResource())  # GET
+api.add_route('/orthologs/{gene_id}/{species}', OrthologResource())  # GET
 
 # Status endpoints - used to check that API is running correctly
 api.add_route('/simple_status', SimpleStatusResource())  # un-authenticated

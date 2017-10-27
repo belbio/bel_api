@@ -668,7 +668,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /term/{term_id}:
+  /terms/{term_id}:
     get:
       summary: Get Term record
       description: Get Term record, example term_id=HGNC:391
@@ -770,7 +770,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /term/{term_id}/equivalents:
+  /terms/{term_id}/equivalents:
     get:
       summary: Term Equivalents
       description: Get Term equivalents, example term_id=HGNC:AKT1
@@ -803,7 +803,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /term/{term_id}/canonicalize:
+  /terms/{term_id}/canonicalized:
     get:
       summary: Term Canonicalization
       description: |
@@ -846,7 +846,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /term/{term_id}/decanonicalize:
+  /terms/{term_id}/decanonicalized:
     get:
       summary: Term Decanonicalization
       description: |
@@ -888,7 +888,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /term/types:
+  /terms/types:
     get:
       summary: Term Types
       description: |
@@ -952,7 +952,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /ortholog/{gene_id}/{species_id}:
+  /orthologs/{gene_id}/{species_id}:
     get:
       summary: Ortholog
       description: |
