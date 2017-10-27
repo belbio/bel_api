@@ -14,8 +14,8 @@ log = logging.getLogger(__name__)
 default_canonical_namespace = 'EG'  # for genes, proteins
 
 
-def get_ortholog(gene_id: str, tax_id: str) -> Optional[str]:
-    """Get ortholog
+def get_ortholog(gene_id: str, tax_id: str) -> List[str]:
+    """Get orthologs for given gene_id and species
 
     Canonicalize prior to ortholog query and decanonicalize
     the resulting ortholog
@@ -25,7 +25,7 @@ def get_ortholog(gene_id: str, tax_id: str) -> Optional[str]:
         species (str): target species for ortholog
 
     Returns:
-        (str): gene_id of ortholog if available, None otherwise
+        List[str]: decanonicalized ortholog IDs if available, None otherwise
     """
 
     gene_id = canonicalize(gene_id)
@@ -33,8 +33,8 @@ def get_ortholog(gene_id: str, tax_id: str) -> Optional[str]:
     log.info(query)
     cursor = arangodb.aql.execute(query)
 
+    orthologs = []
     for record in cursor:
-        ortholog = record
+        orthologs.append(decanonicalize(record))
 
-    ortholog = decanonicalize(ortholog)
-    return ortholog
+    return orthologs

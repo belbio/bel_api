@@ -33,6 +33,6 @@ class OrthologResource(object):
 
         ortholog = orthology.get_ortholog(gene_id, tax_id)
 
-        resp.media = {'ortholog': ortholog}
+        resp.media = {'orthologs': ortholog}
         resp.status = falcon.HTTP_200
 
