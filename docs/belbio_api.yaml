@@ -987,7 +987,8 @@ paths:
                   ortholog:
                     type: string
                 example:
-                  ortholog: SP:Q19LI2
+                  orthologs:
+                    - SP:Q19LI2
         default:
           description: Error
           content:
