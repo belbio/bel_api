@@ -9,6 +9,7 @@ Usage:  program.py <customer>
 from arango import ArangoClient, ArangoError
 from typing import Mapping, Dict, List, Any, Optional, Union, Tuple
 import logging
+import re
 
 from Config import config
 
@@ -30,3 +31,20 @@ ortholog_node_coll_name = 'ortholog_nodes'
 ortholog_edge_coll_name = 'ortholog_edges'
 equiv_node_coll_name = 'equivalence_nodes'
 equiv_edge_coll_name = 'equivalence_edges'
+
+
+def arango_id_to_key(_id):
+    """Remove illegal chars from potential arangodb _key (id)
+
+    Args:
+        _id (str): id to be used as arangodb _key
+
+    Returns:
+        (str): _key value with illegal chars removed
+    """
+
+    key = re.sub("[^a-zA-Z0-9\_\-\:\.\@\(\)\+\,\=\;\$\!\*\'\%]+", '_', _id)
+    if len(key) > 254:
+        log.error(f'Arango _key cannot be longer than 254 chars: Len={len(key)}  Key: {key}')
+    return key
+

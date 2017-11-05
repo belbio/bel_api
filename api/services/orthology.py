@@ -4,7 +4,7 @@ from typing import Mapping, Dict, List, Any, Optional, Union, Tuple
 import re
 
 from models.es import es
-from models.arangodb import arangodb
+from models.arangodb import arangodb, arango_id_to_key
 
 from services.terms import canonicalize, decanonicalize
 
@@ -29,7 +29,8 @@ def get_ortholog(gene_id: str, tax_id: str) -> List[str]:
     """
 
     gene_id = canonicalize(gene_id)
-    gene_id = gene_id.replace(' ', '_')  # TODO - partial fix - future convert into Arango Key format (e.g. no spaces) and use for all Key transformations and detransformations
+    gene_id = arango_id_to_key(gene_id)
+
     query = f'FOR vertex IN 1..1 ANY "ortholog_nodes/{gene_id}" ortholog_edges FILTER vertex.tax_id == "{tax_id}" RETURN vertex._key'
     log.info(query)
     cursor = arangodb.aql.execute(query)
