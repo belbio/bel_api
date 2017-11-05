@@ -143,6 +143,15 @@ paths:
         description: BEL Object
         schema:
           type: string
+      - name: namespace_targets
+        in: query
+        required: false
+        description: |
+          string serialization of List[Map[str,List[str]]]
+          e.g. [{"HGNC": ["EG", "SP"]}] to indicate HGNC should be canonicalized
+          into the EG or SP namespace returning original term if no canonical form
+          exists. Priority of namespace conversion is determined by the order of the
+          target namespaces listed.
       responses:
         '200':
           description: Successful response
@@ -197,6 +206,15 @@ paths:
         description: BEL Object
         schema:
           type: string
+      - name: namespace_targets
+        in: query
+        required: false
+        description: |
+          string serialization of List[Map[str,List[str]]]
+          e.g. [{"HGNC": ["EG", "SP"]}] to indicate HGNC should be canonicalized
+          into the EG or SP namespace returning original term if no canonical form
+          exists. Priority of namespace conversion is determined by the order of the
+          target namespaces listed.
       responses:
         '200':
           description: Successful response
