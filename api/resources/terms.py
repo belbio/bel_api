@@ -1,5 +1,6 @@
 import falcon
 import services.terms as terms
+import json
 
 from Config import config  # Application settings enabled for Dev/Test/Prod
 
@@ -66,7 +67,10 @@ class TermCanonicalizeResource(object):
     def on_get(self, req, resp, term_id):
         """GET User Profile"""
 
-        term_id = terms.canonicalize(term_id)
+        namespace_targets = req.get_param('namespace_targets')
+        if namespace_targets:
+            namespace_targets = json.loads(namespace_targets)
+        term_id = terms.canonicalize(term_id, namespace_targets=namespace_targets)
         resp.media = {'term_id': term_id}
         resp.status = falcon.HTTP_200
 
@@ -76,6 +80,10 @@ class TermDecanonicalizeResource(object):
 
     def on_get(self, req, resp, term_id):
         """GET User Profile"""
+
+        namespace_targets = req.get_param('namespace_targets')
+        if namespace_targets:
+            namespace_targets = json.loads(namespace_targets)
 
         term_id = terms.decanonicalize(term_id)
         resp.media = {'term_id': term_id}

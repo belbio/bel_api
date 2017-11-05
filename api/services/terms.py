@@ -196,7 +196,7 @@ def get_equivalents(term_id: str, namespaces: List[str]=None) -> List[Mapping[st
     return equivalents
 
 
-def canonicalize(term_id: str, namespaces: List[str]=None) -> str:
+def canonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = None) -> str:
     """Canonicalize term_id
 
     Convert term namespace to canonical namespaces pulling them from
@@ -205,60 +205,57 @@ def canonicalize(term_id: str, namespaces: List[str]=None) -> str:
     and the first namespace:id found will be returned.
 
     For example, given HGNC:A1BG, this function will return EG:1 if
-    namespaces=['EG', 'SP']
+    namespace_targets={'HGNC': [EG', 'SP']}
 
     Args:
         term_id (str): term to canonicalize
-        namespaces (List[str]): list of namespaces (ordered) to convert term into
+        namespace_targets (Mapping[str, List[str]]): Map of namespace targets to convert term into
 
     Returns:
         str: return canonicalized term if available, else the original term_id
     """
 
-    # canonical_settings = {
-    #   'canonical': {'HGNC': ['EG', 'SP'], 'MGI': ['EG', 'SP'], 'RGD': ['EG', 'SP'], 'SP': ['EG']},
-    #   'decanonical': {'EG': ['HGNC', 'MGI', 'RGD', 'SP']}
-    # }
+    if not namespace_targets:
+        namespace_targets = Config.get_canonical_settings()['canonical']
 
-    canonical_settings = Config.get_canonical_settings()
-
-    for start_ns in canonical_settings['canonical']:
+    for start_ns in namespace_targets:
         if re.match(start_ns, term_id):
             equivalents = get_equivalents(term_id)
             # log.info(f'Equiv: {equivalents}')
-            for target_ns in canonical_settings['canonical'][start_ns]:
+            for target_ns in namespace_targets[start_ns]:
                 if target_ns in equivalents:
                     term_id = equivalents[target_ns]
 
     return term_id
 
 
-def decanonicalize(term_id: str, namespaces: List[str]=None) -> str:
+def decanonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = None) -> str:
     """De-canonicalize term_id
 
     Convert term namespace to user friendly namespaces pulling them from
-    the settings ArangoDB collection (e.g. the API configured canonical
+    the settings ArangoDB collection (e.g. the API configured decanonical
     namespace mappings) if not given. The target namespaces are ordered
     and the first namespace:id found will be returned.
 
     For example, given EG:1, this function will return HGNC:A1BG if
-    namespaces=['HGNC', 'MGI', 'RGD', 'SP']
+    namespace_targets={'EG': [HGNC', 'MGI', 'RGD', 'SP'], 'SP': [HGNC', 'MGI', 'RGD']}
 
     Args:
-        term_id (str): term to canonicalize
-        namespaces (List[str]): list of namespaces (ordered) to convert term into
+        term_id (str): term to decanonicalize
+        namespace_targets (Mapping[str, List[str]]): Map of namespace targets to convert term into
 
     Returns:
-        str: return canonicalized term if available, else the original term_id
+        str: return decanonicalized term if available, else the original term_id
     """
 
-    canonical_settings = Config.get_canonical_settings()
+    if not namespace_targets:
+        namespace_targets = Config.get_canonical_settings()['decanonical']
 
-    for start_ns in canonical_settings['decanonical']:
+    for start_ns in namespace_targets:
         if re.match(start_ns, term_id):
             equivalents = get_equivalents(term_id)
             log.info(f'Equiv: {equivalents}')
-            for target_ns in canonical_settings['decanonical'][start_ns]:
+            for target_ns in namespace_targets[start_ns]:
                 if target_ns in equivalents:
                     term_id = equivalents[target_ns]
 
