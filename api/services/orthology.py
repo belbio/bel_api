@@ -29,6 +29,7 @@ def get_ortholog(gene_id: str, tax_id: str) -> List[str]:
     """
 
     gene_id = canonicalize(gene_id)
+    gene_id = gene_id.replace(' ', '_')  # TODO - partial fix - future convert into Arango Key format (e.g. no spaces) and use for all Key transformations and detransformations
     query = f'FOR vertex IN 1..1 ANY "ortholog_nodes/{gene_id}" ortholog_edges FILTER vertex.tax_id == "{tax_id}" RETURN vertex._key'
     log.info(query)
     cursor = arangodb.aql.execute(query)
