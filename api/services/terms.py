@@ -113,6 +113,7 @@ def term_types():
     """Collect Term Types and their counts
 
     Return aggregations of namespaces, entity types, and context types
+    up to a 100 of each type (see size=<number> in query below)
 
     Returns:
         Mapping[str, Mapping[str, int]]: dict of dicts for term types
@@ -127,7 +128,7 @@ def term_types():
         }
     }
 
-    results = es.search(index='terms', doc_type='term', body=search_body, size=0)
+    results = es.search(index='terms', doc_type='term', body=search_body, size=100)
 
     types = {'namespaces': {}, 'entity_types': {}, 'context_types': {}}
 

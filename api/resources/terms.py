@@ -132,9 +132,9 @@ class TermCompletionsResource(object):
 
 
 class TermTypesResource(object):
-    """Get Namespaces, Entity Types, and Context Typesin TermStore
+    """Get Namespaces, Entity Types, and Context Types in TermStore
 
-    Get facet counts for each.  Only return top 20 species counts
+    Get facet counts for each (top 100 for each)
     """
 
     def on_get(self, req, resp):

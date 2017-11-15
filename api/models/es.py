@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from Config import config
-from elasticsearch import Elasticsearch, ConnectionError
-import falcon
+from elasticsearch import Elasticsearch
 
 import logging
 log = logging.getLogger(__name__)

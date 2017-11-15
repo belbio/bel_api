@@ -10,15 +10,12 @@ This project and everyone participating in it is governed by the [Code of Conduc
 
 ## Code Contributions
 
-This project uses the Github Fork/Clone/Branch/PullRequest workflow as discussed here
-http://blog.scottlowe.org/2015/01/27/using-fork-branch-git-workflow/
+This project uses the Git Forking workflow as discussed here https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow
 
-1. Please add an issue to the repository prior to working on a feature or bug.
-It may be helpful to review your plans with the community before starting work.
+1. Please add an issue to the repository prior to working on a feature or bug. It may be helpful to review your plans with the community before starting work.
 1. Fork and clone the repository
 1. Create a topic branch
-1. After completing your changes, please ensure that the code style outlined
-in <repo>:.editorconfig is maintained and all tests pass
+1. After completing your changes, please ensure that the code style outlined in <repo>:.editorconfig is maintained and all tests pass
 1. Submit a pull request referencing the issue being resolved
 
-* Another example of Github Fork/Flow http://www.asmeurer.com/git-workflow/
+* Other examples of Git Forking workflow http://www.asmeurer.com/git-workflow/ or http://blog.scottlowe.org/2015/01/27/using-fork-branch-git-workflow/
