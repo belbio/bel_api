@@ -227,6 +227,7 @@ def canonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = None
             for target_ns in namespace_targets[start_ns]:
                 if target_ns in equivalents:
                     term_id = equivalents[target_ns]
+                    break
 
     return term_id
 
@@ -261,5 +262,6 @@ def decanonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = No
                 log.info(f'Checking target namespace: {target_ns}')
                 if target_ns in equivalents:
                     term_id = equivalents[target_ns]
+                    break
 
     return term_id
