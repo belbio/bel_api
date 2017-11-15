@@ -1,13 +1,11 @@
 import falcon
 import services.orthology as orthology
 
-from Config import config  # Application settings enabled for Dev/Test/Prod
-
 import logging
 log = logging.getLogger(__name__)
 
 # Globals
-common_species = {'human': 'TAX:9606', 'mouse': 'TAX:10090', 'rat': 'TAX:10116'}
+common_species = {'human': 'TAX:9606', 'mouse': 'TAX:10090', 'rat': 'TAX:10116', 'zebrafish': 'TAX:7955'}
 
 
 class OrthologResource(object):

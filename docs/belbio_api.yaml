@@ -246,7 +246,15 @@ paths:
   /bel/{subject}/{relation}/{object}/orthologize/{species_id}:
     get:
       summary: Orthologize BEL
-      description: Orthologize BEL
+      description: |
+        Orthologize BEL
+
+        These common species names can be used in place of the TAX:<id> form:
+        - human (TAX:9606)
+        - mouse (TAX:10090)
+        - rat  (TAX:10116)
+        - zebrafish (TAX:7955)
+
       tags:
       - TODO
       operationId: getBelOrthologize

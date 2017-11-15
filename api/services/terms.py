@@ -258,6 +258,7 @@ def decanonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = No
             equivalents = get_equivalents(term_id)
             log.info(f'Equiv: {equivalents}')
             for target_ns in namespace_targets[start_ns]:
+                log.info(f'Checking target namespace: {target_ns}')
                 if target_ns in equivalents:
                     term_id = equivalents[target_ns]
 

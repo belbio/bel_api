@@ -1,11 +1,6 @@
-import elasticsearch
-import falcon
-from typing import Mapping, Dict, List, Any, Optional, Union, Tuple
-import re
+from typing import List
 
-from models.es import es
 from models.arangodb import arangodb, arango_id_to_key
-
 from services.terms import canonicalize, decanonicalize
 
 import logging
