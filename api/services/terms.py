@@ -118,17 +118,18 @@ def term_types():
     Returns:
         Mapping[str, Mapping[str, int]]: dict of dicts for term types
     """
-    pass
+
+    size = 100
 
     search_body = {
         "aggs": {
-            "namespace_term_counts": {"terms": {"field": "namespace"}},
-            "entity_type_counts": {"terms": {"field": "entity_types"}},
-            "context_type_counts": {"terms": {"field": "context_types"}},
+            "namespace_term_counts": {"terms": {"field": "namespace", "size": size}},
+            "entity_type_counts": {"terms": {"field": "entity_types", "size": size}},
+            "context_type_counts": {"terms": {"field": "context_types", "size": size}},
         }
     }
 
-    results = es.search(index='terms', doc_type='term', body=search_body, size=100)
+    results = es.search(index='terms', doc_type='term', body=search_body, size=0)
 
     types = {'namespaces': {}, 'entity_types': {}, 'context_types': {}}
 
