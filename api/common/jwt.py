@@ -1,7 +1,7 @@
 import jwt
 from datetime import datetime, timedelta
 
-from Config import config
+from bel_lang.Config import config
 
 import logging
 log = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ def jwt_create(userid, payload, expiration=None):
     log.debug('UserId: ', userid, ' Payload: ', payload)
 
     payload.update(additional_payload)
-    token = jwt.encode(payload, config['token_secret'], algorithm=jwt_algorithm)
+    token = jwt.encode(payload, config['bel_api']['shared_secret'], algorithm=jwt_algorithm)
 
     return token.decode('utf-8')
 
@@ -42,7 +42,7 @@ def jwt_validate(token):
             token_payload:  dict of token payload
     """
     try:
-        jwt.decode(token, config.secrets.shared_secret, algorithm=jwt_algorithm)
+        jwt.decode(token, config['bel_api']['shared_secret'], algorithm=jwt_algorithm)
         return True
     except Exception as e:
         return False
@@ -51,7 +51,7 @@ def jwt_validate(token):
 def jwt_extract(token):
     log.debug('In JWT Extract')
     try:
-        return jwt.decode(token, config.secrets.shared_secret, algorithm=jwt_algorithm), ''
+        return jwt.decode(token, config['bel_api']['shared_secret'], algorithm=jwt_algorithm), ''
     except jwt.ExpiredSignatureError:
         log.debug('JWT expired')
         return None, 'JWT expired'

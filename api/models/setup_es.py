@@ -6,18 +6,14 @@ Usage:  program.py <customer>
 
 """
 
-from elasticsearch import Elasticsearch
 import yaml
 import logging
 import logging.config
 
-# Globals
-es_conn = 'http://localhost:9200'
-es = Elasticsearch([es_conn], send_get_body_as='POST')
+from models.es import es
 
-mapping_term_fn = './es_mapping_term.yaml'
-with open(mapping_term_fn, 'r') as f:
-    mapping_term = yaml.load(f)
+# TODO - test this - refactored and untested - may have problems with
+#            es import
 
 
 def index_exists(index):
@@ -29,6 +25,11 @@ def index_exists(index):
 
 
 def create_terms_index():
+
+    mapping_term_fn = './es_mapping_term.yml'
+    with open(mapping_term_fn, 'r') as f:
+        mapping_term = yaml.load(f)
+
     if index_exists('terms'):
         r = es.indices.delete(index="terms")
         log.debug('R: ', r)

@@ -13,4 +13,4 @@ RUN pip install -r /app/requirements.txt
 USER api
 
 # https://sebest.github.io/post/protips-using-gunicorn-inside-a-docker-image/
-CMD gunicorn --config /app/gunicorn.conf --log-config /app/logging.conf -b 0.0.0.0:8000 app:api
+CMD gunicorn --config /app/gunicorn.conf --log-config /app/gunicorn_log.conf -b 0.0.0.0:8000 app:api

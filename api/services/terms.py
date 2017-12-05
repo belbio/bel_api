@@ -6,8 +6,7 @@ import re
 from models.es import es
 from models.arangodb import arangodb
 
-import Config
-from Config import config
+from bel_lang.Config import config
 
 import logging
 log = logging.getLogger(__name__)
@@ -218,7 +217,7 @@ def canonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = None
     """
 
     if not namespace_targets:
-        namespace_targets = Config.get_canonical_settings()['canonical']
+        namespace_targets = config['bel_lang']['canonical']
 
     for start_ns in namespace_targets:
         if re.match(start_ns, term_id):
@@ -252,12 +251,12 @@ def decanonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = No
     """
 
     if not namespace_targets:
-        namespace_targets = Config.get_canonical_settings()['decanonical']
+        namespace_targets = config['bel_lang']['decanonical']
 
     for start_ns in namespace_targets:
         if re.match(start_ns, term_id):
             equivalents = get_equivalents(term_id)
-            log.info(f'Equiv: {equivalents}')
+            log.info(f'Term: {term_id} Equiv: {equivalents}')
             for target_ns in namespace_targets[start_ns]:
                 log.info(f'Checking target namespace: {target_ns}')
                 if target_ns in equivalents:

@@ -11,16 +11,16 @@ from typing import Mapping, Dict, List, Any, Optional, Union, Tuple
 import logging
 import re
 
-from Config import config
+from bel_lang.Config import config
 
 log = logging.getLogger(__name__)
 
 arango_client = ArangoClient(
-    protocol=config.servers.arangodb_protocol,
-    host=config.servers.arangodb_host,
-    port=config.servers.arangodb_port,
-    username=config.servers.arangodb_username,
-    password=config.servers.arangodb_password,
+    protocol=config['bel_api']['servers']['arangodb_protocol'],
+    host=config['bel_api']['servers']['arangodb_host'],
+    port=config['bel_api']['servers']['arangodb_port'],
+    username=config['bel_api']['servers']['arangodb_username'],
+    password=config['secrets']['bel_api']['servers']['arangodb_password'],
     enable_logging=True,
 )
 

@@ -15,8 +15,8 @@ Functionality provided:
 Edit the following files to set the configuration after copying their
 example template file into the filenames below:
 
-* api/conf-api.yml
-* api/conf-logging.yml
+* belbio_conf.yaml.example
+* api/conf_logging.yaml
 * conf-traefik.toml   # production - includes Let's Encrypt SSL certs
 * conf-traefik-dev.toml  # development - http only
 

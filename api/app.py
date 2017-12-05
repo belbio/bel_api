@@ -9,8 +9,8 @@ import logging.config
 import yaml
 import os
 
-from Config import config  # Application settings enabled for Dev/Test/Prod
-
+from bel_lang.Config import config  # Application settings enabled for Dev/Test/Prod
+from middleware.stats import FalconStatsMiddleware
 from resources.status import SimpleStatusResource, StatusResource, VersionResource
 
 from resources.terms import TermResource
@@ -27,22 +27,25 @@ from resources.orthology import OrthologResource
 module_fn = os.path.basename(__file__)
 module_fn = module_fn.replace('.py', '')
 
-logging_conf_fn = './conf-logging.yml'
+logging_conf_fn = './conf_logging.yml'
 with open(logging_conf_fn, mode='r') as f:
     logging.config.dictConfig(yaml.load(f))
     log = logging.getLogger(f'{module_fn}')
 
 cors = CORS(allow_all_origins=True)
+stats_middleware = FalconStatsMiddleware()
 
 # Allow requiring authentication via JWT
-if config.authenticated:
+if config['bel_api']['authenticated']:
+
+    # Loads user data from JWT
     def user_loader(payload):
         # log.info(payload)
         return True
 
     auth_backend = JWTAuthBackend(
         user_loader=user_loader,
-        secret_key=config.secrets.shared_secret,
+        secret_key=config['secrets']['bel_api']['shared_secret'],
         required_claims=['exp', 'iat'],
     )
     auth_middleware = FalconAuthMiddleware(
@@ -51,10 +54,10 @@ if config.authenticated:
         exempt_methods=['HEAD']
     )
 
-    api = application = falcon.API(middleware=[auth_middleware, cors.middleware, ])
+    api = application = falcon.API(middleware=[stats_middleware, auth_middleware, cors.middleware, ])
 
 else:
-    api = application = falcon.API(middleware=[cors.middleware, ])
+    api = application = falcon.API(middleware=[stats_middleware, cors.middleware, ])
 
 
 # Routes  ###############

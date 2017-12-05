@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from Config import config
 from elasticsearch import Elasticsearch
+
+from bel_lang.Config import config
 
 import logging
 log = logging.getLogger(__name__)
 
-es = Elasticsearch([config.servers.elasticsearch], send_get_body_as='POST')
+es = Elasticsearch([config['bel_api']['servers']['elasticsearch']], send_get_body_as='POST')
 
 
 def index_exists(index):

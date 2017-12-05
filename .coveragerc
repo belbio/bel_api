@@ -4,9 +4,9 @@ parallel = False
 branch = False
 source =
     app.py
-    api_common/
-    api_resources/
+    common/
     models/
+    resources/
     services/
 omit =
     bin/*

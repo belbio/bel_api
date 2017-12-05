@@ -1,8 +1,7 @@
 import falcon
 import services.terms as terms
 import json
-
-from Config import config  # Application settings enabled for Dev/Test/Prod
+import functools
 
 import logging
 log = logging.getLogger(__name__)
@@ -11,6 +10,7 @@ log = logging.getLogger(__name__)
 class TermResource(object):
     """Term endpoint"""
 
+    @functools.lru_cache(maxsize=500)
     def on_get(self, req, resp, term_id=None):
         """GET Term using term_id
 
@@ -137,6 +137,7 @@ class TermTypesResource(object):
     Get facet counts for each (top 100 for each)
     """
 
+    @functools.lru_cache(maxsize=500)
     def on_get(self, req, resp):
         """ Get stats """
 

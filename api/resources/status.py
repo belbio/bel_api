@@ -1,7 +1,8 @@
 import falcon
+import copy
 
+from bel_lang.Config import config
 import services.terms as terms
-from Config import config  # Application settings enabled for Dev/Test/Prod
 
 import logging
 log = logging.getLogger(__name__)
@@ -28,9 +29,12 @@ class StatusResource(object):
 
         stats = terms.namespace_term_counts()
 
-        settings = config.dump(config)
+        settings = copy.deepcopy(config)
+        del settings['bel_resources']
         del settings['secrets']
+
         resp.media = {
+            'api_version': config['bel_api'].get('version', 'Unknown'),
             "api_settings": settings,
             'elasticsearch_stats': stats,
             'arangodb_stats': None
@@ -44,6 +48,10 @@ class VersionResource(object):
 
     def on_get(self, req, resp):
 
-        resp.media = {'version': config.version}
+        resp.media = {
+            'api_version': config['bel_api'].get('version', 'Unknown'),
+            'bel_lang_version': config['bel_lang'].get('version', 'Unknown'),
+            'bel_nanopub_version': config['bel_nanopub'].get('version', 'Unknown'),
+        }
         resp.status = falcon.HTTP_200
 

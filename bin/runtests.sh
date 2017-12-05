@@ -6,4 +6,4 @@ if [ ! -d "./tests" ]; then
     exit
 fi
 
-py.test -rs --exitfirst --cov=. --cov-report html --cov-config .coveragerc -c tests/pytest.ini --color=yes --durations=10 --flakes --pep8 tests
+py.test -rs --exitfirst --cov=api --cov-report html --cov-config .coveragerc -c tests/pytest.ini --color=yes --durations=10 --flakes --pep8 tests
