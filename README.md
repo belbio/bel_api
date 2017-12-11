@@ -130,3 +130,20 @@ Note: These instructions were tested for `Docker version 17.05.0-ce, build 89658
 0. The services should now be up and ready.
 0. Run `docker-compose logs -f` to view logs. Run `docker-compose stop` to stop all services.
 
+## Dependencies and Licensing
+
+* Python3.6
+* Falcon - BEL REST API framework python module
+* gUnicorn - python WSGI server
+* Traefik - Docker friendly reverse proxy (not required if you use your own)
+* Docker - for Traefik, gUnicorn/Falcon, ArangoDB, ElasticSearch
+* ArangoDB
+* ElasticSearch
+
+### Licensing:
+
+* Apache 2 - Elasticsearch - https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt
+* Apache 2 - ArangoDB - https://www.arangodb.com/documentation/faq/
+* MIT - Traefik - https://github.com/containous/traefik/blob/master/LICENSE.md
+* Apache 2 - Docker - https://www.docker.com/components-licenses
+* Apache 2 - BEL.bio tools
