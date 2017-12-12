@@ -13,5 +13,7 @@ pytest-pep8==1.0.6
 pytest-sugar==0.8.0
 pytest-watch==4.1.0
 requests==2.13.0
-sphinx-rtd-theme>=0.1.10-alpha
+sphinx-autobuild==0.7.1
+sphinx-rtd-theme>=0.2.5b2
+sphinxcontrib-napoleon==0.6.1
 jsonschema>=2.6.0
