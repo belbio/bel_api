@@ -8,14 +8,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>BEL.bio API Docs &mdash; BEL.bio API 0.1.0 documentation</title>
+  <title>Dependencies and Licensing &mdash; BEL.bio API 0.1.0 documentation</title>
   
 
   
   
   
   
-    <link rel="canonical" href="apidocs.bel.bioindex.html"/>
+    <link rel="canonical" href="apidocs.bel.biorequirements.html"/>
   
 
   
@@ -37,8 +37,9 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="BEL.bio API 0.1.0 documentation" href="#"/>
-        <link rel="next" title="Glossary" href="glossary.html"/> 
+    <link rel="top" title="BEL.bio API 0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="Related Projects" href="related.html"/>
+        <link rel="prev" title="Glossary" href="glossary.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -57,7 +58,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> BEL.bio API
+            <a href="index.html" class="icon icon-home"> BEL.bio API
           
 
           
@@ -95,10 +96,10 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference external" href="http://apidocs.bel.bio/openapi/index.html">API Reference (Swagger)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="requirements.html">Dependencies and Licensing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dependencies and Licensing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="related.html">Related Projects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="link_contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="link_contributing.html#code-of-conduct">Code of Conduct</a></li>
@@ -128,7 +129,7 @@
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">BEL.bio API</a>
+          <a href="index.html">BEL.bio API</a>
         
       </nav>
 
@@ -156,15 +157,15 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#">Docs</a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>BEL.bio API Docs</li>
+      <li>Dependencies and Licensing</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/requirements.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -174,8 +175,10 @@
   
   <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
       
-        <a href="glossary.html" class="btn btn-neutral float-right" title="Glossary" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="related.html" class="btn btn-neutral float-right" title="Related Projects" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
+      
+        <a href="glossary.html" class="btn btn-neutral" title="Glossary" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
   </div>
   
@@ -184,47 +187,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="bel-bio-api-docs">
-<h1>BEL.bio API Docs<a class="headerlink" href="#bel-bio-api-docs" title="Permalink to this headline">¶</a></h1>
-<p>The BEL.bio API provides a REST API for the BEL Language and BEL Content.</p>
-<p>Functionality provided:</p>
+  <div class="section" id="dependencies-and-licensing">
+<h1>Dependencies and Licensing<a class="headerlink" href="#dependencies-and-licensing" title="Permalink to this headline">¶</a></h1>
+<p><em>Dependencies</em></p>
 <ul class="simple">
-<li>BEL Namespace queries</li>
-<li>BEL language parsing and validation [TODO]</li>
-<li>BEL Nanopub management and validation [TODO]</li>
-<li>BEL Edge creation from BEL Nanopubs [TODO]</li>
-<li>BEL EdgeStore services [TODO]</li>
+<li>Python 3.6+</li>
+<li>Falcon - BEL REST API framework python module</li>
+<li>gUnicorn - python WSGI server</li>
+<li>Traefik - Docker friendly reverse proxy (not required if you use your
+own)</li>
+<li>Docker - for Traefik, gUnicorn/Falcon, ArangoDB, ElasticSearch</li>
+<li>ArangoDB</li>
+<li>ElasticSearch</li>
+<li>bel_lang python package</li>
+<li>bel_nanopub python package</li>
 </ul>
-<div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference external" href="http://apidocs.bel.bio/openapi/index.html">API Reference (Swagger)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="requirements.html">Dependencies and Licensing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="related.html">Related Projects</a></li>
-<li class="toctree-l1"><a class="reference internal" href="link_contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="link_conduct.html">Code of Conduct</a></li>
-</ul>
-</div>
-<div class="section" id="background">
-<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="http://bel.bio">BEL.bio</a> is a clean build of a <a class="reference external" href="http://openbel.org/language/version_2.0/bel_specification_version_2.0.html">BEL</a> platform using Python 3.6+ and Docker to
-increase ease of community use and deployment. Some major enhancements are:</p>
+<p><em>Licensing</em></p>
+<p>BEL.bio API and BEL.bio created tools and libraries use the Apache 2.0 license.</p>
 <ul class="simple">
-<li>Supports multiple versions of BEL at the same time</li>
-<li>Improved syntactic and semantic validation over OpenBEL API</li>
-<li>Ability to manage BEL Namespaces individually</li>
-<li>Elasticsearch based namespace searching and term completion</li>
-<li>Python libraries designed to support BEL statement, nanopub, edge parsing</li>
-</ul>
-</div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+<li>Apache 2 - Elasticsearch
+<a class="reference external" href="https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt">https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt</a></li>
+<li>Apache 2 - ArangoDB - <a class="reference external" href="https://www.arangodb.com/documentation/faq/">https://www.arangodb.com/documentation/faq/</a></li>
+<li>MIT - Traefik -
+<a class="reference external" href="https://github.com/containous/traefik/blob/master/LICENSE.md">https://github.com/containous/traefik/blob/master/LICENSE.md</a></li>
+<li>Apache 2 - Docker - <a class="reference external" href="https://www.docker.com/components-licenses">https://www.docker.com/components-licenses</a></li>
 </ul>
 </div>
 
@@ -238,8 +224,10 @@ increase ease of community use and deployment. Some major enhancements are:</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="glossary.html" class="btn btn-neutral float-right" title="Glossary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="related.html" class="btn btn-neutral float-right" title="Related Projects" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
+      
+        <a href="glossary.html" class="btn btn-neutral" title="Glossary" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
