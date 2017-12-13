@@ -51,6 +51,7 @@ docs: make_html
 	cp -r make_docs/images docs
 	cp make_docs/CNAME docs
 	cp make_docs/belbio_api.yaml docs
+	touch docs/.nojekyll
 
 
 livehtml:
