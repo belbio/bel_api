@@ -46,7 +46,6 @@ docker_push:
 	docker push belbio/bel_api
 
 make_docs:
-	rm -r docs/*
 	cd make_docs/sphinx; make html
 	cp -r make_docs/sphinx/build/html/* docs
 	cp -r make_docs/openapi docs
