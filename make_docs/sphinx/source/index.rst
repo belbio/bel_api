@@ -31,6 +31,7 @@ Functionality provided:
    dependencies
    glossary
    related
+   windows_dev_notes
 
 
 Background
