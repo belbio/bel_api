@@ -21,7 +21,7 @@ info:
     **Note the Endpoints in the TODO section are only documented and
     not yet implemented**
 
-  version: vversion: "0.1.1"
+  version: "0.1.1"
   contact:
     name: whayes@adsworks.com
     url: https://bel.bio
