@@ -21,7 +21,7 @@ info:
     **Note the Endpoints in the TODO section are only documented and
     not yet implemented**
 
-  version: v0.1.0
+  version: vversion: "0.1.1"
   contact:
     name: whayes@adsworks.com
     url: https://bel.bio
@@ -410,6 +410,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
+
   /belstmt/{stmt}/validate:
     get:
       # deprecated: true
@@ -672,7 +673,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
-
   /terms:
     get:
       summary: Terms
@@ -978,54 +978,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /orthologs/{gene_id}:
-    get:
-      summary: Ortholog
-      description: |
-        Get orthologs for given gene_id for all available species
-
-        Example query gene_id=HGNC:AKT1
-        Result: MGI:Akt1, RGD:Akt1
-      tags:
-      - Terminologies
-      operationId: getOrtholog
-      parameters:
-      - name: gene_id
-        in: path
-        required: true
-        description: Gene or Protein ID
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  orthologs:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        species_id:
-                          type: string
-                example:
-                  orthologs:
-                    - id: MGI:Akt1
-                      species_id: TAX:10090
-                    - id: RGD:Akt1
-                      species_id: TAX:10116
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-
   /orthologs/{gene_id}/{species_id}:
     get:
       summary: Ortholog
@@ -1058,10 +1010,8 @@ paths:
               schema:
                 type: object
                 properties:
-                  orthologs:
-                    type: array
-                    items:
-                      type: string
+                  ortholog:
+                    type: string
                 example:
                   orthologs:
                     - SP:Q19LI2
@@ -1139,8 +1089,7 @@ paths:
                   version:
                     type: string
                 example:
-                  version: 0.1.0
-
+                  version: version: "0.1.1"
 components:
   schemas:
 

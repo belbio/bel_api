@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Search &mdash; BEL.bio API version: &#34;0.1.1&#34; documentation</title>
+  <title>Dependencies and Licensing &mdash; BEL.bio API version: &#34;0.1.1&#34; documentation</title>
   
 
   
@@ -17,7 +17,7 @@
   
   
   
-    <link rel="canonical" href="apidocs.bel.biosearch.html"/>
+    <link rel="canonical" href="apidocs.bel.biodependencies.html"/>
   
 
   
@@ -38,8 +38,10 @@
   
         <link rel="index" title="Index"
               href="genindex.html"/>
-        <link rel="search" title="Search" href="#"/>
-    <link rel="top" title="BEL.bio API version: &#34;0.1.1&#34; documentation" href="index.html"/> 
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="BEL.bio API version: &#34;0.1.1&#34; documentation" href="index.html"/>
+        <link rel="next" title="Glossary" href="glossary.html"/>
+        <link rel="prev" title="DevOps" href="devops.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -78,7 +80,7 @@
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="#" method="get">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -96,7 +98,7 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="install.html#configuration">Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="install.html#docker-compose">Docker Compose</a></li>
@@ -126,9 +128,9 @@
 <li class="toctree-l2"><a class="reference internal" href="devops.html#contributor-licensing-agreements">Contributor Licensing Agreements</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies and Licensing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="dependencies.html#dependencies">Dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dependencies.html#licensing">Licensing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dependencies and Licensing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#licensing">Licensing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
@@ -177,36 +179,66 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Search</li>
+      <li>Dependencies and Licensing</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
+            <a href="_sources/dependencies.rst.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
     
   </ul>
 
   
+  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
+      
+        <a href="glossary.html" class="btn btn-neutral float-right" title="Glossary" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="devops.html" class="btn btn-neutral" title="DevOps" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+  </div>
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <noscript>
-  <div id="fallback" class="admonition warning">
-    <p class="last">
-      Please activate JavaScript to enable the search
-      functionality.
-    </p>
-  </div>
-  </noscript>
+  <div class="section" id="dependencies-and-licensing">
+<h1>Dependencies and Licensing<a class="headerlink" href="#dependencies-and-licensing" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Python 3.6+</li>
+<li>Falcon - BEL REST API framework python module</li>
+<li>gUnicorn - python WSGI server</li>
+<li>Traefik - Docker friendly reverse proxy (not required if you use your
+own)</li>
+<li>Docker - for Traefik, gUnicorn/Falcon, ArangoDB, ElasticSearch</li>
+<li>ArangoDB</li>
+<li>ElasticSearch</li>
+<li>bel_lang python package</li>
+<li>bel_nanopub python package</li>
+</ul>
+</div>
+<div class="section" id="licensing">
+<h2>Licensing<a class="headerlink" href="#licensing" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Apache 2 - BEL.bio API</li>
+<li>Apache 2 - BEL Python Package</li>
+<li>Apache 2 - Elasticsearch
+<a class="reference external" href="https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt">https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt</a></li>
+<li>Apache 2 - ArangoDB - <a class="reference external" href="https://www.arangodb.com/documentation/faq/">https://www.arangodb.com/documentation/faq/</a></li>
+<li>MIT - Traefik -
+<a class="reference external" href="https://github.com/containous/traefik/blob/master/LICENSE.md">https://github.com/containous/traefik/blob/master/LICENSE.md</a></li>
+<li>Apache 2 - Docker - <a class="reference external" href="https://www.docker.com/components-licenses">https://www.docker.com/components-licenses</a></li>
+</ul>
+</div>
+</div>
 
-  
-  <div id="search-results">
-  
-  </div>
 
            </div>
            <div class="articleComments">
@@ -214,6 +246,15 @@
            </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="glossary.html" class="btn btn-neutral float-right" title="Glossary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="devops.html" class="btn btn-neutral" title="DevOps" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
@@ -253,7 +294,6 @@
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="_static/searchtools.js"></script>
 
   
 
@@ -269,14 +309,7 @@
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
-  
-  <script type="text/javascript">
-    jQuery(function() { Search.loadIndex("searchindex.js"); });
-  </script>
-  
-  <script type="text/javascript" id="searchindexloader"></script>
    
-
 
 </body>
 </html>

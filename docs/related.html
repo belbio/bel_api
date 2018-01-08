@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Related Projects &mdash; BEL.bio API 0.1.0 documentation</title>
+  <title>Other BEL Projects &mdash; BEL.bio API version: &#34;0.1.1&#34; documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
   
   
   
@@ -37,9 +39,8 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="BEL.bio API 0.1.0 documentation" href="index.html"/>
-        <link rel="next" title="Contributing" href="link_contributing.html"/>
-        <link rel="prev" title="Dependencies and Licensing" href="requirements.html"/> 
+    <link rel="top" title="BEL.bio API version: &#34;0.1.1&#34; documentation" href="index.html"/>
+        <link rel="prev" title="Glossary" href="glossary.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -71,7 +72,7 @@
             
             
               <div class="version">
-                0.1.0
+                version: "0.1.1"
               </div>
             
           
@@ -97,10 +98,13 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#docker-compose">Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#development-installation">Development Installation</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="http://apidocs.bel.bio/openapi/index.html">API Reference (Swagger)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="requirements.html">Dependencies and Licensing</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Related Projects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="link_contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="link_contributing.html#code-of-conduct">Code of Conduct</a></li>
 <li class="toctree-l2"><a class="reference internal" href="link_contributing.html#code-contributions">Code Contributions</a></li>
@@ -115,6 +119,21 @@
 <li class="toctree-l2"><a class="reference internal" href="link_conduct.html#attribution">Attribution</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="devops.html">DevOps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#builds-and-testing">Builds and Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#dependabot">Dependabot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#code-quality">Code Quality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#contributor-licensing-agreements">Contributor Licensing Agreements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies and Licensing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dependencies.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dependencies.html#licensing">Licensing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Other BEL Projects</a></li>
 </ul>
 
             
@@ -159,7 +178,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Related Projects</li>
+      <li>Other BEL Projects</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -175,10 +194,8 @@
   
   <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
       
-        <a href="link_contributing.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      
-        <a href="requirements.html" class="btn btn-neutral" title="Dependencies and Licensing" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="glossary.html" class="btn btn-neutral" title="Glossary" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
   </div>
   
@@ -187,8 +204,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="related-projects">
-<h1>Related Projects<a class="headerlink" href="#related-projects" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="other-bel-projects">
+<h1>Other BEL Projects<a class="headerlink" href="#other-bel-projects" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><a class="reference external" href="http://openbel.org">OpenBEL</a>, Selventa sponsored community open source project for BEL</li>
 <li><a class="reference external" href="http://pybel.readthedocs.io/en/latest/">PyBEL</a>, PyBEL is a Python software package that parses BEL scripts, validates their semantics, and facilitates data interchange between common formats and database systems like JSON, CSV, Excel, SQL, CX, and Neo4J.</li>
@@ -207,10 +224,8 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="link_contributing.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      
-        <a href="requirements.html" class="btn btn-neutral" title="Dependencies and Licensing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="glossary.html" class="btn btn-neutral" title="Glossary" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -219,7 +234,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, William Hayes.
+        &copy; Copyright 2018, William Hayes.
 
     </p>
   </div>
@@ -241,7 +256,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0',
+            VERSION:'version: &#34;0.1.1&#34;',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -4,8 +4,8 @@ VERSION_FILE=VERSION
 VERSION=`cat $(VERSION_FILE)`
 
 # ensures list is not mis-identified with a file of the same name
-.PHONY: deploy-major deploy-minor deploy-path update_ebnf update_parsers
-.PHONY: docs test list help lint run push_docker
+.PHONY: deploy-major deploy-minor deploy-path livedocs
+.PHONY: test list help lint run docker_push make_docs
 
 define deploy_commands
 	@echo "Update CHANGELOG"
@@ -40,27 +40,20 @@ deploy_patch: make_docs
 	bumpversion --allow-dirty patch
 	${deploy_commands}
 
-
-update_ebnf:
-	./bin/yaml_to_ebnf.py
-
-update_parsers: update_ebnf
-	./bin/ebnf_to_parsers.py
-
 docker_push:
 	@echo $(VERSION)
 	docker build -t belbio/bel_api -t belbio/bel_api:$(VERSION) -f docker/Dockerfile-bel_api-image .
 	docker push belbio/bel_api
 
 make_docs:
-	rm -r make_docs/*
+	rm -r docs/*
 	cd make_docs/sphinx; make html
 	cp -r make_docs/sphinx/build/html/* docs
 	cp -r make_docs/openapi docs
 	cp -r make_docs/images docs
 	cp make_docs/CNAME docs
 	cp make_docs/belbio_api.yaml docs
-	touch make_docs/.nojekyll
+	touch docs/.nojekyll
 
 
 livedocs:

@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Glossary &mdash; BEL.bio API 0.1.0 documentation</title>
+  <title>Glossary &mdash; BEL.bio API version: &#34;0.1.1&#34; documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
   
   
   
@@ -37,9 +39,9 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="BEL.bio API 0.1.0 documentation" href="index.html"/>
-        <link rel="next" title="Dependencies and Licensing" href="requirements.html"/>
-        <link rel="prev" title="BEL.bio API Docs" href="index.html"/> 
+    <link rel="top" title="BEL.bio API version: &#34;0.1.1&#34; documentation" href="index.html"/>
+        <link rel="next" title="Other BEL Projects" href="related.html"/>
+        <link rel="prev" title="Dependencies and Licensing" href="dependencies.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -71,7 +73,7 @@
             
             
               <div class="version">
-                0.1.0
+                version: "0.1.1"
               </div>
             
           
@@ -97,10 +99,13 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#docker-compose">Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#development-installation">Development Installation</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="http://apidocs.bel.bio/openapi/index.html">API Reference (Swagger)</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Glossary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="requirements.html">Dependencies and Licensing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="related.html">Related Projects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="link_contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="link_contributing.html#code-of-conduct">Code of Conduct</a></li>
 <li class="toctree-l2"><a class="reference internal" href="link_contributing.html#code-contributions">Code Contributions</a></li>
@@ -115,6 +120,21 @@
 <li class="toctree-l2"><a class="reference internal" href="link_conduct.html#attribution">Attribution</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="devops.html">DevOps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#builds-and-testing">Builds and Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#dependabot">Dependabot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#code-quality">Code Quality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#contributor-licensing-agreements">Contributor Licensing Agreements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies and Licensing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dependencies.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dependencies.html#licensing">Licensing</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="related.html">Other BEL Projects</a></li>
 </ul>
 
             
@@ -175,10 +195,10 @@
   
   <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
       
-        <a href="requirements.html" class="btn btn-neutral float-right" title="Dependencies and Licensing" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="related.html" class="btn btn-neutral float-right" title="Other BEL Projects" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="BEL.bio API Docs" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dependencies.html" class="btn btn-neutral" title="Dependencies and Licensing" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
   </div>
   
@@ -189,33 +209,42 @@
             
   <div class="section" id="glossary">
 <h1>Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">¶</a></h1>
+<p>Organized by importance of term not alphabetically</p>
 <dl class="glossary docutils">
-<dt id="term-bel-statement">BEL statement</dt>
-<dd>single string version of BEL triple</dd>
-<dt id="term-nested-bel-statement">Nested BEL statement</dt>
-<dd>Where the object of a BEL triple is another bel triple, e.g. <em>subject relation (subject relation object)</em>.</dd>
+<dt id="term-bel-assertion">BEL assertion</dt>
+<dd>single string version of a BEL triple</dd>
+<dt id="term-nested-bel-assertion">Nested BEL assertion</dt>
+<dd>Where the object of a BEL triple is another BEL triple, e.g. <em>subject relation (subject relation object)</em>.</dd>
 <dt id="term-bel-triple">BEL triple</dt>
-<dd>subject, relation, object (SRO) version of BEL statement</dd>
+<dd>subject, relation, object (SRO) version of BEL assertion</dd>
 <dt id="term-bel-nanopub">BEL Nanopub</dt>
-<dd>JSON or YAML document containing BEL triple(s), Evidence, Context, Citation, and Metadata</dd>
+<dd>JSON or YAML document containing BEL triple(s), Evidence, Annotations, Citation, and Nanopub Metadata</dd>
+<dt id="term-bel-edge">BEL Edge</dt>
+<dd>BEL triples, computed BEL canonicalized to standard BEL Namespace IDs and potentially orthologized which are stored in an EdgeStore (a graph database).</dd>
+<dt id="term-bel-network">BEL Network</dt>
+<dd>A subset of the BEL Edges in the EdgeStore that are selected for connectivity and environmental context, e.g. BEL Edges connected to p(HGNC:EGFR) for lung cancer in humans.</dd>
+<dt id="term-nanopubstore">NanopubStore</dt>
+<dd>A database for storing Nanopubs with a separate CRUD REST API interface and some basic Web Administration.</dd>
+<dt id="term-edgestore">EdgeStore</dt>
+<dd>A database for storing BEL Edges which is search-able via the BEL.bio API. This is a graph database which allows for network neighborhood and shortest path queries between nodes.</dd>
+<dt id="term-networkstore">NetworkStore</dt>
+<dd>A database for Networks with a separate CRUD REST API interface and some basic Web Administration.</dd>
 <dt id="term-evidence">Evidence</dt>
 <dd>short text extraction or supporting information for BEL Triple (Evidence in BEL Script, Support in OpenBEL Nanopub format)</dd>
 <dt id="term-bel-namespace">BEL Namespace</dt>
 <dd>A terminology used to unambiguously identify a gene/protein, biological process, pathology, cell line, etc. The terms in BEL Namespace have a namespace prefix such as <strong>HGNC</strong> for Human Gene Nomenclature Committee human gene symbols or GO for Gene Ontology. The Namespace definition may contain equivalents to other namespaces; it may also contain hierarchical structure such as an Anatomy namespace or the Gene Ontology.</dd>
-<dt id="term-context">Context</dt>
-<dd>OpenBEL Annotations are now called Context and referred to as <em>Experimental Context</em> in BELMgr.  Context is a list of (context_type, ID and label).  The context_type indicates what type of context it is such as Species, Disease, CellLine, etc.  The context id is now managed as a BEL Namespace which will allow for hierarchical queries in the future.</dd>
-<dt id="term-bel-edge">BEL Edge</dt>
-<dd>BEL triples, computed BEL canonicalized to standard BEL Namespace IDs and potentially orthologized stored in EdgeStore (a graph database)</dd>
+<dt id="term-annotations">Annotations</dt>
+<dd>Annotations are a list of (AnnotationType, ID and label).  The AnnotationType indicates what type of annotation it is such as Species, Disease, CellLine, etc.  The Annotation ID is now managed as a BEL Namespace which will allow for hierarchical queries in the future.</dd>
 <dt id="term-api">API</dt>
-<dd>BEL.bio API – BEL language, BEL Nanopub, terminology (BEL Namespaces, equivalences and orthology) and BEL Edge REST API services</dd>
+<dd>BEL.bio API – BEL language, BEL Nanopub, BEL Namespaces (and equivalences and orthology) and BEL Edge REST API services</dd>
 <dt id="term-ast">AST</dt>
-<dd>Abstract Syntax Tree of BEL Statement or BEL Triple</dd>
+<dd>Abstract Syntax Tree of BEL Assertion or BEL Triple. A hierarchically organized data structure of the BEL Assertion which is very useful for performing transforms such as canonicalization, orthologization or generating computed edges.</dd>
 <dt id="term-ast-function">AST Function</dt>
 <dd>BEL function, e.g. p() or modifier function, e.g. var()</dd>
 <dt id="term-ast-nsarg-or-nsarg">AST NSArg or NSArg</dt>
-<dd>Namespace argument, e.g. HGNC:AKT1, Namespace prefix plus namespace value</dd>
+<dd>Namespace argument, e.g. p(HGNC:AKT1), HGNC:AKT1 is the namespace argument where HGNC is the namespace prefix and AKT1 is the Namespace value.</dd>
 <dt id="term-ast-strarg-or-strarg">AST StrArg or StrArg</dt>
-<dd>String argument, e.g. pmod(Ph, T, 22), Ph, T and 22 are string arguments</dd>
+<dd>String argument, e.g. pmod(Ph, T, 22), Ph, T and 22 are string arguments.</dd>
 </dl>
 </div>
 
@@ -229,10 +258,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="requirements.html" class="btn btn-neutral float-right" title="Dependencies and Licensing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="related.html" class="btn btn-neutral float-right" title="Other BEL Projects" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="BEL.bio API Docs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dependencies.html" class="btn btn-neutral" title="Dependencies and Licensing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -241,7 +270,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, William Hayes.
+        &copy; Copyright 2018, William Hayes.
 
     </p>
   </div>
@@ -263,7 +292,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0',
+            VERSION:'version: &#34;0.1.1&#34;',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

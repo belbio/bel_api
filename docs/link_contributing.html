@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Contributing &mdash; BEL.bio API 0.1.0 documentation</title>
+  <title>Contributing &mdash; BEL.bio API version: &#34;0.1.1&#34; documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
   
   
   
@@ -37,9 +39,9 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="BEL.bio API 0.1.0 documentation" href="index.html"/>
+    <link rel="top" title="BEL.bio API version: &#34;0.1.1&#34; documentation" href="index.html"/>
         <link rel="next" title="Code of Conduct" href="link_conduct.html"/>
-        <link rel="prev" title="Related Projects" href="related.html"/> 
+        <link rel="prev" title="Installation" href="install.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -71,7 +73,7 @@
             
             
               <div class="version">
-                0.1.0
+                version: "0.1.1"
               </div>
             
           
@@ -97,10 +99,13 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#docker-compose">Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#development-installation">Development Installation</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="http://apidocs.bel.bio/openapi/index.html">API Reference (Swagger)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="requirements.html">Dependencies and Licensing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="related.html">Related Projects</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#code-of-conduct">Code of Conduct</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#code-contributions">Code Contributions</a></li>
@@ -115,6 +120,21 @@
 <li class="toctree-l2"><a class="reference internal" href="link_conduct.html#attribution">Attribution</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="devops.html">DevOps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#builds-and-testing">Builds and Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#dependabot">Dependabot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#code-quality">Code Quality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devops.html#contributor-licensing-agreements">Contributor Licensing Agreements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies and Licensing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dependencies.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dependencies.html#licensing">Licensing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="related.html">Other BEL Projects</a></li>
 </ul>
 
             
@@ -178,7 +198,7 @@
         <a href="link_conduct.html" class="btn btn-neutral float-right" title="Code of Conduct" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="related.html" class="btn btn-neutral" title="Related Projects" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="install.html" class="btn btn-neutral" title="Installation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
   </div>
   
@@ -191,23 +211,20 @@
 </div>
 <div class="section" id="contributing">
 <h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">+1:</th><td class="field-body">First off, thanks for taking the time to contribute! :+1:</td>
-</tr>
-</tbody>
-</table>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">First off, thanks for taking the time to contribute!</p>
+</div>
 <p>The following is a set of guidelines for contributing to BEL.bio and its
 repositories, which are hosted in <a class="reference external" href="https://github.com/belbio">BELbio</a>
 on GitHub. These are mostly guidelines, not rules. Use your best
 judgment, and feel free to propose changes to this document in a pull
 request. If you have any questions, please let us know.</p>
+<p>You will need to sign a Contributer’s License Agreement (CLA) the first time you submit a pull request and anytime afterwards that the CLA agreement is updated (very rarely). This is signed by clicking on the request as part of the pull request and digitally signed with your Github ID automatically.</p>
 <div class="section" id="code-of-conduct">
 <h2>Code of Conduct<a class="headerlink" href="#code-of-conduct" title="Permalink to this headline">¶</a></h2>
-<p>This project and everyone participating in it is governed by the <a class="reference external" href="CONDUCT.md">Code
-of Conduct</a>. By participating, you are expected to uphold
+<p>This project and everyone participating in it is governed by the <em>Code
+of Conduct</em> <a class="reference internal" href="link_conduct.html"><span class="doc">Code of Conduct</span></a>. By participating, you are expected to uphold
 this code. Please report unacceptable behavior to one of the project
 maintainers, <a class="reference external" href="mailto:whayes&#37;&#52;&#48;adsworks&#46;com">William Hayes</a> or <a class="reference external" href="mailto:adifabio&#37;&#52;&#48;adsworks&#46;com">Anselmo
 Di Fabio</a>.</p>
@@ -216,14 +233,17 @@ Di Fabio</a>.</p>
 <h2>Code Contributions<a class="headerlink" href="#code-contributions" title="Permalink to this headline">¶</a></h2>
 <p>This project uses the Git Forking workflow as discussed here
 <a class="reference external" href="https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow">https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow</a></p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">It may be helpful to review your plans with the community before starting work.</p>
+</div>
 <ol class="arabic simple">
 <li>Please add an issue to the repository prior to working on a feature
-or bug. It may be helpful to review your plans with the community
-before starting work.</li>
+or bug.</li>
 <li>Fork and clone the repository</li>
 <li>Create a topic branch</li>
 <li>After completing your changes, please ensure that the code style
-outlined in :.editorconfig is maintained and all tests pass</li>
+outlined in <a class="reference external" href="https://github.com/belbio/bel_api/blob/master/.editorconfig">Editorconfig</a> is followed.</li>
 <li>Submit a pull request referencing the issue being resolved</li>
 </ol>
 <ul class="simple">
@@ -247,7 +267,7 @@ outlined in :.editorconfig is maintained and all tests pass</li>
         <a href="link_conduct.html" class="btn btn-neutral float-right" title="Code of Conduct" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="related.html" class="btn btn-neutral" title="Related Projects" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="install.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -256,7 +276,7 @@ outlined in :.editorconfig is maintained and all tests pass</li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, William Hayes.
+        &copy; Copyright 2018, William Hayes.
 
     </p>
   </div>
@@ -278,7 +298,7 @@ outlined in :.editorconfig is maintained and all tests pass</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0',
+            VERSION:'version: &#34;0.1.1&#34;',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

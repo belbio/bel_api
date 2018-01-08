@@ -1,4 +1,4 @@
-Related Projects
+Other BEL Projects
 -----------------------
 
 -  OpenBEL_, Selventa sponsored community open source project for BEL
