@@ -978,28 +978,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /orthologs/{gene_id}/{species_id}:
+  /orthologs/{gene_id}:
     get:
-      summary: Ortholog
+      summary: Orthologs for given gene
       description: |
-        Get ortholog for given gene_id from species_id
+        Get orthologs for given gene_id for all species
 
-        Example query gene_id=HGNC:A1BG  species_id: TAX:10090
-        Result: SP:Q19LI2
+        Example query gene_id=HGNC:AKT1
+        Result: MGI:AKT1, TAX:10090
+                RGD:AKT1, TAX:10116
       tags:
       - Terminologies
-      operationId: getOrtholog
+      operationId: getOrthologs
       parameters:
       - name: gene_id
         in: path
         required: true
         description: Gene or Protein ID
-        schema:
-          type: string
-      - name: species_id
-        in: path
-        required: true
-        description: Get ortholog from species_id for gene_id
         schema:
           type: string
       responses:
@@ -1010,11 +1005,67 @@ paths:
               schema:
                 type: object
                 properties:
-                  ortholog:
-                    type: string
+                  orthologs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        species_id:
+                          type: string
                 example:
                   orthologs:
-                    - SP:Q19LI2
+                    - id: MGI:Akt1
+                      species_id: TAX:10090
+                    - id: RGD:Akt1
+                      species_id: TAX:10116
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+  /orthologs/{gene_id}/{species_id}:
+    get:
+      summary: Ortholog
+      description: |
+        Get ortholog for given gene_id from species_id
+
+        Example query gene_id=HGNC:A1BG  species_id: TAX:10090
+        Result: MGI:A1bg
+      tags:
+      - Terminologies
+      operationId: getOrthologsSpeciesId
+      parameters:
+      - name: gene_id
+        in: path
+        required: true
+        description: Gene or Protein ID
+        schema:
+          type: string
+      - name: species_id
+        in: path
+        required: true
+        description: Get orthologs with species_id for gene_id
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orthologs:
+                    type: array
+                    items:
+                      type: string
+                example:
+                  orthologs:
+                    - MGI:A1bg
         default:
           description: Error
           content:
