@@ -25,17 +25,17 @@ dev_install:
 run:
 	cd api; gunicorn --config ./gunicorn.conf --log-config ./gunicorn_log.conf -b 0.0.0.0:8181 app:api
 
-deploy-major: make_docs
+deploy_major: make_docs
 	@echo Deploying major update
 	bumpversion major
 	@${deploy_commands}
 
-deploy-minor: make_docs
+deploy_minor: make_docs
 	@echo Deploying minor update
 	bumpversion minor
 	@${deploy_commands}
 
-deploy-patch: make_docs
+deploy_patch: make_docs
 	@echo Deploying patch update
 	bumpversion --allow-dirty patch
 	${deploy_commands}
