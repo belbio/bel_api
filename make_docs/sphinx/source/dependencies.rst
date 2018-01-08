@@ -1,8 +1,9 @@
 
 Dependencies and Licensing
---------------------------
+==============================
 
-*Dependencies*
+Dependencies
+-----------------
 
 -  Python 3.6+
 -  Falcon - BEL REST API framework python module
@@ -15,10 +16,11 @@ Dependencies and Licensing
 -  bel_lang python package
 -  bel_nanopub python package
 
-*Licensing*
+Licensing
+---------------
 
-BEL.bio API and BEL.bio created tools and libraries use the Apache 2.0 license.
-
+-  Apache 2 - BEL.bio API
+-  Apache 2 - BEL Python Package
 -  Apache 2 - Elasticsearch
    https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt
 -  Apache 2 - ArangoDB - https://www.arangodb.com/documentation/faq/

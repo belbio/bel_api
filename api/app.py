@@ -9,7 +9,7 @@ import logging.config
 import yaml
 import os
 
-from bel_lang.Config import config  # Application settings enabled for Dev/Test/Prod
+from bel.Config import config
 from middleware.stats import FalconStatsMiddleware
 from resources.status import SimpleStatusResource, StatusResource, VersionResource
 
@@ -27,10 +27,8 @@ from resources.orthology import OrthologResource
 module_fn = os.path.basename(__file__)
 module_fn = module_fn.replace('.py', '')
 
-logging_conf_fn = './conf_logging.yml'
-with open(logging_conf_fn, mode='r') as f:
-    logging.config.dictConfig(yaml.load(f))
-    log = logging.getLogger(f'{module_fn}')
+logging.config.dictConfig(config['logging'])
+log = logging.getLogger(f'{module_fn}')
 
 cors = CORS(allow_all_origins=True)
 stats_middleware = FalconStatsMiddleware()

@@ -1,6 +1,6 @@
 from typing import List
 
-from models.arangodb import arangodb, arango_id_to_key
+import bel.db.arangodb
 from services.terms import canonicalize, decanonicalize
 
 import logging
@@ -8,8 +8,11 @@ log = logging.getLogger(__name__)
 
 default_canonical_namespace = 'EG'  # for genes, proteins
 
+arangodb_client = bel.db.arangodb.get_client()
+belns_db = bel.db.arangodb.get_belns_handle(arangodb_client)
 
-def get_ortholog(gene_id: str, tax_id: str) -> List[str]:
+
+def get_ortholog(gene_id: str, tax_id: str = None) -> List[str]:
     """Get orthologs for given gene_id and species
 
     Canonicalize prior to ortholog query and decanonicalize
@@ -24,14 +27,23 @@ def get_ortholog(gene_id: str, tax_id: str) -> List[str]:
     """
 
     gene_id = canonicalize(gene_id)
-    gene_id = arango_id_to_key(gene_id)
+    gene_id_key = bel.db.arangodb.arango_id_to_key(gene_id)
 
-    query = f'FOR vertex IN 1..1 ANY "ortholog_nodes/{gene_id}" ortholog_edges FILTER vertex.tax_id == "{tax_id}" RETURN vertex._key'
-    log.info(query)
-    cursor = arangodb.aql.execute(query)
+    if tax_id:
+        query = f'FOR vertex IN 1..3 ANY "ortholog_nodes/{gene_id_key}" ortholog_edges FILTER vertex.tax_id == "{tax_id}" RETURN DISTINCT vertex._key'
+        cursor = belns_db.aql.execute(query)
+        orthologs = []
+        for record in cursor:
+            orthologs.append(decanonicalize(record))
 
-    orthologs = []
-    for record in cursor:
-        orthologs.append(decanonicalize(record))
+        return orthologs
+    else:
+        query = 'FOR vertex IN 1..3 ANY "ortholog_nodes/{0}" ortholog_edges RETURN DISTINCT {{id: vertex._key, species_id: vertex.tax_id}}'.format(gene_id_key)
+        cursor = belns_db.aql.execute(query)
+        orthologs = []
+        for record in cursor:
+            orthologs.append({'id': decanonicalize(record['id']), 'species_id': record['species_id']})
 
-    return orthologs
+        return orthologs
+
+

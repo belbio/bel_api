@@ -1,20 +1,25 @@
 import elasticsearch
 import falcon
-from typing import Mapping, Dict, List, Any, Optional, Union, Tuple
+from typing import Mapping, List
 import re
 
-from models.es import es
-from models.arangodb import arangodb
+import bel.db.elasticsearch
+import bel.db.arangodb
 
-from bel_lang.Config import config
+from bel.Config import config
 
 import logging
 log = logging.getLogger(__name__)
 
+es = bel.db.elasticsearch.get_client()
+
+arangodb_client = bel.db.arangodb.get_client()
+belns_db = bel.db.arangodb.get_belns_handle(arangodb_client)
+
 
 def get_species_info(species_id):
 
-    log.info(species_id)
+    log.debug(species_id)
 
     url_template = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&lvl=3&lin=f&keep=1&srchmode=1&unlock&id=<src_id>"
     search_body = {
@@ -187,8 +192,10 @@ def get_equivalents(term_id: str, namespaces: List[str]=None) -> List[Mapping[st
         List[Mapping[str, str]]: e.g. [{'term_id': 'HGNC:5', 'namespace': 'EG'}]
     """
 
-    query = f"FOR vertex, edge IN 1..10 ANY 'equivalence_nodes/{term_id}' equivalence_edges " + "RETURN {term_id: vertex._key, namespace: vertex.namespace}"
-    cursor = arangodb.aql.execute(query)
+    term_id_key = bel.db.arangodb.arango_id_to_key(term_id)
+
+    query = f"FOR vertex, edge IN 1..10 ANY 'equivalence_nodes/{term_id_key}' equivalence_edges " + "RETURN {term_id: vertex._key, namespace: vertex.namespace}"
+    cursor = belns_db.aql.execute(query)
 
     equivalents = {}
     for record in cursor:
@@ -217,7 +224,7 @@ def canonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = None
     """
 
     if not namespace_targets:
-        namespace_targets = config['bel_lang']['canonical']
+        namespace_targets = config['bel']['lang']['canonical']
 
     for start_ns in namespace_targets:
         if re.match(start_ns, term_id):
@@ -251,14 +258,14 @@ def decanonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = No
     """
 
     if not namespace_targets:
-        namespace_targets = config['bel_lang']['decanonical']
+        namespace_targets = config['bel']['lang']['decanonical']
 
     for start_ns in namespace_targets:
         if re.match(start_ns, term_id):
             equivalents = get_equivalents(term_id)
-            log.info(f'Term: {term_id} Equiv: {equivalents}')
+            log.debug(f'Term: {term_id} Equiv: {equivalents}')
             for target_ns in namespace_targets[start_ns]:
-                log.info(f'Checking target namespace: {target_ns}')
+                log.debug(f'Checking target namespace: {target_ns}')
                 if target_ns in equivalents:
                     term_id = equivalents[target_ns]
                     break

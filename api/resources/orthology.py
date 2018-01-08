@@ -22,15 +22,13 @@ class OrthologResource(object):
             return
 
         if tax_id is None:
-            resp.media = {'title': 'GET Orthologs', 'message': 'Must provide species in path, e.g. /ortholog/HGNC:AKT1/TAX:10090'}
+            orthologs = orthology.get_ortholog(gene_id)
+            resp.media = {'orthologs': orthologs}
             resp.status = falcon.HTTP_200
-            return
-
-        if tax_id in common_species:
-            tax_id = common_species[tax_id]
-
-        ortholog = orthology.get_ortholog(gene_id, tax_id)
-
-        resp.media = {'orthologs': ortholog}
-        resp.status = falcon.HTTP_200
+        else:
+            if tax_id in common_species:
+                tax_id = common_species[tax_id]
+            ortholog = orthology.get_ortholog(gene_id, tax_id)
+            resp.media = {'orthologs': ortholog}
+            resp.status = falcon.HTTP_200
 

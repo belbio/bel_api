@@ -23,18 +23,20 @@ Functionality provided:
    :maxdepth: 1
    :caption: Contents:
 
+   install
    API Reference (Swagger) <http://apidocs.bel.bio/openapi/index.html>
-   glossary
-   requirements
-   related
    link_contributing
    link_conduct
+   devops
+   dependencies
+   glossary
+   related
+
 
 Background
 -------------
 
-`BEL.bio`_ is a clean build of a BEL_ platform using Python 3.6+ and Docker to
-increase ease of community use and deployment. Some major enhancements are:
+`BEL.bio`_ is a clean build of a BEL_ platform using Python 3.6+ and Docker to increase ease of community use and deployment. Some major enhancements are:
 
 - Supports multiple versions of BEL at the same time
 - Improved syntactic and semantic validation over OpenBEL API
@@ -43,13 +45,8 @@ increase ease of community use and deployment. Some major enhancements are:
 - Python libraries designed to support BEL statement, nanopub, edge parsing
 
 
+Related Documentation
+--------------------------
 
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+* `BEL Python Package <http://bel.readthedocs.io/en/latest/>`_ - powers most of the BEL language and processing functionality of the API
+* `BEL Resource Tools <http://bel_resources.readthedocs.io/en/latest/>`_ - creates and loads resources used by the API (namespaces, orthology, etc)

@@ -1,10 +1,11 @@
 # Run make help or make list to find out what the commands are
 
+VERSION_FILE=VERSION
+VERSION=`cat $(VERSION_FILE)`
 
 # ensures list is not mis-identified with a file of the same name
 .PHONY: deploy-major deploy-minor deploy-path update_ebnf update_parsers
-.PHONY: docs test list help lint run
-
+.PHONY: docs test list help lint run push_docker
 
 define deploy_commands
 	@echo "Update CHANGELOG"
@@ -14,21 +15,27 @@ define deploy_commands
 	git push --tags
 endef
 
+dev_install:
+	python3.6 -m venv .venv --prompt bel_api
+	.venv/bin/pip install --upgrade pip
+	.venv/bin/pip install --upgrade setuptools
+
+	.venv/bin/pip install -r requirements.txt
 
 run:
 	cd api; gunicorn --config ./gunicorn.conf --log-config ./gunicorn_log.conf -b 0.0.0.0:8181 app:api
 
-deploy-major: make_html
+deploy-major: make_docs
 	@echo Deploying major update
 	bumpversion major
 	@${deploy_commands}
 
-deploy-minor: make_html
+deploy-minor: make_docs
 	@echo Deploying minor update
 	bumpversion minor
 	@${deploy_commands}
 
-deploy-patch: make_html
+deploy-patch: make_docs
 	@echo Deploying patch update
 	bumpversion --allow-dirty patch
 	${deploy_commands}
@@ -37,28 +44,37 @@ deploy-patch: make_html
 update_ebnf:
 	./bin/yaml_to_ebnf.py
 
-
 update_parsers: update_ebnf
 	./bin/ebnf_to_parsers.py
 
+docker_push:
+	@echo $(VERSION)
+	docker build -t belbio/bel_api -t belbio/bel_api:$(VERSION) -f docker/Dockerfile-bel_api-image .
+	docker push belbio/bel_api
 
-make_html:
+make_docs:
+	rm -r make_docs/*
 	cd make_docs/sphinx; make html
-
-docs: make_html
 	cp -r make_docs/sphinx/build/html/* docs
 	cp -r make_docs/openapi docs
 	cp -r make_docs/images docs
 	cp make_docs/CNAME docs
 	cp make_docs/belbio_api.yaml docs
-	touch docs/.nojekyll
+	touch make_docs/.nojekyll
 
 
-livehtml:
+livedocs:
 	cd make_docs/sphinx; sphinx-autobuild -q -p 0 --open-browser --delay 5 source build/html
 
-test:
-	bin/runtests.sh
+
+tests: clean_pyc
+	py.test -rs --cov=./api --cov-report html --cov-config .coveragerc -c tests/pytest.ini --color=yes --durations=10 --flakes --pep8 tests
+
+
+clean_pyc:
+	find . -name '*.pyc' -exec rm -r -- {} +
+	find . -name '*.pyo' -exec rm -r -- {} +
+	find . -name '__pycache__' -exec rm -r -- {} +
 
 
 lint:

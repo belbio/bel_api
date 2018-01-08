@@ -17,9 +17,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../../..'))  # Add root in order to reference README, contributing, etc
 
 
 # -- General configuration ------------------------------------------------
@@ -52,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'BEL.bio API'
-copyright = '2017, William Hayes'
+copyright = '2018, William Hayes'
 author = 'William Hayes'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -86,19 +86,20 @@ todo_include_todos = True
 
 html_theme = "sphinx_rtd_theme"
 html_theme_path = ["_themes", ]
-html_logo = '_static/logo-w200.png'
+
 
 html_theme_options = {
     'canonical_url': 'apidocs.bel.bio',
     'collapse_navigation': False,
     'sticky_navigation': True,
     'navigation_depth': 4,
-    'includehidden': False,
     'logo_only': False,
     'display_version': True,
     'prev_next_buttons_location': "both",
-    # 'style_external_links': True,
+    # 'style_external_links': True,  # Theme error  unsupported theme option
 }
+html_logo = '_static/images/logo-w200.png'
+html_favicon = '_static/images/favicon.png'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
