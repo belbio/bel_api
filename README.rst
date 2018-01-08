@@ -20,4 +20,4 @@ Functionality [to be] provided:
 - Contributing guidelines
 - and more
 
-[DockerHub BEL.bio API image](https://hub.docker.com/r/belbio/bel_api/)
+`DockerHub BEL.bio API image <https://hub.docker.com/r/belbio/bel_api/>`_
