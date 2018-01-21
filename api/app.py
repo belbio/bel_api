@@ -6,12 +6,14 @@ from falcon_cors import CORS
 from falcon_auth import FalconAuthMiddleware, JWTAuthBackend
 import logging
 import logging.config
-import yaml
 import os
 
 from bel.Config import config
 from middleware.stats import FalconStatsMiddleware
+
 from resources.status import SimpleStatusResource, StatusResource, VersionResource
+
+from resources.bel_lang import BelSpecificationResource, BelCompletion
 
 from resources.terms import TermResource
 from resources.terms import TermsResource
@@ -22,6 +24,8 @@ from resources.terms import TermDecanonicalizeResource
 from resources.terms import TermTypesResource
 
 from resources.orthology import OrthologResource
+
+from resources.pubmed import PubmedResource
 
 # Setup logging
 module_fn = os.path.basename(__file__)
@@ -61,9 +65,16 @@ else:
 # Routes  ###############
 # Add routes to skip authentication in common/middleware:AuthMiddleware.skip_routes list
 
+# BEL Language routes
+api.add_route('/bel/{version}/specification', BelSpecificationResource())  # GET
+api.add_route('/bel/{version}/completion', BelCompletion())  # GET
+api.add_route('/bel/{version}/completion/{belstr}', BelCompletion())  # GET
+# api.add_route('/bel/{version}/functions', BelSpecificationResource())  # GET
+# api.add_route('/bel/{version}/relations', BelSpecificationResource())  # GET
+
 # Term routes
 api.add_route('/terms', TermsResource())  # GET
-api.add_route('/terms/completions/{complete_term}', TermCompletionsResource())
+api.add_route('/terms/completions/{completion_text}', TermCompletionsResource())
 
 api.add_route('/terms/{term_id}', TermResource())  # GET
 api.add_route('/terms/{term_id}/equivalents', TermEquivalentsResource())  # GET
@@ -75,6 +86,9 @@ api.add_route('/terms/types', TermTypesResource())  # GET
 api.add_route('/orthologs', OrthologResource())  # GET
 api.add_route('/orthologs/{gene_id}', OrthologResource())  # GET
 api.add_route('/orthologs/{gene_id}/{species}', OrthologResource())  # GET
+
+# Text routes
+api.add_route('/text/pubmed/{pmid}', PubmedResource())  # GET
 
 # Status endpoints - used to check that API is running correctly
 api.add_route('/simple_status', SimpleStatusResource())  # un-authenticated

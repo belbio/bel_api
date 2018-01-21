@@ -1,8 +1,8 @@
 openapi: 3.0.0
 
 servers:
-- name: Production server V1
-  url: https://api.bel.bio/v1
+  - description: Production server V1
+    url: https://api.bel.bio/v1
 
 info:
   title: BELBio REST API
@@ -21,7 +21,7 @@ info:
     **Note the Endpoints in the TODO section are only documented and
     not yet implemented**
 
-  version: 0.1.2
+  version: 0.1.3
   contact:
     name: whayes@adsworks.com
     url: https://bel.bio
@@ -45,7 +45,33 @@ tags:
 
 paths:
 
-  /bel/{subject}/{relation}/{object}/validate:
+  /bel/{version}/specification:
+    get:
+      summary: BEL Specification
+      tags:
+        - BEL
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /bel/{version}/completion/{text}:
+    get:
+      summary: BEL Assertion Completion
+      tags:
+        - BEL
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /bel/{version}/validate/triple/{subject}/{relation}/{object}:
     get:
       summary: Validate
       description: Validate BEL
@@ -117,7 +143,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{subject}/{relation}/{object}/canonicalize:
+  /bel/{version}/canonicalize/triple/{subject}/{relation}/{object}:
     get:
       summary: Canonicalize BEL
       description: Canonicalize BEL
@@ -152,6 +178,8 @@ paths:
           into the EG or SP namespace returning original term if no canonical form
           exists. Priority of namespace conversion is determined by the order of the
           target namespaces listed.
+        schema:
+          type: string
       responses:
         '200':
           description: Successful response
@@ -180,7 +208,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{subject}/{relation}/{object}/decanonicalize:
+  /bel/{version}/decanonicalize/triple/{subject}/{relation}/{object}:
     get:
       summary: Decanonicalize BEL
       description: Decanonicalize BEL
@@ -215,6 +243,8 @@ paths:
           into the EG or SP namespace returning original term if no canonical form
           exists. Priority of namespace conversion is determined by the order of the
           target namespaces listed.
+        schema:
+          type: string
       responses:
         '200':
           description: Successful response
@@ -243,7 +273,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{subject}/{relation}/{object}/orthologize/{species_id}:
+  /bel/{version}/orthologize/{species_id}/triple/{subject}/{relation}/{object}:
     get:
       summary: Orthologize BEL
       description: |
@@ -317,7 +347,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{subject}/{relation}/{object}/edges:
+  /bel/{version}/edges/triple/{subject}/{relation}/{object}:
     get:
       summary: BEL Edges
       description: |
@@ -360,10 +390,7 @@ paths:
 
               computed_signatures=componentOf,degradation,activity
         schema:
-          type: array
-          items:
-            type: string
-        style: simple
+          type: string
       - name: ast
         in: query
         required: false
@@ -411,7 +438,7 @@ paths:
                 $ref: '#/components/schemas/ErrorModel'
 
 
-  /belstmt/{stmt}/validate:
+  /bel/{version}/validate/single/{stmt}:
     get:
       # deprecated: true
       summary: Validate
@@ -455,7 +482,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /belstmt/{stmt}/canonicalize:
+  /bel/{version}/canonicalize/single/{stmt}:
     get:
       summary: Canonicalize
       description: Canonicalize BEL Statement
@@ -497,7 +524,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /belstmt/{stmt}/decanonicalize:
+  /bel/{version}/decanonicalize/single/{stmt}:
     get:
       summary: Decanonicalize
       description: Decanonicalize BEL Statement
@@ -539,7 +566,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /belstmt/{stmt}/orthologize/{species_id}:
+  /bel/{version}/orthologize/{species_id}/single/{stmt}:
     get:
       summary: Orthologize
       description: Orthologize BEL Statement
@@ -593,7 +620,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /belstmt/{stmt}/edges:
+  /bel/{version}/edges/single/{stmt}:
     get:
       summary: BEL Statement Edges
       description: |
@@ -624,10 +651,7 @@ paths:
 
               computed_signatures=componentOf,degradation,activity
         schema:
-          type: array
-          items:
-            type: string
-        style: simple
+          type: string
       - name: ast
         in: query
         required: false
@@ -673,6 +697,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
+
+
   /terms:
     get:
       summary: Terms
@@ -723,17 +749,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /terms/completions/{complete_term}:
+  /terms/match:
+    get:
+      summary: Match term list
+      description: |
+        Given list of terms, retrieve valid Namespaced term or message
+        that original term in list was not found.
+
+        This specific endpoint is for the BEL Editor Assertion list textarea
+        input field to allow inserting many e.g. BEL Objects given a constant
+        BEL Subject and BEL Relation.
+      tags:
+        - TODO
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+
+  /terms/completions/{completion_text}:
     get:
       summary: Term Completion
       description: |
         Get term completion suggestions filtered by species_id, entity_types
-        or context_types.  You may only use one filter at a time.
+        annotation_types or namespaces.  You many use as many filters as desired.
+        Each filter type must be present, but you can submit multiple
+        entity_types, etc and the query must match 1 or more of the given
+        entity_types but is not required to match all of them.
+
       tags:
       - Terminologies
       operationId: getTermCompletion
       parameters:
-      - name: complete_term
+      - name: completion_text
         in: path
         required: true
         description: Partial term to complete, example completion 'AKT'
@@ -763,13 +813,25 @@ paths:
           type: array
           items:
             type: string
-      - name: context_types
+      - name: annotation_types
         required: false
         in: query
         description: |
-          Context Types will accept any of the values listed in the /term/types result.
+          Annotation Types will accept any of the values listed in the /term/types result.
 
-          Example query would be complete_term: scler and entity_type: Disease
+          Example query would be complete_term: scler and annotation_type: Disease
+        style: form
+        schema:
+          type: array
+          items:
+            type: string
+      - name: namespaces
+        required: false
+        in: query
+        description: |
+          Namespaces will accept any of the namespace values listed in the /term/types result.
+
+          Example query would be complete_term: scler and namespace: DO
         style: form
         schema:
           type: array
@@ -978,6 +1040,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
+
   /orthologs/{gene_id}:
     get:
       summary: Orthologs for given gene
@@ -1073,6 +1136,94 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
+  /pubmed:
+    get:
+      summary: Pubmed Info
+      description: |
+        Get Pubmed Info from NLM and Pubtator annotations to enhance the
+        Pubmed information.
+      tags:
+        - Utility
+      operationId: getPubmed
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pmid:
+                    type: string
+                  title:
+                    type: string
+                  abstract:
+                    type: string
+                  authors:
+                    type: array
+                    items:
+                      type: string
+                  pub_date:
+                    type: string
+                    description: ISOdate format YYYY-MM-DD or null if unknown
+                  journal_title:
+                    type: string
+                  journal_iso_title:
+                    type: string
+                  doi:
+                    type: string
+                  compounds:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                  mesh:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                  annotations:
+                    description: |
+                      Pubtator BioConcept annotations against Pubmed Title and Abstract.
+                      This is an object of multiple annotated terms using valid namespaces
+                      with an object containing the spans it was extracted from
+                      the text of the extracted string, the name and label of the
+                      term and the entity and annotation types if available.
+                    type: object
+                    additionalProperties:
+                      type: object
+                    example:
+                      "HGNC:ABCC1":
+                        spans:
+                          - begin: 315
+                            end: 326
+                            text: Multidrug resistance-associated protein 1
+                          - begin: 299
+                            end: 310
+                            text: MRP-1
+                        entity_types:
+                          - Protein
+                          - Gene
+                          - RNA
+                        annotations_types:
+                          - null
+                        name: ATP binding cassette subfamily C member 1
+                        label: ABCC1
+
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
   /simple_status:
     get:
       summary: Simple Status
@@ -1292,3 +1443,4 @@ components:
       type: apiKey
       name: Authorization
       in: header
+

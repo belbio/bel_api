@@ -64,50 +64,187 @@ def get_term(term_id):
     # print('DumpVar:\n', json.dumps(result, indent=4))
     if len(result['hits']['hits']) > 0:
         result = result['hits']['hits'][0]['_source']
-        del result['completions']
     else:
         result = None
 
     return result
 
 
-def get_term_completions(complete_term, size, context_filter):
-    """Get Term completions filtered by context
+def get_term_search(search_term, size, entity_types, annotation_types, species, namespaces):
+    """Search for terms given search term"""
 
+    filters = []
+    if entity_types:
+        filters.append({"terms": {"entity_types": entity_types}})
+    if annotation_types:
+        filters.append({"terms": {"annotation_types": annotation_types}})
+    if species:
+        filters.append({"terms": {"species": species}})
+    if namespaces:
+        filters.append({"terms": {"namespaces": namespaces}})
+
+    search_body = {
+        "size": 10,
+        "query": {
+            "bool": {
+                "minimum_should_match": 1,
+                "should": [
+                    {
+                        "match": {
+                            "id": {
+                                "query": "AKT1",
+                                "boost": 4
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "name": {
+                                "query": "AKT1",
+                                "boost": 2
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "synonyms": {
+                                "query": "AKT1"
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "label": {
+                                "query": "AKT1",
+                                "boost": 4
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "alt_ids": {
+                                "query": "AKT1",
+                                "boost": 2
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "src_id": {
+                                "query": "AKT1"
+                            }
+                        }
+                    }
+                ],
+                "filter": filters,
+            }
+        },
+        "highlight": {
+            "fields": [
+                {"id": {}},
+                {"name": {}},
+                {"label": {}},
+                {"synonyms": {}},
+                {"alt_ids": {}},
+                {"src_id": {}}
+            ]
+        }
+    }
+
+    results = es.search(index='terms', doc_type='term', body=search_body)
+
+    search_results = []
+    for result in results['hits']['hits']:
+        search_results.append(result['_source'] + {'highlight': result['highlight']})
+
+    return search_results
+
+
+def get_term_completions(completion_text, size, entity_types, annotation_types, species, namespaces):
+    """Get Term completions filtered by additional requirements
+
+    Args:
+        completion_text: text to complete to location NSArgs
+        size: how many terms to return
+        entity_types: list of entity_types used to filter completion results
+        annotation_types: list of annotation types used to filter completion results
+        species: list of species (TAX:nnnn) used to filter completions
+        namespaces: list of namespaces to filter completions
+
+    Returns:
+        list of NSArgs
     """
+
+    if isinstance(entity_types, str):
+        entity_types = [entity_types]
+    if isinstance(annotation_types, str):
+        annotation_types = [annotation_types]
+    if isinstance(species, str):
+        species = [species]
+    if isinstance(namespaces, str):
+        namespaces = [namespaces]
+
+    filters = []
+    if entity_types:
+        filters.append({"terms": {"entity_types": entity_types}})
+    if annotation_types:
+        filters.append({"terms": {"annotation_types": annotation_types}})
+    if species:
+        filters.append({"terms": {"species_id": species}})
+    if namespaces:
+        filters.append({"terms": {"namespace": namespaces}})
+
     search_body = {
         "_source": ["id", "name", "label", "description", "species_id", "species_label"],
-        "suggest": {
-            "term-suggest": {
-                "prefix": complete_term,
-                "completion": {
-                    "field": "completions",
-                    "size": size,
-                }
+        "size": 10,
+        "query": {
+            "bool": {
+                "must": {
+                    "match": {
+                        "autocomplete": {
+                            "query": completion_text,
+                            "operator": "and"
+                        }
+                    }
+                },
+                "filter": filters,
+            }
+        },
+        "highlight": {
+            "fields": {
+                "autocomplete": {"type": "plain"}
             }
         }
     }
 
-    if context_filter:
-        search_body['suggest']['term-suggest']['completion']['contexts'] = context_filter
-
+    # import json
+    # print('DumpVar:\n', json.dumps(search_body, indent=4))
     results = es.search(index='terms', doc_type='term', body=search_body)
 
     # highlight matches
     completions = []
-    for option in results['suggest']['term-suggest'][0]['options']:
-        match = re.sub(f'({complete_term})', r"<em>\1<em>", option['text'], flags=re.IGNORECASE)
 
-        species_id = option['_source'].get('species_id', None)
-        species_label = option['_source'].get('species_label', None)
+    for result in results['hits']['hits']:
+        species_id = result['_source'].get('species_id', None)
+        species_label = result['_source'].get('species_label', None)
         species = {'id': species_id, 'label': species_label}
+
+        # Filter out duplicate matches
+        matches = []
+        matches_lower = []
+        for match in result["highlight"]["autocomplete"]:
+            if match.lower() in matches_lower:
+                continue
+            matches.append(match)
+            matches_lower.append(match.lower())
+
         completions.append({
-            "id": option['_source']["id"],
-            "name": option['_source']['name'],
-            "label": option['_source']['label'],
-            "description": option['_source'].get('description', None),
+            "id": result['_source']["id"],
+            "name": result['_source']['name'],
+            "label": result['_source']['label'],
+            "description": result['_source'].get('description', None),
             "species": species,
-            "match": match,
+            "highlight": matches,
         })
 
     return completions
@@ -129,18 +266,18 @@ def term_types():
         "aggs": {
             "namespace_term_counts": {"terms": {"field": "namespace", "size": size}},
             "entity_type_counts": {"terms": {"field": "entity_types", "size": size}},
-            "context_type_counts": {"terms": {"field": "context_types", "size": size}},
+            "annotation_type_counts": {"terms": {"field": "annotation_types", "size": size}},
         }
     }
 
     results = es.search(index='terms', doc_type='term', body=search_body, size=0)
 
-    types = {'namespaces': {}, 'entity_types': {}, 'context_types': {}}
+    types = {'namespaces': {}, 'entity_types': {}, 'annotation_types': {}}
 
     aggs = {
         "namespace_term_counts": "namespaces",
         "entity_type_counts": "entity_types",
-        "context_type_counts": "context_types",
+        "annotation_type_counts": "annotation_types",
     }
     for agg in aggs:
         for bucket in results['aggregations'][agg]['buckets']:

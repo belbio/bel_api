@@ -1,7 +1,7 @@
 import falcon
 import services.terms as terms
 import json
-import functools
+import fastcache
 
 import logging
 log = logging.getLogger(__name__)
@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 class TermResource(object):
     """Term endpoint"""
 
-    @functools.lru_cache(maxsize=500)
+    @fastcache.clru_cache(maxsize=500)
     def on_get(self, req, resp, term_id=None):
         """GET Term using term_id
 
@@ -92,42 +92,27 @@ class TermDecanonicalizeResource(object):
 
 class TermCompletionsResource(object):
 
-    """Get Users listing based on query - generally by organization
+    """Get NSArgs that match completion request"""
 
-    create new
-    """
-
-    def on_get(self, req, resp, complete_term):
+    def on_get(self, req, resp, completion_text):
         """GET List of Terms
 
             Args:
-                search_term (str): partial term to search for - may be null
+                completion_text (str): partial term or term description to search for - may be null
+
             Results:
                 List[Mapping[str, Any]]: list of terms
         """
 
         size = req.get_param('size', default=10)
+        entity_types = req.get_param('entity_types', [])
+        species = req.get_param('species', [])
+        annotation_types = req.get_param('annotation_types', [])
+        namespaces = req.get_param('namespaces', [])
 
-        # Can only use 1 context filter at a time
-        cnt = 0
-        context_filter = None
-        for filter_type in ['entity_types', 'context_types', 'species_id']:
-            filter_val = req.get_param(filter_type, default=None)
-            if filter_val:
-                cnt += 1
-                context_filter = {filter_type: filter_val}
+        completions = terms.get_term_completions(completion_text, size, entity_types, annotation_types, species, namespaces)
 
-        if cnt > 1:
-            resp.media = {
-                "title": "Too many context filters",
-                'message': "Can only use one context filter at a time, you used {}".format(cnt),
-            }
-            resp.status = falcon.HTTP_400
-            return
-
-        completions = terms.get_term_completions(complete_term, size, context_filter)
-
-        resp.media = {'complete_term': complete_term, 'completions': completions}
+        resp.media = {'completion_text': completion_text, 'completions': completions}
         resp.status = falcon.HTTP_200
 
 
@@ -137,7 +122,7 @@ class TermTypesResource(object):
     Get facet counts for each (top 100 for each)
     """
 
-    @functools.lru_cache(maxsize=500)
+    @fastcache.clru_cache(maxsize=500)
     def on_get(self, req, resp):
         """ Get stats """
 

@@ -28,8 +28,10 @@ Functionality provided:
    link_contributing
    link_conduct
    devops
+   troubleshooting
    dependencies
    glossary
+   concept_types
    related
    windows_dev_notes
 
