@@ -5,15 +5,15 @@ import bel.nanopub.pubmed
 import services.terms as terms
 # from bel.Config import config
 
-import timy
-from timy.settings import (
-    timy_config,
-    TrackingMode
-)
+# import timy
+# from timy.settings import (
+#     timy_config,
+#     TrackingMode
+# )
+# timy_config.tracking_mode = TrackingMode.LOGGING
 
 import logging
 log = logging.getLogger(__name__)
-timy_config.tracking_mode = TrackingMode.LOGGING
 
 
 def enhance_pubmed_annotations(pubmed: MutableMapping[str, Any]) -> Mapping[str, Any]:
@@ -75,20 +75,20 @@ def get_pubmed_for_beleditor(pmid: str, pubmed_only_flag: bool) -> Mapping[str, 
     Returns:
         Mapping[str, Any]: json object with Pubmed info
     """
-    with timy.Timer() as timer:
-        pubmed = bel.nanopub.pubmed.get_pubmed(pmid)
-        timer.track('Got pubmed')
-        # Get Bioconcepts extracted from Title, Abstract
-        if not pubmed_only_flag:
-            pubtator = bel.nanopub.pubmed.get_pubtator(pmid)
-            timer.track('Got pubtator')
+    #with timy.Timer() as timer:
+    pubmed = bel.nanopub.pubmed.get_pubmed(pmid)
+    # timer.track('Got pubmed')
+    # Get Bioconcepts extracted from Title, Abstract
+    if not pubmed_only_flag:
+        pubtator = bel.nanopub.pubmed.get_pubtator(pmid)
+        # timer.track('Got pubtator')
 
-            if pubtator:
-                pubmed['annotations'] = copy.deepcopy(pubtator['annotations'])
-                timer.track('Enhanced pubmed')
+        if pubtator:
+            pubmed['annotations'] = copy.deepcopy(pubtator['annotations'])
+            # timer.track('Enhanced pubmed')
 
-                # Add entity types and annotation types to annotations
-                pubmed = enhance_pubmed_annotations(pubmed)
+            # Add entity types and annotation types to annotations
+            pubmed = enhance_pubmed_annotations(pubmed)
 
     return pubmed
 
