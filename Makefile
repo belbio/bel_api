@@ -5,7 +5,7 @@ VERSION=`cat $(VERSION_FILE)`
 
 # ensures list is not mis-identified with a file of the same name
 .PHONY: deploy-major deploy-minor deploy-path livedocs
-.PHONY: test list help lint run docker_push make_docs
+.PHONY: test list help lint run docker_push docs
 
 define deploy_commands
 	@echo "Update CHANGELOG"
@@ -45,7 +45,7 @@ docker_push:
 	docker build -t belbio/bel_api -t belbio/bel_api:$(VERSION) -f docker/Dockerfile-bel_api-image .
 	docker push belbio/bel_api
 
-make_docs:
+docs:
 	cd make_docs/sphinx; make html
 	cp -r make_docs/sphinx/build/html/* docs
 	cp -r make_docs/openapi docs

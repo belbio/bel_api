@@ -61,15 +61,93 @@ paths:
   /bel/{version}/completion/{text}:
     get:
       summary: BEL Assertion Completion
+      description: |
+        BEL completion will provide synactically and semantically valid suggestions for
+        functions, namespace arguments (NSArgs) and string arguments (StrArg) if
+        that StrArg is a default namespace type argument.
+
+        ## Notes
+
+        * Namespace value completions will only be returned after at least two characters
+        are provided.
+
+        * If a completion has both functions and namespaces, it can be up to 2X the
+        size parameter as both returned completion lists are added together with
+        the function completion list taking priority. The function list,
+        given at least two characters for filtering, will be very small or empty.
+
+        ## Examples:
+
+        * completion_text="" - provide list of all primary functions for completion
+        * ='p' - only provide functions starting with 'p'
+        * ='p(' - provide fus() as the only completion since it is the only function that can be in position 1 of the proteinAbundance() function
+        * ='p(AK' - no functions match so only namespace values will be returned
+        * ='p(HGNC:AKT1)' cursor_loc=3  completion_text = 'HG' completions will be returned for all values that have the Protein entity type based on the p() function signature specification. HG will NOT be considered part of the namespace to limit to the HGNC namespace.
+        * ='p(HGNC:AKT1)' cursor_loc=8 completion_text = 'AK' completions will use HGNC namespace and the entity type Protein to filter the results.
+        * ='p(HGNC:AKT1) in' completion_text = 'in', relation replacement found will be 'increases'
+
       tags:
         - BEL
+      operationId: getBelCompletion
+      parameters:
+      - name: version
+        in: path
+        required: true
+        description: BEL Version
+        schema:
+          type: string
+      - name: text
+        in: path
+        required: true
+        description: Completion text
+        schema:
+          type: string
+      - name: cursor_loc
+        in: query
+        required: false
+        description: |
+          Cursor location in completion text. First char is 0. If not provided, it will default
+          to the end of the string which is what is usually desired.
+        schema:
+          type: integer
+      - name: bel_comp
+        in: query
+        required: false
+        description: |
+          Can be used to enhance validation. Values can be
+          either 'subject', 'object' or 'full'.
+        schema:
+          type: string
+      - name: species_id
+        in: query
+        required: false
+        description: |
+          Species ID which can be used to filter possible completions. For example,
+          if the part of the BEL Assertion to complete is a proteinAbundance function
+          and the part to complete is the first argument of that function, the
+          completions provided will be Proteins associated with the given species_id.
+        schema:
+          type: string
+      - name: size
+        in: query
+        required: false
+        description: How many completions to return, defaults to 10
+        schema:
+          type: integer
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/BelCompletion'
+
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
 
   /bel/{version}/validate/triple/{subject}/{relation}/{object}:
     get:
@@ -437,7 +515,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-
   /bel/{version}/validate/single/{stmt}:
     get:
       # deprecated: true
@@ -698,6 +775,61 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
+  /bel/{version}/editor/list:
+    get:
+      summary: Transform list of terms into BEL functions
+      description: |
+        Given list of terms, retrieve valid Namespaced term or message
+        that original term in list was not found and wrap in given BEL function.
+
+        This specific endpoint is for the BEL Editor Assertion bulk
+        input field to allow inserting many BEL Objects or Subjects at once.
+
+        An example would be given gene expression perturbation such as a drug,
+        one could list the mRNA's increased due to the drug as BEL objects and
+        wrap them in r() functions after validating them as known terms.
+      tags:
+        - TODO
+      operationId: getBelEditorList
+      parameters:
+      - name: list
+        required: true
+        in: query
+        description: URL encoded list of terms, each separated by a comma
+        schema:
+          type: string
+      - name: function
+        required: true
+        in: query
+        description: Wrap valid terms in this function
+        schema:
+          type: string
+      - name: namespace
+        in: query
+        required: false
+        description: Prefix terms in list with namespace before term validation
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    result:
+                      type: string
+                      description: Valid namespaced term wrapped in given function, null if not found
+                    term:
+                      type: string
+                      description: initial term given to be transformed
+                    message:
+                      type: string
+                      description: Error or warning message associated with term, optional
+
 
   /terms:
     get:
@@ -749,25 +881,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /terms/match:
-    get:
-      summary: Match term list
-      description: |
-        Given list of terms, retrieve valid Namespaced term or message
-        that original term in list was not found.
-
-        This specific endpoint is for the BEL Editor Assertion list textarea
-        input field to allow inserting many e.g. BEL Objects given a constant
-        BEL Subject and BEL Relation.
-      tags:
-        - TODO
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: array
 
   /terms/completions/{completion_text}:
     get:
@@ -793,7 +906,7 @@ paths:
         required: false
         in: query
         description: |
-          Species ID, will accept TAX:<integer>, human, mouse or rat
+          Species ID, will accept TAX:\<integer\>, human, mouse or rat
 
           Example query would be complete_term: AKT and species_id: TAX:9606 or human
         style: form
@@ -850,7 +963,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Completion'
+                $ref: '#/components/schemas/TermCompletion'
         default:
           description: Error
           content:
@@ -1368,11 +1481,55 @@ components:
         children: []
         obsolete_ids: []
 
-    Completion:
+    BelCompletion:
       type: object
+      description: Completion object for BEL Assertions
       properties:
-        complete_term:
+        completion_text:
           type: string
+          description: Text to submit for completion
+        completions:
+          type: array
+          items:
+            type: object
+            properties:
+              replacement:
+                type: string
+                description: Replace the BEL input given with this if this completion is selected.
+              cursor_loc:
+                type: integer
+                description: |
+                  Provide a cursor location in the input field to select part of the
+                  BEL assertion provided to complete on.
+              label:
+                type: string
+                description: Human friendly label of what was found to use for the completion
+              highlight:
+                type: string
+                description: |
+                  Presents the matched text with \<em\>\</em\> tags wrapping the
+                  completion text for the ID or synonym
+                  found. The ID or synonym found will often not be the same as the
+                  official Namespace ID inserted into the BEL assertion.
+      example:
+        completion_text: EGF
+        completions:
+        - replacement: p(SP:Q0D2K5
+          cursor_loc: 11
+          highlight: <em>EGFEM1P</em>
+          label: EGFEM1P
+        - replacement: p(EG:51162
+          cursor_loc: 10
+          highlight: <em>EGF</em> like domain multiple 7
+          label: EGFL7
+
+    TermCompletion:
+      type: object
+      description: Completion object for Terms
+      properties:
+        completion_text:
+          type: string
+          description: Text to submit for completion
         completions:
           type: array
           items:
@@ -1396,29 +1553,38 @@ components:
                     type: string
                   label:
                     type: string
-              match:
-                type: string
+              highlight:
+                type: array
+                items:
+                  type: string
                 description: |
-                  ID or synonym with <em></em> tags wrapping the matched text.
+                  List of ID's or synonyms with \<em\>\</em\> tags wrapping the
+                  completion text that was matched.
+
       example:
-        complete_term: AKT
+        completion_text: AKT
         completions:
-        - id: EG:64400
-          name: AKT interacting protein
-          label: AKTIP
-          description: AKT interacting protein
-          species:
-            id: TAX:9606
-            label: human
-          match: <em>AKT<em> interacting protein
-        - id: HGNC:AKTIP
-          name: AKT interacting protein
-          label: AKTIP
-          description: ''
-          species:
-            id: TAX:9606
-            label: human
-          match: <em>AKT<em> interacting protein
+          - id: HGNC:AKT1
+            name: AKT serine/threonine kinase 1
+            label: AKT1
+            description: ''
+            species:
+              id: TAX:9606
+              label: human
+            highlight:
+            - <em>AKT1</em>
+            - <em>AKT</em> serine/threonine kinase 1
+            - <em>AKT</em>
+          - id: HGNC:AKT1S1
+            name: AKT1 substrate 1
+            label: AKT1S1
+            description: ''
+            species:
+              id: TAX:9606
+              label: human
+            highlight:
+            - <em>AKT1S1</em>
+            - <em>AKT1</em> substrate 1
 
     ErrorModel:
       type: object
