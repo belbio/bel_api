@@ -54,6 +54,7 @@ def get_term(term_id):
                 "should": [
                     {"term": {"id": term_id}},
                     {"term": {"alt_ids": term_id}},
+                    {"term": {"obsolete_ids": term_id}},
                 ]
             }
         }
@@ -73,6 +74,9 @@ def get_term(term_id):
 def get_term_search(search_term, size, entity_types, annotation_types, species, namespaces):
     """Search for terms given search term"""
 
+    if not size:
+        size = 10
+
     filters = []
     if entity_types:
         filters.append({"terms": {"entity_types": entity_types}})
@@ -84,7 +88,7 @@ def get_term_search(search_term, size, entity_types, annotation_types, species, 
         filters.append({"terms": {"namespaces": namespaces}})
 
     search_body = {
-        "size": 10,
+        "size": size,
         "query": {
             "bool": {
                 "minimum_should_match": 1,
@@ -195,7 +199,7 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
         filters.append({"terms": {"namespace": namespaces}})
 
     search_body = {
-        "_source": ["id", "name", "label", "description", "species_id", "species_label"],
+        "_source": ["id", "name", "label", "description", "species_id", "species_label", "entity_types", "annotation_types"],
         "size": 10,
         "query": {
             "bool": {

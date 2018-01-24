@@ -75,7 +75,8 @@ def get_pubmed_for_beleditor(pmid: str, pubmed_only_flag: bool) -> Mapping[str, 
     Returns:
         Mapping[str, Any]: json object with Pubmed info
     """
-    #with timy.Timer() as timer:
+
+    # with timy.Timer() as timer:
     pubmed = bel.nanopub.pubmed.get_pubmed(pmid)
     # timer.track('Got pubmed')
     # Get Bioconcepts extracted from Title, Abstract
@@ -83,7 +84,7 @@ def get_pubmed_for_beleditor(pmid: str, pubmed_only_flag: bool) -> Mapping[str, 
         pubtator = bel.nanopub.pubmed.get_pubtator(pmid)
         # timer.track('Got pubtator')
 
-        if pubtator:
+        if pubtator and 'annotations' in pubtator:
             pubmed['annotations'] = copy.deepcopy(pubtator['annotations'])
             # timer.track('Enhanced pubmed')
 
