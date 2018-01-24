@@ -1249,7 +1249,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /pubmed:
+  /text/pubmed:
     get:
       summary: Pubmed Info
       description: |
@@ -1258,6 +1258,13 @@ paths:
       tags:
         - Utility
       operationId: getPubmed
+      parameters:
+      - name: pmid
+        in: path
+        required: true
+        description: Pubmed ID
+        schema:
+          type: integer
       responses:
         '200':
           description: Successful response
