@@ -184,7 +184,6 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
 
     filters = []
     if entity_types and isinstance(entity_types, str):
-        entity_types = [entity_types]
         filters.append({"terms": {"entity_types": [entity_types]}})
     elif entity_types:
         filters.append({"terms": {"entity_types": entity_types}})
@@ -203,6 +202,8 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
         filters.append({"terms": {"namespace": [namespaces]}})
     elif namespaces:
         filters.append({"terms": {"namespace": namespaces}})
+
+    print('Filters', filters)
 
     search_body = {
         "_source": ["id", "name", "label", "description", "species_id", "species_label", "entity_types", "annotation_types"],
