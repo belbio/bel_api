@@ -13,7 +13,9 @@ from middleware.stats import FalconStatsMiddleware
 
 from resources.status import SimpleStatusResource, StatusResource, VersionResource
 
-from resources.bel_lang import BelSpecificationResource, BelCompletion
+from resources.bel_lang import BelVersions
+from resources.bel_lang import BelSpecificationResource
+from resources.bel_lang import BelCompletion
 
 from resources.terms import TermResource
 from resources.terms import TermsResource
@@ -66,6 +68,7 @@ else:
 # Add routes to skip authentication in common/middleware:AuthMiddleware.skip_routes list
 
 # BEL Language routes
+api.add_route('/bel/versions', BelVersions())  # GET
 api.add_route('/bel/{version}/specification', BelSpecificationResource())  # GET
 api.add_route('/bel/{version}/completion', BelCompletion())  # GET
 api.add_route('/bel/{version}/completion/{belstr}', BelCompletion())  # GET

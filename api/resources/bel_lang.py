@@ -7,6 +7,16 @@ import logging
 log = logging.getLogger(__name__)
 
 
+class BelVersions(object):
+    """Get BEL Versions"""
+
+    def on_get(self, req, resp):
+
+        bel_versions = bel.lang.bel_specification.get_bel_versions()
+        resp.media = bel_versions
+        resp.status = falcon.HTTP_200
+
+
 class BelSpecificationResource(object):
     """Get BEL Specification enhanced JSON object"""
 

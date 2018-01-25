@@ -28,6 +28,11 @@ We are using Code Climate for code quality assessments.
 
 We are using CodeCov for code test coverage assessments.
 
+Changelog
+-----------
+
+We are using [Github Changelog Generator](https://github.com/skywinder/github-changelog-generator) for updating the Changelog.
+
 Contributor Licensing Agreements
 --------------------------------------
 

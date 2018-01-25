@@ -45,6 +45,21 @@ tags:
 
 paths:
 
+  /bel/versions:
+    get:
+      summary: BEL Versions
+      tags:
+        - BEL
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
   /bel/{version}/specification:
     get:
       summary: BEL Specification

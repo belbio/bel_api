@@ -179,23 +179,29 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
         list of NSArgs
     """
 
-    if isinstance(entity_types, str):
-        entity_types = [entity_types]
-    if isinstance(annotation_types, str):
-        annotation_types = [annotation_types]
-    if isinstance(species, str):
-        species = [species]
-    if isinstance(namespaces, str):
-        namespaces = [namespaces]
+    if species == [None]:
+        species = []
 
     filters = []
-    if entity_types:
+    if entity_types and isinstance(entity_types, str):
+        entity_types = [entity_types]
+        filters.append({"terms": {"entity_types": [entity_types]}})
+    elif entity_types:
         filters.append({"terms": {"entity_types": entity_types}})
-    if annotation_types:
+
+    if annotation_types and isinstance(annotation_types, str):
+        filters.append({"terms": {"annotation_types": [annotation_types]}})
+    elif annotation_types:
         filters.append({"terms": {"annotation_types": annotation_types}})
-    if species:
+
+    if species and isinstance(species, str):
+        filters.append({"terms": {"species_id": [species]}})
+    elif species:
         filters.append({"terms": {"species_id": species}})
-    if namespaces:
+
+    if namespaces and isinstance(namespaces, str):
+        filters.append({"terms": {"namespace": [namespaces]}})
+    elif namespaces:
         filters.append({"terms": {"namespace": namespaces}})
 
     search_body = {
