@@ -251,8 +251,8 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
 
         completions.append({
             "id": result['_source']["id"],
-            "name": result['_source']['name'],
-            "label": result['_source']['label'],
+            "name": result['_source'].get('name', 'Missing Name'),
+            "label": result['_source'].get('label', 'Missing Label'),
             "description": result['_source'].get('description', None),
             "species": species,
             "highlight": matches,
