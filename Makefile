@@ -4,12 +4,17 @@ VERSION_FILE=VERSION
 VERSION=`cat $(VERSION_FILE)`
 
 # ensures list is not mis-identified with a file of the same name
-.PHONY: deploy-major deploy-minor deploy-path livedocs
-.PHONY: test list help lint run docker_push docs
+.PHONY: deploy-major deploy-minor deploy-path docs livedocs
+.PHONY: test list help lint run docker_push docker_quickpush
+.PHONY: update_changelog
 
 define deploy_commands
 	@echo "Update CHANGELOG"
 	@echo "Create Github release and attach the gem file"
+
+	github_changelog_generator
+	git add CHANGELOG.md
+	git commit -m "Updated Changelog"
 
 	git push
 	git push --tags
@@ -24,6 +29,11 @@ dev_install:
 
 run:
 	cd api; gunicorn --config ./gunicorn.conf --log-config ./gunicorn_log.conf -b 0.0.0.0:8181 app:api
+
+
+update_changelog:
+	github_changelog_generator
+
 
 deploy_major: make_docs
 	@echo Deploying major update
@@ -41,22 +51,20 @@ deploy_patch: make_docs
 	${deploy_commands}
 
 docker_push:
-	@echo $(VERSION)
+	@echo Deploying docker image to dockerhub $(VERSION)
 	docker build -t belbio/bel_api -t belbio/bel_api:$(VERSION) -f docker/Dockerfile-bel_api-image .
 	docker push belbio/bel_api
 
-docs:
-	cd make_docs/sphinx; make html
-	cp -r make_docs/sphinx/build/html/* docs
-	cp -r make_docs/openapi docs
-	cp -r make_docs/images docs
-	cp make_docs/CNAME docs
-	cp make_docs/belbio_api.yaml docs
-	touch docs/.nojekyll
+
+docker_quickpush:
+	@echo Updating api.bel.bio docker image directly
+	rsync -a --exclude=".*" ../bel docker
+	docker build -t belbio/bel_api -f docker/Dockerfile-bel_api-quickpush .
+	# docker save belbio/bel_api | bzip2 | pv | ssh belbio 'bunzip2 | docker load'
 
 
 livedocs:
-	cd make_docs/sphinx; sphinx-autobuild -q -p 0 --open-browser --delay 5 source build/html
+	cd sphinx; sphinx-autobuild -q -p 0 --open-browser --delay 5 source build/html
 
 
 tests: clean_pyc
