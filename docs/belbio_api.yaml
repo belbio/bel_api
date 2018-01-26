@@ -8,9 +8,9 @@ info:
   title: BELBio REST API
   description: |
 
-    ## BEL Bio REST API description
+    ## BEL Bio REST API
 
-    More [BEL API documentation](http://apidocs.bel.bio) http://apidocs.bel.bio
+    [More BEL API documentation](http://bel-api.readthedocs.io/en/latest/), installation, etc
 
     ## Security
 
