@@ -7,9 +7,10 @@ servers:
 info:
   title: BELBio REST API
   description: |
+
     ## BEL Bio REST API description
 
-    More [BEL API documentation](http://apidocs.bel.bio)
+    More [BEL API documentation](http://apidocs.bel.bio) http://apidocs.bel.bio
 
     ## Security
 
