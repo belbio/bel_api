@@ -24,7 +24,7 @@ Functionality provided:
    :caption: Contents:
 
    install
-   API Reference (Swagger) <http://apidocs.bel.bio/openapi/index.html>
+   API Reference (Swagger) <http://apidocs.bel.bio/index.html>
    link_contributing
    link_conduct
    devops
