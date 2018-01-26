@@ -7,9 +7,13 @@ servers:
 info:
   title: BELBio REST API
   description: |
-    BEL Bio REST API description
+    ## BEL Bio REST API description
 
-    Security - this API can be secured via JSON Web Token passed
+    More [BEL API documentation](http://apidocs.bel.bio)
+
+    ## Security
+
+    This API can be secured via JSON Web Token passed
     in the Authorization header, but it is currently disabled. Since
     only GETs are allowed at this point, it does not appear necessary
     to restrict access.
