@@ -138,6 +138,19 @@ paths:
           either 'subject', 'object' or 'full'.
         schema:
           type: string
+      - name: bel_fmt
+        in: query
+        required: false
+        description: |
+          Used to select short, medium or long BEL formatting for
+          BEL Completions. Defaults to medium.
+
+          * short: short format for BEL Functions and Relations
+          * medium: short format for BEL Functions and long format for Relations
+          * long: long format for BEL Functions and Relations
+        schema:
+          type: string
+          enum: [short, medium, long]
       - name: species_id
         in: query
         required: false
