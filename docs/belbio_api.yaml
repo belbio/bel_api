@@ -1298,6 +1298,15 @@ paths:
         description: Pubmed ID
         schema:
           type: integer
+      - name: pubmed_only
+        in: query
+        required: false
+        description: |
+          Only retrieve Pubmed data and not Pubtator annotations.
+          Pubmed responds in <100ms. Pubtator annotations may take
+          several seconds.
+        schema:
+          type: boolean
       responses:
         '200':
           description: Successful response
