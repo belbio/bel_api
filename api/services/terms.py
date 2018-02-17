@@ -179,12 +179,29 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
         list of NSArgs
     """
 
+    matches = re.match('([A-Z]+):"?(.*)', completion_text)
+    log.info(f'Matches {matches} {completion_text}')
+    if matches:
+        namespaces = [matches.group(1)]
+        completion_text = matches.group(2)
+
     if species == [None]:
         species = []
 
+    if namespaces == [None]:
+        namespaces = []
+
+    if annotation_types == [None]:
+        annotation_types = []
+
+    if entity_types == [None]:
+        entity_types = []
+
     filters = []
     if entity_types and isinstance(entity_types, str):
-        filters.append({"terms": {"entity_types": [entity_types]}})
+        entity_types = [entity_types]
+        filters.append({"terms": {"entity_types": entity_types}})
+
     elif entity_types:
         filters.append({"terms": {"entity_types": entity_types}})
 
@@ -193,44 +210,98 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
     elif annotation_types:
         filters.append({"terms": {"annotation_types": annotation_types}})
 
-    if species and isinstance(species, str):
-        filters.append({"terms": {"species_id": [species]}})
-    elif species:
-        filters.append({"terms": {"species_id": species}})
+    grp = False
+    if entity_types:
+        grp = [et for et in entity_types if et in config['bel_api']['search']['species_entity_types']]
+
+    if grp:
+        if species and isinstance(species, str):
+            filters.append({"terms": {"species_id": [species]}})
+        elif species:
+            filters.append({"terms": {"species_id": species}})
 
     if namespaces and isinstance(namespaces, str):
         filters.append({"terms": {"namespace": [namespaces]}})
     elif namespaces:
         filters.append({"terms": {"namespace": namespaces}})
 
-    print('Filters', filters)
+    # log.info(f'Term Filters {filters}')
 
     search_body = {
-        "_source": ["id", "name", "label", "description", "species_id", "species_label", "entity_types", "annotation_types"],
+        "_source": ["id", "name", "label", "description", "species_id", "species_label", "entity_types", "annotation_types", "synonyms", ],
         "size": 10,
         "query": {
             "bool": {
+                "should": [
+                    {
+                        "match": {
+                            "id": {
+                                "query": completion_text,
+                                "boost": 6
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "namespace_value": {
+                                "query": completion_text,
+                                "boost": 5
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "label": {
+                                "query": completion_text,
+                                "boost": 5
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "synonyms": {
+                                "query": completion_text,
+                                "boost": 3
+                            }
+                        }
+                    },
+                ],
                 "must": {
                     "match": {
                         "autocomplete": {
-                            "query": completion_text,
-                            "operator": "and"
+                            "query": completion_text
                         }
                     }
                 },
-                "filter": filters,
+                "filter": filters
             }
         },
         "highlight": {
             "fields": {
-                "autocomplete": {"type": "plain"}
+                "autocomplete": {"type": "plain"},
+                "synonyms": {"type": "plain"}
             }
         }
     }
 
-    # import json
-    # print('DumpVar:\n', json.dumps(search_body, indent=4))
+    # TODO Add namespace_value to terminology object (the value of the NSArg after the prefix)
+    if config['bel_api'].get('search', False):
+        if config['bel_api']['search'].get('boost_namespaces', False):
+            if not isinstance(config['bel_api']['search']['boost_namespaces'], (list)):
+                log.warn('BEL config boost_namespaces is not an array (list)!')
+            else:
+                boost_namespaces = {
+                    "terms": {
+                        "namespace_value": config['bel_api']['search']['boost_namespaces'],
+                        "boost": 6
+                    }
+                }
+                search_body['query']['bool']['should'].append(boost_namespaces)
+
     results = es.search(index='terms', doc_type='term', body=search_body)
+    # import json
+    # print(json.dumps(search_body, indent=4))
+    # print('DumpVar:\n', json.dumps(results, indent=4))
 
     # highlight matches
     completions = []
@@ -239,7 +310,8 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
         species_id = result['_source'].get('species_id', None)
         species_label = result['_source'].get('species_label', None)
         species = {'id': species_id, 'label': species_label}
-
+        entity_types = result['_source'].get('entity_types', None)
+        annotation_types = result['_source'].get('annotation_types', None)
         # Filter out duplicate matches
         matches = []
         matches_lower = []
@@ -255,6 +327,8 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
             "label": result['_source'].get('label', 'Missing Label'),
             "description": result['_source'].get('description', None),
             "species": species,
+            "entity_types": entity_types,
+            "annotation_types": annotation_types,
             "highlight": matches,
         })
 
