@@ -34,4 +34,4 @@ These terms are used as the preferred Annotation type in BEL Nanopubs. They prov
 - CellLine
 - CellStructure
 - Pathology
-- Organism
+- Species
