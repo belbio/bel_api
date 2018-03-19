@@ -10,12 +10,18 @@ import os
 
 from bel.Config import config
 from middleware.stats import FalconStatsMiddleware
+from middleware.field_converters import BelConverter
 
 from resources.status import SimpleStatusResource, StatusResource, VersionResource
 
 from resources.bel_lang import BelVersions
 from resources.bel_lang import BelSpecificationResource
 from resources.bel_lang import BelCompletion
+
+from resources.edges import EdgeResource
+from resources.edges import EdgesResource
+
+from resources.pipeline import PipelineResource
 
 from resources.terms import TermResource
 from resources.terms import TermsResource
@@ -63,6 +69,10 @@ if config['bel_api']['authenticated']:
 else:
     api = application = falcon.API(middleware=[stats_middleware, cors.middleware, ])
 
+# Router converter for BEL Expressions and NSArgs
+#   converts_FORWARDSLASH_ to / after URI template fields are extracted
+#
+api.router_options.converters['bel'] = BelConverter
 
 # Routes  ###############
 # Add routes to skip authentication in common/middleware:AuthMiddleware.skip_routes list
@@ -71,24 +81,32 @@ else:
 api.add_route('/bel/versions', BelVersions())  # GET
 api.add_route('/bel/{version}/specification', BelSpecificationResource())  # GET
 api.add_route('/bel/{version}/completion', BelCompletion())  # GET
-api.add_route('/bel/{version}/completion/{belstr}', BelCompletion())  # GET
+api.add_route('/bel/{version}/completion/{belstr:bel}', BelCompletion())  # GET
 # api.add_route('/bel/{version}/functions', BelSpecificationResource())  # GET
 # api.add_route('/bel/{version}/relations', BelSpecificationResource())  # GET
 
+# EdgeStore routes
+api.add_route('/edges/{edge_id}', EdgeResource())  # GET
+
+# Nanopub routes
+
+# Pipeline routes
+api.add_route('/pipeline', PipelineResource())  # POST
+
 # Term routes
 api.add_route('/terms', TermsResource())  # GET
-api.add_route('/terms/completions/{completion_text}', TermCompletionsResource())
+api.add_route('/terms/completions/{completion_text:bel}', TermCompletionsResource())
 
-api.add_route('/terms/{term_id}', TermResource())  # GET
-api.add_route('/terms/{term_id}/equivalents', TermEquivalentsResource())  # GET
-api.add_route('/terms/{term_id}/canonicalized', TermCanonicalizeResource())  # GET
-api.add_route('/terms/{term_id}/decanonicalized', TermDecanonicalizeResource())  # GET
+api.add_route('/terms/{term_id:bel}', TermResource())  # GET
+api.add_route('/terms/{term_id:bel}/equivalents', TermEquivalentsResource())  # GET
+api.add_route('/terms/{term_id:bel}/canonicalized', TermCanonicalizeResource())  # GET
+api.add_route('/terms/{term_id:bel}/decanonicalized', TermDecanonicalizeResource())  # GET
 api.add_route('/terms/types', TermTypesResource())  # GET
 
 # Orthology routes
 api.add_route('/orthologs', OrthologResource())  # GET
-api.add_route('/orthologs/{gene_id}', OrthologResource())  # GET
-api.add_route('/orthologs/{gene_id}/{species}', OrthologResource())  # GET
+api.add_route('/orthologs/{gene_id:bel}', OrthologResource())  # GET
+api.add_route('/orthologs/{gene_id:bel}/{species}', OrthologResource())  # GET
 
 # Text routes
 api.add_route('/text/pubmed/{pmid}', PubmedResource())  # GET
