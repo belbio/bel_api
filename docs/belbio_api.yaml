@@ -106,6 +106,12 @@ paths:
         * ='p(HGNC:AKT1)' cursor_loc=8 completion_text = 'AK' completions will use HGNC namespace and the entity type Protein to filter the results.
         * ='p(HGNC:AKT1) in' completion_text = 'in', relation replacement found will be 'increases'
 
+        Note: Any forward slashes '/' in the completion text need to be replaced
+          with _FORWARDSLASH_ otherwise it will get interpreted as
+          another path component and will likely not match a valid
+          url path (e.g. if gene_id="stupid/name" - this will look like
+          /bel/{version}/completion/stupid/name and not match /bel/{version}/completion/{text} since there is
+          an extra path component.
       tags:
         - BEL
       operationId: getBelCompletion
@@ -182,10 +188,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{version}/validate/triple/{subject}/{relation}/{object}:
+  /bel/{version}/validate/{subject|statement}/{relation}/{object}:
     get:
       summary: Validate
-      description: Validate BEL
+      description: |
+        Validate BEL
+
+        Note: Any forward slashes '/' in the subject|statement
+          or object need to be replaced with _FORWARDSLASH_
+          otherwise it will get interpreted as another path
+          component and will likely not match a valid
+          url path (e.g. if subject="p(GO:\"stupid/name\")" -
+          this will add an extra path parameter by mistake by
+          mis-interpreting the '/'.
+
       tags:
       - TODO
       operationId: getBelValidate
@@ -254,10 +270,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{version}/canonicalize/triple/{subject}/{relation}/{object}:
+  /bel/{version}/canonicalize/{subject|statement}/{relation}/{object}:
     get:
       summary: Canonicalize BEL
-      description: Canonicalize BEL
+      description: |
+        Canonicalize BEL
+
+        Note: Any forward slashes '/' in the subject|statement
+          or object need to be replaced with _FORWARDSLASH_
+          otherwise it will get interpreted as another path
+          component and will likely not match a valid
+          url path (e.g. if subject="p(GO:\"stupid/name\")" -
+          this will add an extra path parameter by mistake by
+          mis-interpreting the '/'.
       tags:
       - TODO
       operationId: getBelCanonicalize
@@ -319,10 +344,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{version}/decanonicalize/triple/{subject}/{relation}/{object}:
+  /bel/{version}/decanonicalize/{subject|statement}/{relation}/{object}:
     get:
       summary: Decanonicalize BEL
-      description: Decanonicalize BEL
+      description: |
+        Decanonicalize BEL
+
+        Note: Any forward slashes '/' in the subject|statement
+          or object need to be replaced with _FORWARDSLASH_
+          otherwise it will get interpreted as another path
+          component and will likely not match a valid
+          url path (e.g. if subject="p(GO:\"stupid/name\")" -
+          this will add an extra path parameter by mistake by
+          mis-interpreting the '/'.
       tags:
       - TODO
       operationId: getBelDecanonicalize
@@ -384,7 +418,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{version}/orthologize/{species_id}/triple/{subject}/{relation}/{object}:
+  /bel/{version}/orthologize/{species_id}/{subject|statement}/{relation}/{object}:
     get:
       summary: Orthologize BEL
       description: |
@@ -396,6 +430,13 @@ paths:
         - rat  (TAX:10116)
         - zebrafish (TAX:7955)
 
+        Note: Any forward slashes '/' in the subject|statement
+          or object need to be replaced with _FORWARDSLASH_
+          otherwise it will get interpreted as another path
+          component and will likely not match a valid
+          url path (e.g. if subject="p(GO:\"stupid/name\")" -
+          this will add an extra path parameter by mistake by
+          mis-interpreting the '/'.
       tags:
       - TODO
       operationId: getBelOrthologize
@@ -458,7 +499,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{version}/edges/triple/{subject}/{relation}/{object}:
+  /bel/{version}/edges/{subject|statement}/{relation}/{object}:
     get:
       summary: BEL Edges
       description: |
@@ -466,6 +507,14 @@ paths:
 
         The call will create BEL Edges from the BEL triple which can
         be loaded into the edge store.
+
+        Note: Any forward slashes '/' in the subject|statement
+          or object need to be replaced with _FORWARDSLASH_
+          otherwise it will get interpreted as another path
+          component and will likely not match a valid
+          url path (e.g. if subject="p(GO:\"stupid/name\")" -
+          this will add an extra path parameter by mistake by
+          mis-interpreting the '/'.
       tags:
       - TODO
       operationId: getBelEdges
@@ -516,266 +565,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  edges:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        subject:
-                          type: string
-                        relation:
-                          type: string
-                        object:
-                          type: string
-                        ast:
-                          type: object
-                          description: |
-                            If AST is requested (by query param), provide
-                            the AST along with the Edge subject, relation, and
-                            objects.
-                          additionalProperties:
-                            type: object
-                  messages:
-                    type: array
-                    items:
-                      type: string
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-
-  /bel/{version}/validate/single/{stmt}:
-    get:
-      # deprecated: true
-      summary: Validate
-      description: Validate BEL Statement
-      tags:
-      - TODO
-      operationId: getBelStmtValidate
-      parameters:
-      - name: stmt
-        in: path
-        required: true
-        description: BEL Statement
-        schema:
-          type: string
-      - name: ast
-        in: query
-        required: false
-        description: |
-          If AST is requested, the abstract syntax tree of the
-          BEL Edges will be provided in the response.
-        schema:
-          type: boolean
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  valid:
-                    type: boolean
-                  messages:
-                    type: array
-                    items:
-                      type: string
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-
-  /bel/{version}/canonicalize/single/{stmt}:
-    get:
-      summary: Canonicalize
-      description: Canonicalize BEL Statement
-      tags:
-      - TODO
-      operationId: getBelStmtCanonicalize
-      parameters:
-      - name: stmt
-        in: path
-        required: true
-        description: BEL Statement
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  canonicalized:
-                    type: object
-                    properties:
-                      subject:
-                        type: string
-                      relation:
-                        type: string
-                      object:
-                        type: string
-                  messages:
-                    type: array
-                    items:
-                      type: string
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-
-  /bel/{version}/decanonicalize/single/{stmt}:
-    get:
-      summary: Decanonicalize
-      description: Decanonicalize BEL Statement
-      tags:
-      - TODO
-      operationId: getBelStmtDecanonicalize
-      parameters:
-      - name: stmt
-        in: path
-        required: true
-        description: BEL Statement
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  decanonicalize:
-                    type: object
-                    properties:
-                      subject:
-                        type: string
-                      relation:
-                        type: string
-                      object:
-                        type: string
-                  messages:
-                    type: array
-                    items:
-                      type: string
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-
-  /bel/{version}/orthologize/{species_id}/single/{stmt}:
-    get:
-      summary: Orthologize
-      description: Orthologize BEL Statement
-      tags:
-      - TODO
-      operationId: getBelStmtOrthologize
-      parameters:
-      - name: stmt
-        in: path
-        required: true
-        description: BEL Statement
-        schema:
-          type: string
-      - name: species_id
-        in: path
-        required: true
-        description: |
-          Orthologize BEL into Species ID. Species ID is either TAX:<integer>
-          format from the NCBI Taxonomy namespace or using the
-          common labels:
-            * human
-            * mouse
-            * rat
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  orthologized:
-                    type: object
-                    properties:
-                      subject:
-                        type: string
-                      relation:
-                        type: string
-                      object:
-                        type: string
-                  messages:
-                    type: array
-                    items:
-                      type: string
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-
-  /bel/{version}/edges/single/{stmt}:
-    get:
-      summary: BEL Statement Edges
-      description: |
-        Create BEL Edges
-
-        The call will create BEL Edges from the BEL statement which can
-        be loaded into the edge store.
-      tags:
-      - TODO
-      operationId: getBelStmtEdges
-      parameters:
-      - name: stmt
-        in: path
-        required: true
-        description: BEL Statement
-        schema:
-          type: string
-      - name: computed_signatures
-        in: query
-        required: false
-        description: |
-          Default is to create all of the defined computed edges as
-          specified in the BEL Language Specification file.
-
-          You can specify which computed_signature steps will be performed
-          by specifying a comma-delimited list of computed_signature
-          keys. Example:
-
-              computed_signatures=componentOf,degradation,activity
-        schema:
-          type: string
-      - name: ast
-        in: query
-        required: false
-        description: |
-          If AST is requested, the abstract syntax tree of the
-          BEL Edges will be provided in the response.
-        schema:
-          type: boolean
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-             schema:
                 type: object
                 properties:
                   edges:
@@ -888,7 +677,8 @@ paths:
   /terms/{term_id}:
     get:
       summary: Get Term record
-      description: Get Term record, example term_id=HGNC:391
+      description: |
+        Get Term record, example term_id=HGNC:391
       tags:
       - Terminologies
       operationId: getTerm
@@ -896,7 +686,15 @@ paths:
       - name: term_id
         in: path
         required: true
-        description: Term ID (or alternate Term ID)
+        description: |
+          Term ID (or alternate Term ID)
+
+          Note: Any forward slashes '/' in term need to be replaced
+            with _FORWARDSLASH_ otherwise it will get interpreted as
+            another path component and will likely not match a valid
+            url path (e.g. if term_id="stupid/name" - this will look like
+            /terms/stupid/name and not match /terms/{term_id} since there is
+            an extra path component.
         schema:
           type: string
       responses:
@@ -932,7 +730,15 @@ paths:
       - name: completion_text
         in: path
         required: true
-        description: Partial term to complete, example completion 'AKT'
+        description: |
+          Partial term to complete, example completion 'AKT'
+
+          Note: Any forward slashes '/' in term need to be replaced
+            with _FORWARDSLASH_ otherwise it will get interpreted as
+            another path component and will likely not match a valid
+            url path (e.g. if completion_text="stupid/name" - this will look like
+            /terms/completions/stupid/name and not match /terms/completions/{completion_text} since there is
+            an extra path component.
         schema:
           type: string
       - name: species_id
@@ -1015,7 +821,15 @@ paths:
       - name: term_id
         in: path
         required: true
-        description: Term ID (or alternate Term ID)
+        description: |
+          Term ID (or alternate Term ID)
+
+          Note: Any forward slashes '/' in term need to be replaced
+            with _FORWARDSLASH_ otherwise it will get interpreted as
+            another path component and will likely not match a valid
+            url path (e.g. if term_id="stupid/name" - this will look like
+            /terms/stupid/name and not match /terms/{term_id} since there is
+            an extra path component.
         schema:
           type: string
       responses:
@@ -1058,7 +872,15 @@ paths:
       - name: term_id
         in: path
         required: true
-        description: Term ID (or alternate Term ID)
+        description: |
+          Term ID (or alternate Term ID)
+
+          Note: Any forward slashes '/' in term need to be replaced
+            with _FORWARDSLASH_ otherwise it will get interpreted as
+            another path component and will likely not match a valid
+            url path (e.g. if term_id="stupid/name" - this will look like
+            /terms/stupid/name and not match /terms/{term_id} since there is
+            an extra path component.
         schema:
           type: string
       responses:
@@ -1100,7 +922,15 @@ paths:
       - name: term_id
         in: path
         required: true
-        description: Term ID (or alternate Term ID)
+        description: |
+          Term ID (or alternate Term ID)
+
+          Note: Any forward slashes '/' in term need to be replaced
+            with _FORWARDSLASH_ otherwise it will get interpreted as
+            another path component and will likely not match a valid
+            url path (e.g. if term_id="stupid/name" - this will look like
+            /terms/stupid/name and not match /terms/{term_id} since there is
+            an extra path component.
         schema:
           type: string
       responses:
@@ -1203,7 +1033,15 @@ paths:
       - name: gene_id
         in: path
         required: true
-        description: Gene or Protein ID
+        description: |
+          Gene or Protein ID
+
+          Note: Any forward slashes '/' in term need to be replaced
+            with _FORWARDSLASH_ otherwise it will get interpreted as
+            another path component and will likely not match a valid
+            url path (e.g. if gene_id="stupid/name" - this will look like
+            /orthologs/stupid/name and not match /orthologs/{gene_id} since there is
+            an extra path component.
         schema:
           type: string
       responses:
@@ -1251,7 +1089,15 @@ paths:
       - name: gene_id
         in: path
         required: true
-        description: Gene or Protein ID
+        description: |
+          Gene or Protein ID
+
+          Note: Any forward slashes '/' in term need to be replaced
+            with _FORWARDSLASH_ otherwise it will get interpreted as
+            another path component and will likely not match a valid
+            url path (e.g. if gene_id="stupid/name" - this will look like
+            /orthologs/stupid/name and not match /orthologs/{gene_id} since there is
+            an extra path component.
         schema:
           type: string
       - name: species_id
@@ -1386,6 +1232,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
+
   /simple_status:
     get:
       summary: Simple Status
