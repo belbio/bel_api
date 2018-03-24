@@ -1,3 +1,6 @@
+# Used for quick patch updates to api.bel.bio
+# Have to mount the bel python package to /bel
+
 FROM python:3.6
 MAINTAINER  William Hayes whayes@openbel.org
 
@@ -8,7 +11,11 @@ RUN groupadd -g 1000 api && useradd api -u 1000 -g 1000 && mkdir /app && chown -
 WORKDIR /app
 
 COPY ./requirements.txt /app/requirements.txt
+COPY docker/bel /bel
 RUN pip install -r /app/requirements.txt
+RUN pip install -e /bel
+
+COPY ./api /app
 
 USER api
 
