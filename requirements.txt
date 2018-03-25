@@ -1,8 +1,8 @@
-bel==0.7.4
-elasticsearch==6.0.0
+bel==0.7.5
+elasticsearch==6.1.1
 gevent==1.2.2
 python-arango==3.12.1
-falcon==1.3.0rc2
+falcon==1.4.1
 falcon_auth==1.1.0
 falcon_cors==1.1.7
 gunicorn==19.7.1
@@ -12,5 +12,4 @@ passlib==1.7.1
 json-logging-py==0.2
 layeredconfig==0.3.2
 rq==0.10.0
-# Needed for bel python module - added temporarily for quick docker push
-python-dateutil==2.6.1
+
