@@ -4,8 +4,10 @@ import copy
 from bel.Config import config
 import services.terms as terms
 
-import logging
-log = logging.getLogger(__name__)
+# import logging
+import structlog
+
+log = structlog.getLogger(__name__)
 
 
 class SimpleStatusResource(object):
@@ -14,6 +16,18 @@ class SimpleStatusResource(object):
     def on_get(self, req, resp):
 
         resp.media = {"message": "Simple unauthenticated status API endpoint works"}
+        resp.status = falcon.HTTP_200
+
+
+class HealthCheckResource(object):
+    """Simple healthcheck status - always un-authenticated endpoint"""
+
+    def on_get(self, req, resp):
+
+        resp.media = {
+            "message": "Simple unauthenticated health status check",
+            "up": True,
+        }
         resp.status = falcon.HTTP_200
 
 

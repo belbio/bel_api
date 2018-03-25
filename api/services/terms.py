@@ -61,8 +61,7 @@ def get_term(term_id):
     }
 
     result = es.search(index='terms', doc_type='term', body=search_body)
-    # import json
-    # print('DumpVar:\n', json.dumps(result, indent=4))
+
     if len(result['hits']['hits']) > 0:
         result = result['hits']['hits'][0]['_source']
     else:
@@ -71,8 +70,12 @@ def get_term(term_id):
     return result
 
 
+# TODO - not deployed/fully implemented
 def get_term_search(search_term, size, entity_types, annotation_types, species, namespaces):
-    """Search for terms given search term"""
+    """Search for terms given search term
+
+        to be used for /terms POST endpoint
+    """
 
     if not size:
         size = 10
@@ -96,7 +99,15 @@ def get_term_search(search_term, size, entity_types, annotation_types, species, 
                     {
                         "match": {
                             "id": {
-                                "query": "AKT1",
+                                "query": "",
+                                "boost": 4
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "namespace_value": {
+                                "query": "",
                                 "boost": 4
                             }
                         }
@@ -104,7 +115,7 @@ def get_term_search(search_term, size, entity_types, annotation_types, species, 
                     {
                         "match": {
                             "name": {
-                                "query": "AKT1",
+                                "query": "",
                                 "boost": 2
                             }
                         }
@@ -112,14 +123,14 @@ def get_term_search(search_term, size, entity_types, annotation_types, species, 
                     {
                         "match": {
                             "synonyms": {
-                                "query": "AKT1"
+                                "query": ""
                             }
                         }
                     },
                     {
                         "match": {
                             "label": {
-                                "query": "AKT1",
+                                "query": "",
                                 "boost": 4
                             }
                         }
@@ -127,7 +138,7 @@ def get_term_search(search_term, size, entity_types, annotation_types, species, 
                     {
                         "match": {
                             "alt_ids": {
-                                "query": "AKT1",
+                                "query": "",
                                 "boost": 2
                             }
                         }
@@ -135,7 +146,7 @@ def get_term_search(search_term, size, entity_types, annotation_types, species, 
                     {
                         "match": {
                             "src_id": {
-                                "query": "AKT1"
+                                "query": ""
                             }
                         }
                     }
@@ -179,8 +190,9 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
         list of NSArgs
     """
 
+    # Split out Namespace from namespace value to use namespace for filter
+    #     and value for completion text
     matches = re.match('([A-Z]+):"?(.*)', completion_text)
-    log.info(f'Matches {matches} {completion_text}')
     if matches:
         namespaces = [matches.group(1)]
         completion_text = matches.group(2)
@@ -245,7 +257,7 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
                         "match": {
                             "namespace_value": {
                                 "query": completion_text,
-                                "boost": 5
+                                "boost": 8
                             }
                         }
                     },
@@ -261,10 +273,10 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
                         "match": {
                             "synonyms": {
                                 "query": completion_text,
-                                "boost": 3
+                                "boost": 2
                             }
                         }
-                    },
+                    }
                 ],
                 "must": {
                     "match": {
@@ -284,7 +296,7 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
         }
     }
 
-    # TODO Add namespace_value to terminology object (the value of the NSArg after the prefix)
+    # Boost namespaces
     if config['bel_api'].get('search', False):
         if config['bel_api']['search'].get('boost_namespaces', False):
             if not isinstance(config['bel_api']['search']['boost_namespaces'], (list)):
@@ -299,9 +311,6 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
                 search_body['query']['bool']['should'].append(boost_namespaces)
 
     results = es.search(index='terms', doc_type='term', body=search_body)
-    # import json
-    # print(json.dumps(search_body, indent=4))
-    # print('DumpVar:\n', json.dumps(results, indent=4))
 
     # highlight matches
     completions = []

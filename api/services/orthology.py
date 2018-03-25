@@ -28,22 +28,20 @@ def get_ortholog(gene_id: str, tax_id: str = None) -> List[str]:
 
     gene_id = canonicalize(gene_id)
     gene_id_key = bel.db.arangodb.arango_id_to_key(gene_id)
+    orthologs = []
 
+    # TODO Clean up duplicated code and normalize the output
     if tax_id:
         query = f'FOR vertex IN 1..3 ANY "ortholog_nodes/{gene_id_key}" ortholog_edges FILTER vertex.tax_id == "{tax_id}" RETURN DISTINCT vertex._key'
         cursor = belns_db.aql.execute(query)
-        orthologs = []
         for record in cursor:
             orthologs.append(decanonicalize(record))
-
-        return orthologs
     else:
         query = 'FOR vertex IN 1..3 ANY "ortholog_nodes/{0}" ortholog_edges RETURN DISTINCT {{id: vertex._key, species_id: vertex.tax_id}}'.format(gene_id_key)
         cursor = belns_db.aql.execute(query)
-        orthologs = []
         for record in cursor:
             orthologs.append({'id': decanonicalize(record['id']), 'species_id': record['species_id']})
 
-        return orthologs
+    return orthologs
 
 

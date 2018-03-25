@@ -111,7 +111,6 @@ class TermCompletionsResource(object):
         namespaces = req.get_param('namespaces', [])
 
         completions = terms.get_term_completions(completion_text, size, entity_types, annotation_types, species, namespaces)
-
         resp.media = {'completion_text': completion_text, 'completions': completions}
         resp.status = falcon.HTTP_200
 
