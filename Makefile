@@ -1,20 +1,19 @@
 # Run make help or make list to find out what the commands are
 
+# TODO -- break out local make commands into a Makefile-local and
+#   include into this one: https://www.gnu.org/software/make/manual/html_node/Include.html
+
+
 VERSION_FILE=VERSION
 VERSION=`cat $(VERSION_FILE)`
 
 # ensures list is not mis-identified with a file of the same name
-.PHONY: deploy-major deploy-minor deploy-path docs livedocs
+.PHONY: deploy_major deploy_minor deploy_patch livedocs
 .PHONY: test list help lint run docker_push docker_quickpush
-.PHONY: update_changelog
 
 define deploy_commands
 	@echo "Update CHANGELOG"
 	@echo "Create Github release and attach the gem file"
-
-	github_changelog_generator
-	git add CHANGELOG.md
-	git commit -m "Updated Changelog"
 
 	git push
 	git push --tags
@@ -30,29 +29,24 @@ dev_install:
 run:
 	cd api; gunicorn --config ./gunicorn.conf --log-config ./gunicorn_log.conf -b 0.0.0.0:8181 app:api
 
-
-update_changelog:
-	github_changelog_generator
-
-
-deploy_major: make_docs
+deploy_major:
 	@echo Deploying major update
 	bumpversion major
 	@${deploy_commands}
 
-deploy_minor: make_docs
+deploy_minor:
 	@echo Deploying minor update
 	bumpversion minor
 	@${deploy_commands}
 
-deploy_patch: make_docs
+deploy_patch:
 	@echo Deploying patch update
 	bumpversion --allow-dirty patch
 	${deploy_commands}
 
 docker_push:
 	@echo Deploying docker image to dockerhub $(VERSION)
-	docker build -t belbio/bel_api -t belbio/bel_api:$(VERSION) -f docker/Dockerfile-bel_api-image .
+	docker build -t belbio/bel_api -t belbio/bel_api:$(VERSION) -f docker/Dockerfile-bel_api .
 	docker push belbio/bel_api
 
 
@@ -60,8 +54,8 @@ docker_quickpush:
 	@echo Updating api.bel.bio docker image directly
 	rsync -a --exclude=".*" ../bel docker
 	docker build -t belbio/bel_api -f docker/Dockerfile-bel_api-quickpush .
-	# docker save belbio/bel_api | bzip2 | pv | ssh belbio 'bunzip2 | docker load'
-
+	docker save belbio/bel_api | bzip2 | pv | ssh belbio 'bunzip2 | docker load'
+	ssh belbio cd services; docker-compose stop belbio_api; docker-compose rm -f belbio_api; docker-compose up -d belbio_api; docker image prune -f
 
 livedocs:
 	cd sphinx; sphinx-autobuild -q -p 0 --open-browser --delay 5 source build/html
@@ -80,10 +74,8 @@ clean_pyc:
 lint:
 	flake8 --exclude=.tox
 
-
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
-
 
 help:
 	@echo "List of commands"
