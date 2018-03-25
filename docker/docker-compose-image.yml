@@ -23,19 +23,25 @@ services:
       - ./belbio_secrets.yml:/app/belbio_secrets.yml
     environment:
       - SERVER_MODE=DEV
+      - traefik.enable=true
+      - traefik.backend=bel_api
+      - traefik.frontend.rule=Host:belapi.test;PathPrefixStrip:/v1
+      - traefik.port=8000
     # restart: always
 
   # ArangoDB - document/graph store - core requirement
   # belbio_conf arangodb_host: localhost  port: 8529
   bel_arangodb:
     container_name: bel_arangodb
-    image: arangodb:3.2.9
+    image: arangodb:3.3.4
     ports:
       - "8529:8529"
     volumes:
       - bel_arango_data:/var/lib/arangodb3
     environment:
       - ARANGO_NO_AUTH=1
+    healthcheck:
+         test: curl -f my-system:8529/_api/version || exit 1
     # restart: always
 
   # Elasticsearch - terminology search - core requirement

@@ -8,14 +8,16 @@ volumes:
     driver: local
   bel_kibana_data:
     driver: local
+  bel_redis_data:
+    driver: local
 
 services:
 
   # Reverse proxy for BEL API and other web endpoints
   # http://localhost:8088
-  bel_traefik:
+  traefik:
     image: traefik:latest
-    container_name: bel_traefik
+    container_name: traefik
     ports:
       - "80:80"
       - "443:443"
@@ -27,30 +29,31 @@ services:
     # network_mode: "host"
 
 
-  # # BEL API - core requirement
-  # bel_api:
-  #   container_name: bel_api
-  #   image: bel_api:latest
-  #   build:
-  #     context: ..
-  #     dockerfile: ./docker/Dockerfile-bel_api
-  #   ports:
-  #     - "8010:8000"
-  #   # depends_on:
-  #   #   - bel_elasticsearch
-  #   #   - bel_arangodb
-  #   volumes:
-  #     - ../api:/app
-  #     - ./belbio_conf.yml:/app/belbio_conf.yml
-  #     - ./belbio_secrets.yml:/app/belbio_secrets.yml
-  #   labels:
-  #     - traefik.enable=true
-  #     - traefik.backend=bel_api
-  #     - traefik.frontend.rule=Host:belapi.test;PathPrefixStrip:/v1
-  #     - traefik.port=8000
-  #   environment:
-  #     - SERVER_MODE=DEV
-  #   restart: always
+  # BEL API - core requirement
+  bel_api:
+    container_name: bel_api
+    image: belbio/bel_api:latest
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile-bel_api
+    ports:
+      - "8010:8000"
+    depends_on:
+      - bel_elasticsearch
+      - bel_arangodb
+      - bel_redis
+    volumes:
+      - ../api:/app
+      - ./belbio_conf_local_docker_image.yml:/app/belbio_conf.yml
+      - ./belbio_secrets.yml:/app/belbio_secrets.yml
+    labels:
+      - traefik.enable=true
+      - traefik.backend=bel_api
+      - traefik.frontend.rule=Host:belapi.test;PathPrefixStrip:/v1
+      - traefik.port=8000
+    environment:
+      - SERVER_MODE=DEV
+    restart: unless-stopped
 
 
 #  ArangoDB and ElasticSearch are setup on api.openbel.org
@@ -71,7 +74,7 @@ services:
   # http://localhost:8529
   bel_arangodb:
     container_name: bel_arangodb
-    image: arangodb:3.2.9
+    image: arangodb:3.3.4
     ports:
       - "8529:8529"
     volumes:
@@ -83,13 +86,15 @@ services:
       - traefik.port=8529
     environment:
       - ARANGO_NO_AUTH=1
-    restart: always
+    healthcheck:
+         test: curl -f my-system:8529/_api/version || exit 1
+    restart: unless-stopped
 
   # Elasticsearch - terminology search - core requirement
   # http://localhost:9200
   bel_elasticsearch:
     container_name: bel_elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.1.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.1.2
     ports:
       - "9200:9200"
     volumes:
@@ -111,14 +116,14 @@ services:
     #   resources:
     #     limits:
     #       memory: 1g
-    restart: always
+    restart: unless-stopped
 
 
   # Optional for viewing Elasticsearch terminology search service
   # http://localhost:5601
   bel_kibana:
     container_name: bel_kibana
-    image: docker.elastic.co/kibana/kibana:6.1.0
+    image: docker.elastic.co/kibana/kibana:6.1.2
     ports:
       - 5601:5601
     volumes:
@@ -135,6 +140,52 @@ services:
       - xpack.security.enabled=false
     # logging:
     #   driver: none
-    restart: always
+    restart: unless-stopped
 
+  bel_redis:
+    container_name: bel_redis
+    image: redis:alpine
+    ports: ["6379:6379"]
+    volumes:
+      - bel_redis_data:/data
+    restart: unless-stopped
 
+  bel_rq_dashboard:
+    container_name: bel_rq_dashboard
+    image: rq_dashboard
+    build:
+      context: .
+      dockerfile: Dockerfile-rq_dashboard
+    depends_on: [bel_redis]
+    ports: ["9181:9181"]
+    environment:
+      - RQ_DASHBOARD_REDIS_URL=redis://bel_redis
+    restart: unless-stopped
+
+  bel_rq_worker:
+    container_name: bel_rq_worker
+    image: belbio/bel_api:latest
+
+    # build:
+    #   context: ..
+    #   dockerfile: ./docker/Dockerfile-bel_api
+
+    entrypoint:
+      - rq
+      - worker
+    depends_on:
+      - bel_elasticsearch
+      - bel_arangodb
+      - bel_redis
+    volumes:
+      - ../api:/app
+      - ./belbio_conf_local_docker_image.yml:/app/belbio_conf.yml
+      - ./belbio_secrets.yml:/app/belbio_secrets.yml
+    labels:
+      - traefik.enable=true
+      - traefik.backend=bel_api
+      - traefik.frontend.rule=Host:belapi.test;PathPrefixStrip:/v1
+      - traefik.port=8000
+    environment:
+      - SERVER_MODE=DEV
+    restart: unless-stopped
