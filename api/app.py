@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
+import sys
+
 import falcon
 from falcon_cors import CORS
 from falcon_auth import FalconAuthMiddleware, JWTAuthBackend
+
 import logging
 import logging.config
-import os
+# from pythonjsonlogger import jsonlogger
+import bel.setup_logging
 
 from bel.Config import config
 from middleware.stats import FalconStatsMiddleware
 from middleware.field_converters import BelConverter
 
-from resources.status import SimpleStatusResource, StatusResource, VersionResource
+from resources.status import SimpleStatusResource, HealthCheckResource, StatusResource, VersionResource
 
 from resources.bel_lang import BelVersions
 from resources.bel_lang import BelSpecificationResource
@@ -39,8 +44,11 @@ from resources.pubmed import PubmedResource
 module_fn = os.path.basename(__file__)
 module_fn = module_fn.replace('.py', '')
 
-logging.config.dictConfig(config['logging'])
-log = logging.getLogger(f'{module_fn}')
+bel.setup_logging.setup_logging()
+
+log = logging.getLogger('root')
+
+# log = structlog.getLogger(module_fn)
 
 cors = CORS(allow_all_origins=True)
 stats_middleware = FalconStatsMiddleware()
@@ -60,7 +68,7 @@ if config['bel_api']['authenticated']:
     )
     auth_middleware = FalconAuthMiddleware(
         auth_backend,
-        exempt_routes=['/simple_status', '/version'],
+        exempt_routes=['/simple_status', '/healthcheck', '/version', ],
         exempt_methods=['HEAD']
     )
 
@@ -112,8 +120,9 @@ api.add_route('/orthologs/{gene_id:bel}/{species}', OrthologResource())  # GET
 api.add_route('/text/pubmed/{pmid}', PubmedResource())  # GET
 
 # Status endpoints - used to check that API is running correctly
-api.add_route('/simple_status', SimpleStatusResource())  # un-authenticated
-api.add_route('/status', StatusResource())  # authenticated
+api.add_route('/simple_status', SimpleStatusResource())  # GET un-authenticated
+api.add_route('/healthcheck', HealthCheckResource())  # GET un-authenticated
+api.add_route('/status', StatusResource())  # GET authenticated
 api.add_route('/version', VersionResource())  # version
 
 # Useful for debugging problems in your API; works with pdb.set_trace()
