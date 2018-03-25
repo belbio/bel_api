@@ -12,6 +12,8 @@ RUN pip install -r /app/requirements.txt
 
 USER api
 
+# Volume mount ./api directory to /app in docker-compose file for development
+
 HEALTHCHECK --interval=5m --timeout=5s \
     CMD curl --fail http://localhost:8000/healthcheck || exit 1
 
