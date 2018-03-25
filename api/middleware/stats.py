@@ -1,7 +1,7 @@
 from datetime import datetime
 
-import logging
-log = logging.getLogger(__name__)
+import structlog
+log = structlog.getLogger(__name__)
 
 
 class FalconStatsMiddleware(object):
@@ -17,4 +17,13 @@ class FalconStatsMiddleware(object):
         now = datetime.now()
         delta = now - req.context["start_time"]
 
-        log.info(f'Took {delta.total_seconds() * 1000}ms for {req.uri}')  # milliseconds
+        # log.info(f'Took {delta.total_seconds() * 1000}ms for {req.uri}', {"type": "api_request", 'timespan_seconds': delta.total_seconds(), 'uri': req.uri, 'status': resp.status})
+        timespan_ms = delta.total_seconds() * 1000  # converted to milliseconds
+        type_ = 'api_request'
+        if 'healthcheck' in req.uri:
+            type_ = 'healthcheck'
+
+        log.info(f'Took {timespan_ms}ms for {req.uri}', type=type_, timespan_ms=timespan_ms, uri=req.uri, status=resp.status)
+
+
+
