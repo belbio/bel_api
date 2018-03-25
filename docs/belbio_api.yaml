@@ -1281,6 +1281,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
+  /healthcheck:
+    get:
+      summary: Service Healthcheck
+      description: Simple unauthenticated health status check
+      tags:
+      - Utility
+      security: []
+      operationId: getHealthStatus
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: Simple unauthenticated health status API endpoint works
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
   /version:
     get:
       summary: Version
