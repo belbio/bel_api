@@ -12,4 +12,4 @@ passlib==1.7.1
 json-logging-py==0.2
 layeredconfig==0.3.2
 rq==0.10.0
-
+structlog==18.1.0
