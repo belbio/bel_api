@@ -1,7 +1,10 @@
 import falcon
 
+from bel.lang.belobj import BEL
 import bel.lang.bel_specification
 import bel.lang.completion
+
+from bel.Config import config
 
 import logging
 log = logging.getLogger(__name__)
@@ -43,3 +46,40 @@ class BelCompletion(object):
 
         resp.media = completions
         resp.status = falcon.HTTP_200
+
+
+class BelCanonicalize(object):
+    """Canonicalize BEL"""
+
+    # TODO finish testing and add to Swagger docs
+
+    def on_get(self, req, resp, version, belstr=''):
+
+        namespace_targets = req.get_param('namespace_targets', default=None)
+        api_url = config['bel_api']['servers']['api_url']
+
+        log.info(f'Api_url {api_url}')
+
+        bel_obj = BEL(version=version, api_url=api_url)
+
+        canon_belstr = bel_obj.parse(belstr).canonicalize(namespace_targets=namespace_targets).to_string()
+
+        resp.media = {'canonicalized': canon_belstr, 'original': belstr}
+        resp.status = falcon.HTTP_200
+
+
+class BelDecanonicalize(object):
+    """Decanonicalize BEL"""
+
+    # TODO finish testing and add to Swagger docs
+
+    def on_get(self, req, resp, version, belstr=''):
+
+        api_url = config['bel_api']['servers']['api_url']
+        bel_obj = BEL(version=version, api_url=api_url)
+
+        decanon_belstr = bel_obj.parse(belstr).decanonicalize().to_string()
+
+        resp.media = {'decanonicalized': decanon_belstr, 'original': belstr}
+        resp.status = falcon.HTTP_200
+

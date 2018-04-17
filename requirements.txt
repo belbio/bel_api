@@ -1,18 +1,19 @@
 bel==0.7.5
-colorama==0.3.9
+celery==4.1.0
 elasticsearch==6.1.1
-gevent==1.2.2
-python-arango==3.12.1
 falcon==1.4.1
 falcon_auth==1.1.0
 falcon_cors==1.1.7
+flower==0.9.2
+gevent==1.2.2
 gunicorn==19.7.1
-PyJWT==1.5.3
 itsdangerous==0.24
-passlib==1.7.1
 json-logging-py==0.2
 layeredconfig==0.3.2
+passlib==1.7.1
+PyJWT==1.5.3
+python-arango==3.12.1
 python-dateutil==2.6.1
-rq==0.10.0
 structlog==18.1.0
-
+timy==0.4.0
+# Add librabbitmq when it's Python3 compatible

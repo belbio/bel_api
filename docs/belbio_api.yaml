@@ -188,7 +188,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{version}/validate/{subject|statement}/{relation}/{object}:
+  /bel/{version}/validate/{statement}:
     get:
       summary: Validate
       description: |
@@ -270,39 +270,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{version}/canonicalize/{subject|statement}/{relation}/{object}:
+  /bel/{version}/canonicalize/{bel_string}:
     get:
       summary: Canonicalize BEL
       description: |
         Canonicalize BEL
 
-        Note: Any forward slashes '/' in the subject|statement
-          or object need to be replaced with _FORWARDSLASH_
+        Note: Any forward slashes '/' in the bel_string
+          need to be replaced with _FORWARDSLASH_
           otherwise it will get interpreted as another path
           component and will likely not match a valid
-          url path (e.g. if subject="p(GO:\"stupid/name\")" -
+          url path (e.g. if bel_string="p(GO:\"stupid/name\")" -
           this will add an extra path parameter by mistake by
           mis-interpreting the '/'.
       tags:
-      - TODO
+        - BEL
       operationId: getBelCanonicalize
       parameters:
-      - name: subject
+      - name: bel_string
         in: path
         required: true
-        description: BEL Subject
-        schema:
-          type: string
-      - name: relation
-        in: path
-        required: true
-        description: BEL Relationship
-        schema:
-          type: string
-      - name: object
-        in: path
-        required: true
-        description: BEL Object
+        description: BEL String
         schema:
           type: string
       - name: namespace_targets
@@ -327,11 +315,7 @@ paths:
                   canonicalized:
                     type: object
                     properties:
-                      subject:
-                        type: string
-                      relation:
-                        type: string
-                      object:
+                      bel_string:
                         type: string
                   messages:
                     type: array
@@ -344,39 +328,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{version}/decanonicalize/{subject|statement}/{relation}/{object}:
+  /bel/{version}/decanonicalize/{bel_string}:
     get:
       summary: Decanonicalize BEL
       description: |
         Decanonicalize BEL
 
-        Note: Any forward slashes '/' in the subject|statement
-          or object need to be replaced with _FORWARDSLASH_
+        Note: Any forward slashes '/' in the bel_string
+          need to be replaced with _FORWARDSLASH_
           otherwise it will get interpreted as another path
           component and will likely not match a valid
           url path (e.g. if subject="p(GO:\"stupid/name\")" -
           this will add an extra path parameter by mistake by
           mis-interpreting the '/'.
       tags:
-      - TODO
+      - BEL
       operationId: getBelDecanonicalize
       parameters:
-      - name: subject
+      - name: bel_string
         in: path
         required: true
-        description: BEL Subject
-        schema:
-          type: string
-      - name: relation
-        in: path
-        required: true
-        description: BEL Relationship
-        schema:
-          type: string
-      - name: object
-        in: path
-        required: true
-        description: BEL Object
+        description: BEL String
         schema:
           type: string
       - name: namespace_targets
@@ -401,11 +373,7 @@ paths:
                   decanonicalized:
                     type: object
                     properties:
-                      subject:
-                        type: string
-                      relation:
-                        type: string
-                      object:
+                      bel_string:
                         type: string
                   messages:
                     type: array
@@ -418,7 +386,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{version}/orthologize/{species_id}/{subject|statement}/{relation}/{object}:
+  /bel/{version}/orthologize/{species_id}/{bel_string}:
     get:
       summary: Orthologize BEL
       description: |
@@ -430,8 +398,8 @@ paths:
         - rat  (TAX:10116)
         - zebrafish (TAX:7955)
 
-        Note: Any forward slashes '/' in the subject|statement
-          or object need to be replaced with _FORWARDSLASH_
+        Note: Any forward slashes '/' in the bel_string
+          need to be replaced with _FORWARDSLASH_
           otherwise it will get interpreted as another path
           component and will likely not match a valid
           url path (e.g. if subject="p(GO:\"stupid/name\")" -
@@ -441,22 +409,10 @@ paths:
       - TODO
       operationId: getBelOrthologize
       parameters:
-      - name: subject
+      - name: bel_string
         in: path
         required: true
-        description: BEL Subject
-        schema:
-          type: string
-      - name: relation
-        in: path
-        required: true
-        description: BEL Relationship
-        schema:
-          type: string
-      - name: object
-        in: path
-        required: true
-        description: BEL Object
+        description: BEL String
         schema:
           type: string
       - name: species_id
@@ -482,11 +438,7 @@ paths:
                   orthologized:
                     type: object
                     properties:
-                      subject:
-                        type: string
-                      relation:
-                        type: string
-                      object:
+                      bel_string:
                         type: string
                   messages:
                     type: array
@@ -499,17 +451,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{version}/edges/{subject|statement}/{relation}/{object}:
+  /bel/{version}/edges/{bel_string}:
     get:
       summary: BEL Edges
       description: |
         Create BEL Edges
 
-        The call will create BEL Edges from the BEL triple which can
+        The call will create BEL Edges from the BEL string which can
         be loaded into the edge store.
 
-        Note: Any forward slashes '/' in the subject|statement
-          or object need to be replaced with _FORWARDSLASH_
+        Note: Any forward slashes '/' in the bel_string
+          need to be replaced with _FORWARDSLASH_
           otherwise it will get interpreted as another path
           component and will likely not match a valid
           url path (e.g. if subject="p(GO:\"stupid/name\")" -
@@ -519,22 +471,10 @@ paths:
       - TODO
       operationId: getBelEdges
       parameters:
-      - name: subject
+      - name: bel_string
         in: path
         required: true
-        description: BEL Subject
-        schema:
-          type: string
-      - name: relation
-        in: path
-        required: true
-        description: BEL Relationship
-        schema:
-          type: string
-      - name: object
-        in: path
-        required: true
-        description: BEL Object
+        description: BEL String
         schema:
           type: string
       - name: computed_signatures

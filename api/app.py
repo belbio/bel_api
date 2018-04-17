@@ -22,11 +22,14 @@ from resources.status import SimpleStatusResource, HealthCheckResource, StatusRe
 from resources.bel_lang import BelVersions
 from resources.bel_lang import BelSpecificationResource
 from resources.bel_lang import BelCompletion
+from resources.bel_lang import BelCanonicalize
+from resources.bel_lang import BelDecanonicalize
+
+from resources.tasks import PipelineTasksResource
+from resources.tasks import ResourcesTasksResource
 
 from resources.edges import EdgeResource
 from resources.edges import EdgesResource
-
-from resources.pipeline import PipelineResource
 
 from resources.terms import TermResource
 from resources.terms import TermsResource
@@ -90,6 +93,9 @@ api.add_route('/bel/versions', BelVersions())  # GET
 api.add_route('/bel/{version}/specification', BelSpecificationResource())  # GET
 api.add_route('/bel/{version}/completion', BelCompletion())  # GET
 api.add_route('/bel/{version}/completion/{belstr:bel}', BelCompletion())  # GET
+api.add_route('/bel/{version}/canonicalize/{belstr:bel}', BelCanonicalize())  # GET
+api.add_route('/bel/{version}/decanonicalize/{belstr:bel}', BelDecanonicalize())  # GET
+
 # api.add_route('/bel/{version}/functions', BelSpecificationResource())  # GET
 # api.add_route('/bel/{version}/relations', BelSpecificationResource())  # GET
 
@@ -98,8 +104,11 @@ api.add_route('/edges/{edge_id}', EdgeResource())  # GET
 
 # Nanopub routes
 
-# Pipeline routes
-api.add_route('/pipeline', PipelineResource())  # POST
+
+# Task routes
+api.add_route('/tasks/pipeline', PipelineTasksResource())  # POST
+api.add_route('/tasks/resources', ResourcesTasksResource())  # POST
+
 
 # Term routes
 api.add_route('/terms', TermsResource())  # GET

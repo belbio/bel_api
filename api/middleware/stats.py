@@ -23,7 +23,7 @@ class FalconStatsMiddleware(object):
         if 'healthcheck' in req.uri:
             type_ = 'healthcheck'
 
-        log.info(f'Took {timespan_ms}ms for {req.uri}', type=type_, timespan_ms=timespan_ms, uri=req.uri, status=resp.status)
+        log.info(f'Took {timespan_ms}ms for {req.uri}', type=type_, timespan_ms=timespan_ms, url=req.uri, status=resp.status)
 
 
 
