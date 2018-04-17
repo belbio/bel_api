@@ -313,10 +313,9 @@ paths:
                 type: object
                 properties:
                   canonicalized:
-                    type: object
-                    properties:
-                      bel_string:
-                        type: string
+                    type: string
+                  original:
+                    type: string
                   messages:
                     type: array
                     items:
@@ -371,10 +370,9 @@ paths:
                 type: object
                 properties:
                   decanonicalized:
-                    type: object
-                    properties:
-                      bel_string:
-                        type: string
+                    type: string
+                  original:
+                    type: string
                   messages:
                     type: array
                     items:
