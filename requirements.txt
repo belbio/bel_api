@@ -13,7 +13,7 @@ layeredconfig==0.3.2
 passlib==1.7.1
 PyJWT==1.5.3
 python-arango==3.12.1
-python-dateutil==2.6.1
+python-dateutil==2.7.2
 structlog==18.1.0
 timy==0.4.0
 # Add librabbitmq when it's Python3 compatible
