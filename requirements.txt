@@ -6,7 +6,7 @@ falcon_auth==1.1.0
 falcon_cors==1.1.7
 flower==0.9.2
 gevent==1.2.2
-gunicorn==19.7.1
+gunicorn==19.8.1
 itsdangerous==0.24
 json-logging-py==0.2
 layeredconfig==0.3.2
