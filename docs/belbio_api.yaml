@@ -590,6 +590,73 @@ paths:
                       type: string
                       description: Error or warning message associated with term, optional
 
+  /nanopubs/validate:
+    post:
+      summary: Nanopub Validate
+      description: Validate the nanopub structure, assertions and annotations
+      tags:
+        - Nanopubs
+      operationId: validateNanopub
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ERROR:
+                    type: object
+                    properties:
+                      STRUCTURE:
+                        type: array
+                        items:
+                          type: string
+                      ASSERTION:
+                        type: array
+                        items:
+                          type: string
+                      ANNOTATION:
+                        type: array
+                        items:
+                          type: string
+                  WARNING:
+                    type: object
+                    properties:
+                      STRUCTURE:
+                        type: array
+                        items:
+                          type: string
+                      ASSERTION:
+                        type: array
+                        items:
+                          type: string
+                      ANNOTATION:
+                        type: array
+                        items:
+                          type: string
+                example:
+                  validation_results:
+                    ERROR:
+                      STRUCTURE:
+                      - 'Missing or badly formed type - must have nanopub["type"] = {"name": <name>,
+                        "version": <version}'
+                      ASSERTION:
+                      - 'Failed parse at position 0. Check that you have a valid primary or modifier
+                        function. BEL: pith(MESH:therosclerosis) positiveCorrelation bp(GO:"lipid oxidation")'
+                      ANNOTATION: []
+                    WARNING:
+                      STRUCTURE: []
+                      ASSERTION: []
+                      ANNOTATION:
+                      - 'Annotation term: MESH:artery not found in database'
+                      - 'Annotation term: Review not found in database'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
 
   /terms:
     get:
@@ -649,7 +716,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
-
 
   /terms/completions/{completion_text}:
     get:
@@ -1065,6 +1131,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
+
 
   /text/pubmed:
     get:
