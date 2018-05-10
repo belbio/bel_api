@@ -597,6 +597,114 @@ paths:
       tags:
         - Nanopubs
       operationId: validateNanopub
+      requestBody:
+        description: Submit Nanopub for validation
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - "nanopub"
+              properties:
+                error_level:
+                  type: "string"
+                  enum: [ERROR, WARNING]
+                  default: WARNING
+                  description: |
+                    Default is WARNING which will also check to see if the namespace values are in the Namespace database
+                    and whether they are the correct entity or annotation type.
+
+                    ERROR will only check the nanopub structure and assertion syntax.
+                nanopub:
+                  required:
+                    - "type"
+                    - "assertions"
+                    - "citation"
+                  properties:
+                    type:
+                      required:
+                        - "name"
+                        - "version"
+                      properties:
+                        name:
+                          type: "string"
+                        version:
+                          type: "string"
+                      type: "object"
+                    schema_uri:
+                      type: "string"
+                    assertions:
+                      type: "array"
+                      items:
+                        type: "object"
+                        properties:
+                          object:
+                            type: "string"
+                          relation:
+                            type: "string"
+                          subject:
+                            type: "string"
+                    evidence:
+                      type: "string"
+                    annotations:
+                      type: "array"
+                      items:
+                        type: "object"
+                        properties:
+                          type:
+                            type: "string"
+                          id:
+                            type: "string"
+                          label:
+                            type: "string"
+                    citation:
+                      type: "object"
+                    metadata:
+                      type: "object"
+                  type: "object"
+            example:
+              error_level: WARNING
+              nanopub:
+                type:
+                  ame: BEL
+                  version: 2.0.0
+                schema_uri: http://json.schemastore.org/nanopub_bel-1.0.0.json
+
+                assertions:
+                - object: bp(GO:"lipid oxidation")
+                  relation: positiveCorrelation
+                  subject: pith(MESH:atherosclerosis)
+                evidence: Oxidation and nitration of macromolecules, such as proteins, DNA and lipids,
+                  are prominent in atherosclerotic arteries.
+                annotations:
+                - type: Anatomy
+                  id: MESH:artery
+                  label: artery
+                - type: Disease
+                  id: DO:atherosclerosis
+                  label: atherosclerosis
+                - type: TextLocation
+                  id: Review
+                citation:
+                  authors:
+                  - de Nigris F
+                  - Lerman A
+                  - Ignarro LJ
+                  - Williams-Ignarro S
+                  - Sica V
+                  - Baker AH
+                  - Lerman LO
+                  - Geng YJ
+                  - Napoli C
+                  comments: ''
+                  date_published: ''
+                  source_name: Trends in molecular medicine
+                  database:
+                    name: PubMed
+                    id: '12928037'
+                metadata:
+                  stmt_group: Group 1
+
       responses:
         '200':
           description: Successful response
@@ -1513,6 +1621,7 @@ components:
             highlight:
             - <em>AKT1S1</em>
             - <em>AKT1</em> substrate 1
+
 
     ErrorModel:
       type: object
