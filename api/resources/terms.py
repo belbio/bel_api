@@ -104,7 +104,7 @@ class TermCompletionsResource(object):
                 List[Mapping[str, Any]]: list of terms
         """
 
-        size = req.get_param('size', default=10)
+        size = req.get_param('size', default=21)
         entity_types = req.get_param('entity_types', [])
         species = req.get_param('species', [])
         annotation_types = req.get_param('annotation_types', [])

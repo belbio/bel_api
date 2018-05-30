@@ -8,8 +8,11 @@ import bel.db.arangodb
 
 from bel.Config import config
 
-import logging
-log = logging.getLogger(__name__)
+# import logging
+# log = logging.getLogger(__name__)
+
+import structlog
+log = structlog.getLogger()
 
 es = bel.db.elasticsearch.get_client()
 
@@ -189,7 +192,7 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
     Returns:
         list of NSArgs
     """
-
+    log.info(f'Size: {size}')
     # Split out Namespace from namespace value to use namespace for filter
     #     and value for completion text
     matches = re.match('([A-Z]+):"?(.*)', completion_text)
@@ -210,38 +213,52 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
         entity_types = []
 
     filters = []
+
+    # Entity filters
     if entity_types and isinstance(entity_types, str):
         entity_types = [entity_types]
         filters.append({"terms": {"entity_types": entity_types}})
-
     elif entity_types:
         filters.append({"terms": {"entity_types": entity_types}})
 
+    # Annotation type filters
     if annotation_types and isinstance(annotation_types, str):
         filters.append({"terms": {"annotation_types": [annotation_types]}})
     elif annotation_types:
         filters.append({"terms": {"annotation_types": annotation_types}})
 
-    grp = False
-    if entity_types:
-        grp = [et for et in entity_types if et in config['bel_api']['search']['species_entity_types']]
-
-    if grp:
-        if species and isinstance(species, str):
-            filters.append({"terms": {"species_id": [species]}})
-        elif species:
-            filters.append({"terms": {"species_id": species}})
-
+    # Namespace filter
     if namespaces and isinstance(namespaces, str):
         filters.append({"terms": {"namespace": [namespaces]}})
     elif namespaces:
         filters.append({"terms": {"namespace": namespaces}})
 
-    # log.info(f'Term Filters {filters}')
+    # Species filter
+    grp = False
+    if entity_types:
+        grp = [et for et in entity_types if et in config['bel_api']['search']['species_entity_types']]
+
+    if grp and species:
+        if isinstance(species, str):
+            species = [species]
+
+        # Allow non-species specific terms to be found
+        filters.append(
+            {
+                "bool": {
+                    "should": [
+                        {"bool": {"must_not": {"exists": {"field": "species_id"}}}},
+                        {"terms": {"species_id": species}}
+                    ]
+                }
+            }
+        )
+
+    log.info(f'Term Filters {filters}')
 
     search_body = {
         "_source": ["id", "name", "label", "description", "species_id", "species_label", "entity_types", "annotation_types", "synonyms", ],
-        "size": 10,
+        "size": size,
         "query": {
             "bool": {
                 "should": [
@@ -249,7 +266,8 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
                         "match": {
                             "id": {
                                 "query": completion_text,
-                                "boost": 6
+                                "boost": 6,
+                                "_name": "id"
                             }
                         }
                     },
@@ -257,7 +275,8 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
                         "match": {
                             "namespace_value": {
                                 "query": completion_text,
-                                "boost": 8
+                                "boost": 8,
+                                "_name": "namespace_value"
                             }
                         }
                     },
@@ -265,7 +284,8 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
                         "match": {
                             "label": {
                                 "query": completion_text,
-                                "boost": 5
+                                "boost": 5,
+                                "_name": "label"
                             }
                         }
                     },
@@ -273,7 +293,8 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
                         "match": {
                             "synonyms": {
                                 "query": completion_text,
-                                "boost": 2
+                                "boost": 1,
+                                "_name": "synonyms"
                             }
                         }
                     }
@@ -281,7 +302,8 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
                 "must": {
                     "match": {
                         "autocomplete": {
-                            "query": completion_text
+                            "query": completion_text,
+                            "_name": "autocomplete"
                         }
                     }
                 },
@@ -296,6 +318,9 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
         }
     }
 
+    import json
+    log.info(f'DEBUG Completion search body {json.dumps(search_body)}')
+
     # Boost namespaces
     if config['bel_api'].get('search', False):
         if config['bel_api']['search'].get('boost_namespaces', False):
@@ -304,7 +329,7 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
             else:
                 boost_namespaces = {
                     "terms": {
-                        "namespace_value": config['bel_api']['search']['boost_namespaces'],
+                        "namespace": config['bel_api']['search']['boost_namespaces'],
                         "boost": 6
                     }
                 }
@@ -390,9 +415,11 @@ def namespace_term_counts():
         List[Mapping[str, int]]: array of namespace vs counts
     """
 
+    size = 100
+
     search_body = {
         "aggs": {
-            "namespace_term_counts": {"terms": {"field": "namespace"}}
+            "namespace_term_counts": {"terms": {"field": "namespace", "size": size}}
         }
     }
 
@@ -424,8 +451,7 @@ def get_equivalents(term_id: str, namespaces: List[str]=None) -> List[Mapping[st
     """
 
     term_id_key = bel.db.arangodb.arango_id_to_key(term_id)
-
-    query = f"FOR vertex, edge IN 1..10 ANY 'equivalence_nodes/{term_id_key}' equivalence_edges " + "RETURN {term_id: vertex._key, namespace: vertex.namespace}"
+    query = f"FOR vertex, edge IN 1..10 ANY 'equivalence_nodes/{term_id_key}' equivalence_edges RETURN DISTINCT {{term_id: vertex._key, namespace: vertex.namespace}}"
     cursor = belns_db.aql.execute(query)
 
     equivalents = {}
@@ -460,7 +486,6 @@ def canonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = None
     for start_ns in namespace_targets:
         if re.match(start_ns, term_id):
             equivalents = get_equivalents(term_id)
-            # log.info(f'Equiv: {equivalents}')
             for target_ns in namespace_targets[start_ns]:
                 if target_ns in equivalents:
                     term_id = equivalents[target_ns]
