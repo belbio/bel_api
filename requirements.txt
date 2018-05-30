@@ -1,6 +1,6 @@
 bel==0.7.5
 celery==4.1.1
-elasticsearch==6.1.1
+elasticsearch==6.2.0
 falcon==1.4.1
 falcon_auth==1.1.0
 falcon_cors==1.1.7
