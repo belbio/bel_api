@@ -1,5 +1,5 @@
 bel==0.7.5
-celery==4.1.0
+celery==4.1.1
 elasticsearch==6.1.1
 falcon==1.4.1
 falcon_auth==1.1.0
@@ -14,6 +14,9 @@ passlib==1.7.1
 PyJWT==1.5.3
 python-arango==3.12.1
 python-dateutil==2.6.1
+python-json-logger==0.1.8
 structlog==18.1.0
 timy==0.4.0
+
 # Add librabbitmq when it's Python3 compatible
+ptvsd==3.0.0  # remove if not needed for remote debugging

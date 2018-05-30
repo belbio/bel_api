@@ -1,3 +1,4 @@
+ptvsd==3.2.1
 Pygments==2.2.0
 Sphinx>=1.5.2
 bumpversion==0.5.3

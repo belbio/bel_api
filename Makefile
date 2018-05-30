@@ -9,7 +9,7 @@ VERSION=`cat $(VERSION_FILE)`
 
 # ensures list is not mis-identified with a file of the same name
 .PHONY: deploy_major deploy_minor deploy_patch livedocs
-.PHONY: test list help lint run docker_push docker_quickpush
+.PHONY: test list help lint run docker_push docker_quickpush docker_quickpush_plm docker_quickpush_demo
 
 define deploy_commands
 	@echo "Update CHANGELOG"
@@ -51,11 +51,28 @@ docker_push:
 
 
 docker_quickpush:
-	@echo Updating api.bel.bio docker image directly
+	@echo Updating belbio/bel_api docker image directly to belbio server
 	rsync -a --exclude=".*" ../bel docker
 	docker build -t belbio/bel_api -f docker/Dockerfile-bel_api-quickpush .
 	docker save belbio/bel_api | bzip2 | pv | ssh belbio 'bunzip2 | docker load'
 	ssh belbio cd services; docker-compose stop belbio_api; docker-compose rm -f belbio_api; docker-compose up -d belbio_api; docker image prune -f
+
+
+docker_quickpush_demo:
+	@echo Updating belbio/bel_api docker image directly to Demo2 BELbio server
+	rsync -a --exclude=".*" ../bel docker
+	docker build -t belbio/bel_api -f docker/Dockerfile-bel_api-quickpush .
+	docker save belbio/bel_api | bzip2 | pv | ssh demo 'bunzip2 | docker load'
+#	ssh belbio cd services; docker-compose stop belbio_api; docker-compose rm -f belbio_api; docker-compose up -d belbio_api; docker image prune -f
+
+
+docker_quickpush_plm:
+	@echo Updating belbio/bel_api docker image directly to PLM server
+	rsync -a --exclude=".*" ../bel docker
+	docker build -t belbio/bel_api -f docker/Dockerfile-bel_api-quickpush .
+	docker save belbio/bel_api | bzip2 | pv | ssh plm 'bunzip2 | docker load'
+	# ssh plm cd docker/belbio  && docker-compose stop bel_api && docker-compose rm -f bel_api && docker-compose up -d bel_api && docker image prune -f
+
 
 livedocs:
 	cd sphinx; sphinx-autobuild -q -p 0 --open-browser --delay 5 source build/html
