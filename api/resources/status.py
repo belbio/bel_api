@@ -48,7 +48,6 @@ class StatusResource(object):
             stats = "No elasticsearch index accessible"
 
         settings = copy.deepcopy(config)
-        del settings['bel_resources']
         del settings['secrets']
 
         versions = get_versions()

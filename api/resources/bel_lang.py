@@ -3,6 +3,8 @@ import falcon
 from bel.lang.belobj import BEL
 import bel.lang.bel_specification
 import bel.lang.completion
+import bel.lang.migrate_1_2
+import services.terms as terms
 
 from bel.Config import config
 
@@ -64,6 +66,10 @@ class BelCanonicalize(object):
 
         canon_belstr = bel_obj.parse(belstr).canonicalize(namespace_targets=namespace_targets).to_string()
 
+        # TODO figure out how to handle naked namespace:val better
+        if not canon_belstr:
+            canon_belstr = terms.canonicalize(belstr)
+
         resp.media = {'canonicalized': canon_belstr, 'original': belstr}
         resp.status = falcon.HTTP_200
 
@@ -82,4 +88,16 @@ class BelDecanonicalize(object):
 
         resp.media = {'decanonicalized': decanon_belstr, 'original': belstr}
         resp.status = falcon.HTTP_200
+
+
+class BelMigrate12(object):
+    """Migrate BEL1 to BEL2"""
+
+    def on_get(self, req, resp, belstr):
+
+        belstr = bel.lang.migrate_1_2.migrate(belstr)
+
+        resp.media = {'bel': belstr}
+        resp.status = falcon.HTTP_200
+
 
