@@ -41,7 +41,7 @@ services:
     environment:
       - ARANGO_NO_AUTH=1
     healthcheck:
-         test: curl -f my-system:8529/_api/version || exit 1
+         test: curl -f bel_arangodb:8529/_api/version || exit 1
     # restart: always
 
   # Elasticsearch - terminology search - core requirement

@@ -40,11 +40,23 @@ bel_api:
   # Should we require authentication in API?
   authenticated: false
 
+  mail:
+    api: "https://api.mailgun.net/v3/mg.biodati.com"
+    # api_key:  # Pulled from secrets
+    admin_email: admin@biodati.com
+
+  search:
+    # Boost these namespace in term search results and completions
+    boost_namespaces: ['HGNC', 'MGI', 'RGD', 'ZFIN', 'CHEBI', 'GO']
+
+    # Term completion only applies species filtering to following entity types
+    species_entity_types: ['Gene', 'Protein', 'RNA', 'Micro_RNA']
+
   # For accessing localhost from docker on a mac, use special dns name 'docker.for.mac.localhost'
   servers:
     server_type: PROD
 
-    api_url: https://api.bel.bio/v1
+    api_url: http://belapi.test/v1
 
     # elasticsearch: http://docker.for.mac.localhost:9200
     elasticsearch: http://bel_elasticsearch:9200
@@ -55,6 +67,8 @@ bel_api:
     arangodb_port: 8529
     arangodb_username: ''
     # arangodb_password - comes from secrets file - will be merged in as config['secrets']['bel_api']['servers']['arangodb_password']
+
+    nanopubstore: "http://nanopubstore"
 
 
 bel_resources:

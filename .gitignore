@@ -109,3 +109,4 @@ ENV/
 # mypy
 .mypy_cache/
 belbio_conf.yml
+belbio_secrets.yml

@@ -6,9 +6,11 @@ volumes:
     driver: local
   bel_elasticsearch_data:
     driver: local
+  biodati_elasticsearch_data:
+    driver: local
   bel_kibana_data:
     driver: local
-  bel_redis_data:
+  rabbitmq_data:
     driver: local
 
 services:
@@ -30,20 +32,28 @@ services:
 
 
   # BEL API - core requirement
-  bel_api:
-    container_name: bel_api
+  belapi:
+    container_name: belapi
     image: belbio/bel_api:latest
     build:
       context: ..
-      dockerfile: ./docker/Dockerfile-bel_api
+      dockerfile: ./docker/Dockerfile-bel_api-dev
     ports:
       - "8010:8000"
+      - "3000:3000"
+    environment:
+      - CELERY_BROKER=amqp://admin:admin@rabbitmq:5672
+      - CELERY_BACKEND=amqp://admin:admin@rabbitmq:5672
+      - SERVER_MODE=DEV
+      - BELBIO_BEL_API__SECRETS__BEL_API__SERVERS__ARANGODB_PASSWORD = ""
     depends_on:
       - bel_elasticsearch
       - bel_arangodb
-      - bel_redis
+      - rabbitmq
     volumes:
       - ../api:/app
+      # Add bel python package so it's editable
+      - ../../bel/bel:/usr/local/lib/python3.6/site-packages/bel
       - ./belbio_conf_local_docker_image.yml:/app/belbio_conf.yml
       - ./belbio_secrets.yml:/app/belbio_secrets.yml
     labels:
@@ -51,8 +61,37 @@ services:
       - traefik.backend=bel_api
       - traefik.frontend.rule=Host:belapi.test;PathPrefixStrip:/v1
       - traefik.port=8000
-    environment:
-      - SERVER_MODE=DEV
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
+    restart: unless-stopped
+
+  nanopubstore:
+    container_name: nanopubstore
+    image: biodati/graphdati.nanopubstore:latest
+    # environment:
+      # - AppSettings__Arango_Username=${BSDEMO_ARANGO_USER}
+      # - AppSettings__Arango_Password=${BSDEMO_ARANGO_PASSWD}
+      # - JwtAuth__SecretKey=${BSDEMO_JWT_SECRET}
+    volumes:
+      - ./nanopubstore.appsettings.json:/app/appsettings.json
+    depends_on:
+      - bel_arangodb
+      - elasticsearch_54
+    ports:
+      - "8183:80"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
+    labels:
+      - traefik.enable=true
+      - traefik.backend=nanopubstore
+      - traefik.frontend.rule=Host:nanopubstore.belapi.test
+      - traefik.port=80
     restart: unless-stopped
 
 
@@ -74,7 +113,7 @@ services:
   # http://localhost:8529
   bel_arangodb:
     container_name: bel_arangodb
-    image: arangodb:3.3.4
+    image: arangodb:3.3.9
     ports:
       - "8529:8529"
     volumes:
@@ -87,18 +126,56 @@ services:
     environment:
       - ARANGO_NO_AUTH=1
     healthcheck:
-         test: curl -f my-system:8529/_api/version || exit 1
+         test: curl -f bel_arangodb:8529/_api/version || exit 1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
     restart: unless-stopped
+
 
   # Elasticsearch - terminology search - core requirement
   # http://localhost:9200
   bel_elasticsearch:
     container_name: bel_elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.1.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.3
     ports:
       - "9200:9200"
     volumes:
       - bel_elasticsearch_data:/usr/share/elasticsearch/data
+      - ./elasticsearch.yml:/conf/elasticsearch.yml
+    # logging:
+    #   driver: none
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - xpack.security.enabled=false
+      - xpack.watcher.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 1g
+    logging:
+    #   driver: none
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
+    restart: unless-stopped
+
+  elasticsearch_54:
+    container_name: elasticsearch_54
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.3
+    ports:
+      - "9210:9200"
+    volumes:
+      - biodati_elasticsearch_data:/usr/share/elasticsearch/data
       - ./elasticsearch.yml:/conf/elasticsearch.yml
     # logging:
     #   driver: none
@@ -116,14 +193,19 @@ services:
     #   resources:
     #     limits:
     #       memory: 1g
+    logging:
+    #   driver: none
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
     restart: unless-stopped
-
 
   # Optional for viewing Elasticsearch terminology search service
   # http://localhost:5601
   bel_kibana:
     container_name: bel_kibana
-    image: docker.elastic.co/kibana/kibana:6.1.2
+    image: docker.elastic.co/kibana/kibana:6.2.3
     ports:
       - 5601:5601
     volumes:
@@ -138,54 +220,92 @@ services:
     environment:
       - ELASTICSEARCH_URL=http://bel_elasticsearch:9200
       - xpack.security.enabled=false
-    # logging:
-    #   driver: none
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
     restart: unless-stopped
 
-  bel_redis:
-    container_name: bel_redis
-    image: redis:alpine
-    ports: ["6379:6379"]
-    volumes:
-      - bel_redis_data:/data
-    restart: unless-stopped
 
-  bel_rq_dashboard:
-    container_name: bel_rq_dashboard
-    image: rq_dashboard
-    build:
-      context: .
-      dockerfile: Dockerfile-rq_dashboard
-    depends_on: [bel_redis]
-    ports: ["9181:9181"]
-    environment:
-      - RQ_DASHBOARD_REDIS_URL=redis://bel_redis
-    restart: unless-stopped
-
-  bel_rq_worker:
-    container_name: bel_rq_worker
+  celery_worker:
+    container_name: celery_worker
     image: belbio/bel_api:latest
-
-    # build:
-    #   context: ..
-    #   dockerfile: ./docker/Dockerfile-bel_api
-
-    entrypoint:
-      - rq
-      - worker
-    depends_on:
-      - bel_elasticsearch
-      - bel_arangodb
-      - bel_redis
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile-bel_api-dev
     volumes:
       - ../api:/app
+      # Add bel python package so it's editable
+      - ../../bel/bel:/usr/local/lib/python3.6/site-packages/bel
       - ./belbio_conf_local_docker_image.yml:/app/belbio_conf.yml
       - ./belbio_secrets.yml:/app/belbio_secrets.yml
-    labels:
-      - traefik.enable=true
-      - traefik.backend=bel_api
-      - traefik.frontend.rule=Host:belapi.test;PathPrefixStrip:/v1
-      - traefik.port=8000
+    command: celery -A services.tasks:celery_app worker --loglevel=info --concurrency=2
     environment:
-      - SERVER_MODE=DEV
+      - CELERY_BROKER=amqp://admin:admin@rabbitmq:5672
+      - CELERY_BACKEND=amqp://admin:admin@rabbitmq:5672
+    depends_on:
+      - belapi
+      - rabbitmq
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
     restart: unless-stopped
+
+  flower:
+    container_name: flower
+    image: belbio/bel_api:latest
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile-bel_api-dev
+    environment:
+      - CELERY_BROKER=amqp://admin:admin@rabbitmq:5672
+      - CELERY_BACKEND=amqp://admin:admin@rabbitmq:5672
+    ports:
+      - 5555:5555
+    volumes:
+      - ../api:/app
+      # Add bel python package so it's editable
+      - ../../bel/bel:/usr/local/lib/python3.6/site-packages/bel
+      - ./belbio_conf_local_docker_image.yml:/app/belbio_conf.yml
+      - ./belbio_secrets.yml:/app/belbio_secrets.yml
+    command:  flower -A services.tasks:celery_app --port=5555 --broker=amqp://admin:admin@rabbitmq:5672
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.backend=flower
+    #   - traefik.frontend.rule=Host:flower1.belapi.test
+    #   - traefik.port=5555
+    depends_on:
+      - belapi
+      - rabbitmq
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
+    restart: unless-stopped
+
+  # Used by celery for a message queue
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    image: rabbitmq:3.6-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+      - RABBITMQ_VM_MEMORY_HIGH_WATERMARK=.2  # Allow up to 20% of RAM
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
+    restart: unless-stopped
+
+
