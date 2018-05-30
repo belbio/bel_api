@@ -8,12 +8,13 @@ import falcon
 from falcon_cors import CORS
 from falcon_auth import FalconAuthMiddleware, JWTAuthBackend
 
-import logging
-import logging.config
-# from pythonjsonlogger import jsonlogger
+# import logging
+# import logging.config
+# # from pythonjsonlogger import jsonlogger
 import bel.setup_logging
 
 from bel.Config import config
+
 from middleware.stats import FalconStatsMiddleware
 from middleware.field_converters import BelConverter
 
@@ -25,8 +26,12 @@ from resources.bel_lang import BelCompletion
 from resources.bel_lang import BelCanonicalize
 from resources.bel_lang import BelDecanonicalize
 
+from resources.bel_lang import BelMigrate12
+
 from resources.tasks import PipelineTasksResource
 from resources.tasks import ResourcesTasksResource
+
+from resources.nanopubs import NanopubValidateResource
 
 from resources.edges import EdgeResource
 from resources.edges import EdgesResource
@@ -43,17 +48,28 @@ from resources.orthology import OrthologResource
 
 from resources.pubmed import PubmedResource
 
+import ptvsd
+
+try:
+    ptvsd.enable_attach("my_secret", address=('0.0.0.0', 3000))
+except:
+    pass
+
+
+#Enable the below line of code only if you want the application to wait until the debugger has attached to it
+#ptvsd.wait_for_attach()
+
 # Setup logging
 module_fn = os.path.basename(__file__)
 module_fn = module_fn.replace('.py', '')
 
-bel.setup_logging.setup_logging()
+import structlog
+log = structlog.getLogger('bel_api')
 
-log = logging.getLogger('root')
+# log.info('Starting BEL API', test=1)
 
-# log = structlog.getLogger(module_fn)
+cors = CORS(allow_all_origins=True, allow_all_methods=True, allow_all_headers=True, allow_credentials_all_origins=True)
 
-cors = CORS(allow_all_origins=True)
 stats_middleware = FalconStatsMiddleware()
 
 # Allow requiring authentication via JWT
@@ -80,6 +96,19 @@ if config['bel_api']['authenticated']:
 else:
     api = application = falcon.API(middleware=[stats_middleware, cors.middleware, ])
 
+
+# Add API exception handler
+def internal_error_handler(ex, req, resp, params):
+    if not isinstance(ex, (falcon.HTTPError, falcon.HTTPStatus)):  # Check if it's a manually raised falcon.HTTPError/HTTPStatusXXX
+        log.error(ex)
+        raise falcon.HTTPInternalServerError(description=f'Ex: {repr(ex)}')  # HTTPError is just our own wrapper around falcon.HTTPError
+    else:
+        raise
+
+
+api.add_error_handler(Exception, internal_error_handler)
+
+
 # Router converter for BEL Expressions and NSArgs
 #   converts_FORWARDSLASH_ to / after URI template fields are extracted
 #
@@ -96,6 +125,9 @@ api.add_route('/bel/{version}/completion/{belstr:bel}', BelCompletion())  # GET
 api.add_route('/bel/{version}/canonicalize/{belstr:bel}', BelCanonicalize())  # GET
 api.add_route('/bel/{version}/decanonicalize/{belstr:bel}', BelDecanonicalize())  # GET
 
+# BEL1->2 Migration
+api.add_route('/bel/migrate12/{belstr:bel}', BelMigrate12())  # GET
+
 # api.add_route('/bel/{version}/functions', BelSpecificationResource())  # GET
 # api.add_route('/bel/{version}/relations', BelSpecificationResource())  # GET
 
@@ -103,7 +135,7 @@ api.add_route('/bel/{version}/decanonicalize/{belstr:bel}', BelDecanonicalize())
 api.add_route('/edges/{edge_id}', EdgeResource())  # GET
 
 # Nanopub routes
-
+api.add_route('/nanopubs/validate', NanopubValidateResource())  # POST
 
 # Task routes
 api.add_route('/tasks/pipeline', PipelineTasksResource())  # POST
@@ -139,7 +171,7 @@ if __name__ == '__main__':
     from wsgiref import simple_server
 
     host = "127.0.0.1"
-    port = 8000
+    port = 8181
     httpd = simple_server.make_server(host, port, api)
     print("Serving on {}:{}".format(host, port))
     httpd.serve_forever()
