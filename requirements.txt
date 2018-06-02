@@ -11,7 +11,7 @@ itsdangerous==0.24
 json-logging-py==0.2
 layeredconfig==0.3.2
 passlib==1.7.1
-PyJWT==1.6.1
+PyJWT==1.6.4
 python-arango==3.12.1
 python-dateutil==2.7.3
 python-json-logger==0.1.8
