@@ -1,4 +1,4 @@
-bel==0.7.5
+bel==0.8.0
 celery==4.1.1
 elasticsearch==6.2.0
 falcon==1.4.1
