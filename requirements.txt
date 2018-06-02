@@ -19,4 +19,4 @@ structlog==18.1.0
 timy==0.4.0
 
 # Add librabbitmq when it's Python3 compatible
-ptvsd==3.0.0  # remove if not needed for remote debugging
+ptvsd==3.2.1  # remove if not needed for remote debugging
