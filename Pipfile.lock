@@ -32,11 +32,11 @@
         },
         "bel": {
             "hashes": [
-                "sha256:3d1292a5fa563ff372f39d8469dd10838cbbf85ec79eca23f4cf82f2c93c6162",
-                "sha256:cda488e5ba488cfa2502e6e27dcdcc2b783f2b5b6ef49998cc4f3b1fe8b376e8"
+                "sha256:c893a1c2a92f27f8bc7274578c162547f368b59ef90365e7a8b364564df3e66e",
+                "sha256:ebaeb9c51e0573deae21df6ed65a6cd59619ad75f45554a2c8edd2ff06f6da1e"
             ],
             "index": "pypi",
-            "version": "==0.8.1"
+            "version": "==0.9.1"
         },
         "billiard": {
             "hashes": [
@@ -72,6 +72,12 @@
                 "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"
             ],
             "version": "==3.0.4"
+        },
+        "cityhash": {
+            "hashes": [
+                "sha256:aa8919c00e8d8699df42dd788eda4f24ad13086ea9d83407fd7da4a0206d9d18"
+            ],
+            "version": "==0.2.3.post9"
         },
         "click": {
             "hashes": [
@@ -268,12 +274,6 @@
                 "sha256:d78d58d934a3c2f39daaf89aad5e71551ff75550cf4820020ad6ae29f1b82cc9"
             ],
             "version": "==4.2.2"
-        },
-        "mmh3": {
-            "hashes": [
-                "sha256:185209a217c52afe43e079e5b232d0ef0f3a262601eaaf4371326ab6dcbec508"
-            ],
-            "version": "==2.5.1"
         },
         "msgpack": {
             "hashes": [
