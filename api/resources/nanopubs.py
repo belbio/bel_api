@@ -25,6 +25,7 @@ class NanopubValidateResource(object):
         nanopub = data.get('nanopub', None)
         error_level = data.get('error_level', 'WARNING')
 
+        # TODO Why am I using nanopub['citation'] instead of nanopub['nanopub']?
         if nanopub:
             try:
                 results = bel.nanopub.validate.validate(nanopub, error_level)

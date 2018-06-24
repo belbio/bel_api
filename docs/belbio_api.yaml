@@ -711,54 +711,31 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ERROR:
-                    type: object
-                    properties:
-                      STRUCTURE:
-                        type: array
-                        items:
-                          type: string
-                      ASSERTION:
-                        type: array
-                        items:
-                          type: string
-                      ANNOTATION:
-                        type: array
-                        items:
-                          type: string
-                  WARNING:
-                    type: object
-                    properties:
-                      STRUCTURE:
-                        type: array
-                        items:
-                          type: string
-                      ASSERTION:
-                        type: array
-                        items:
-                          type: string
-                      ANNOTATION:
-                        type: array
-                        items:
-                          type: string
+                type: array
+                items:
+                  type: object
+                  properties:
+                    level:
+                      type: string
+                      enum: [Error, Warning]
+                      default: WARNING
+                    section:
+                      type: string
+                      enum: [Assertion, Annotation, Structure]
+                    label:
+                      type: string
+                      description: Label which can be used in Elasticsearch faceting
+                    index:
+                      type: integer
+                      description: Index of Assertion or Annotation in Nanopub so one can associate an error with a specific Assertion or Annotation
+                    msg:
+                      type: string
                 example:
-                  validation_results:
-                    ERROR:
-                      STRUCTURE:
-                      - 'Missing or badly formed type - must have nanopub["type"] = {"name": <name>,
-                        "version": <version}'
-                      ASSERTION:
-                      - 'Failed parse at position 0. Check that you have a valid primary or modifier
-                        function. BEL: pith(MESH:therosclerosis) positiveCorrelation bp(GO:"lipid oxidation")'
-                      ANNOTATION: []
-                    WARNING:
-                      STRUCTURE: []
-                      ASSERTION: []
-                      ANNOTATION:
-                      - 'Annotation term: MESH:artery not found in database'
-                      - 'Annotation term: Review not found in database'
+                  - level: Error
+                    section: Assertion
+                    label: Error-Assertion
+                    index: 0
+                    msg: Missing parenthesis ...
         default:
           description: Error
           content:
