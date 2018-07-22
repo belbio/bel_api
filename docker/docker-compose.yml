@@ -51,7 +51,7 @@ services:
       - bel_arangodb
       - rabbitmq
     volumes:
-      - ../api:/app
+      - ./api:/app
       # Add bel python package so it's editable
       - ../../bel/bel:/usr/local/lib/python3.6/site-packages/bel
       - ./belbio_conf_local_docker_image.yml:/app/belbio_conf.yml

@@ -4,19 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-bel = "*"
-celery = "*"
 elasticsearch = "*"
 falcon = "*"
 falcon-auth = "*"
 falcon-cors = "*"
 flower = "*"
 gevent = "*"
+greenlet = {version = "*", platform_python_implementation="=='CPython'"}
 gunicorn = "*"
 itsdangerous = "*"
 json-logging-py = "*"
 layeredconfig = "*"
-librabbitmq = "*"
 passlib = "*"
 python-arango = "*"
 python-dateutil = "*"
@@ -25,6 +23,19 @@ structlog = "*"
 timy = "*"
 ptvsd = "*"
 PyJWT = "*"
+celery = "*"# BEL module requirement - here for easier BEL->BELAPI dev
+tatsu = "*"
+fastcache = "*"
+falcon-swagger-ui = {git = "https://github.com/belbio/falcon-swagger-ui.git"}
+ulid = "*"
+click = "*"
+jsonschema = "*"
+cachecontrol = "*"
+cityhash = "*"
+lxml = "*"
+ndg-httpsclient = "*"
+pyopenssl = "*"
+"pyasn1" = "*"
 
 [dev-packages]
 ptvsd = "*"

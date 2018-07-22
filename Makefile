@@ -27,7 +27,7 @@ dev_install:
 	.venv/bin/pip install -r requirements.txt
 
 run:
-	cd api; gunicorn --config ./gunicorn.conf --log-config ./gunicorn_log.conf -b 0.0.0.0:8181 app:api
+	cd api; gunicorn --config ./gunicorn_conf.py --log-config ./gunicorn_log.conf -b 0.0.0.0:8181 app:api
 
 deploy_major:
 	@echo Deploying major update

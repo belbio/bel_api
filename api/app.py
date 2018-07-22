@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import gevent.monkey
+gevent.monkey.patch_all()
+
 import os
 import sys
 
@@ -12,13 +15,18 @@ from falcon_auth import FalconAuthMiddleware, JWTAuthBackend
 # import logging.config
 # # from pythonjsonlogger import jsonlogger
 import bel.setup_logging
+import bel.lang.bel_specification
 
 from bel.Config import config
 
+import services.swaggerui
+
 from middleware.stats import FalconStatsMiddleware
 from middleware.field_converters import BelConverter
+import middleware.falcon_exceptions
 
 from resources.status import SimpleStatusResource, HealthCheckResource, StatusResource, VersionResource
+from resources.swagger import SwaggerResource
 
 from resources.bel_lang import BelVersions
 from resources.bel_lang import BelSpecificationResource
@@ -46,27 +54,18 @@ from resources.terms import TermTypesResource
 
 from resources.orthology import OrthologResource
 
+from resources.belspec import BelSpecResource
+
 from resources.pubmed import PubmedResource
-
-import ptvsd
-
-try:
-    ptvsd.enable_attach("my_secret", address=('0.0.0.0', 3000))
-except:
-    pass
-
-
-#Enable the below line of code only if you want the application to wait until the debugger has attached to it
-#ptvsd.wait_for_attach()
 
 # Setup logging
 module_fn = os.path.basename(__file__)
 module_fn = module_fn.replace('.py', '')
 
+# TODO - figure out how to run logging setup and belspec once on startup rather than
+#        every time a worker is initialized (moved bel.lang.bel_specification.update_specifications to bel/__init__.py)
 import structlog
 log = structlog.getLogger('bel_api')
-
-# log.info('Starting BEL API', test=1)
 
 cors = CORS(allow_all_origins=True, allow_all_methods=True, allow_all_headers=True, allow_credentials_all_origins=True)
 
@@ -96,17 +95,11 @@ if config['bel_api']['authenticated']:
 else:
     api = application = falcon.API(middleware=[stats_middleware, cors.middleware, ])
 
+# Add exception handling
+middleware.falcon_exceptions.register_defaults(api)
 
-# Add API exception handler
-def internal_error_handler(ex, req, resp, params):
-    if not isinstance(ex, (falcon.HTTPError, falcon.HTTPStatus)):  # Check if it's a manually raised falcon.HTTPError/HTTPStatusXXX
-        log.error(ex)
-        raise falcon.HTTPInternalServerError(description=f'Ex: {repr(ex)}')  # HTTPError is just our own wrapper around falcon.HTTPError
-    else:
-        raise
-
-
-api.add_error_handler(Exception, internal_error_handler)
+# Add Swagger UI
+services.swaggerui.register_swaggerui(api)
 
 
 # Router converter for BEL Expressions and NSArgs
@@ -157,6 +150,10 @@ api.add_route('/orthologs', OrthologResource())  # GET
 api.add_route('/orthologs/{gene_id:bel}', OrthologResource())  # GET
 api.add_route('/orthologs/{gene_id:bel}/{species}', OrthologResource())  # GET
 
+# BEL Specification routes
+api.add_route('/belspec', BelSpecResource())  # GET, PUT
+api.add_route('/belspec/{version}', BelSpecResource())  # GET, DELETE
+
 # Text routes
 api.add_route('/text/pubmed/{pmid}', PubmedResource())  # GET
 
@@ -165,6 +162,7 @@ api.add_route('/simple_status', SimpleStatusResource())  # GET un-authenticated
 api.add_route('/healthcheck', HealthCheckResource())  # GET un-authenticated
 api.add_route('/status', StatusResource())  # GET authenticated
 api.add_route('/version', VersionResource())  # version
+api.add_route('/swagger', SwaggerResource())
 
 # Useful for debugging problems in your API; works with pdb.set_trace()
 if __name__ == '__main__':
