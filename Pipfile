@@ -36,6 +36,7 @@ lxml = "*"
 ndg-httpsclient = "*"
 pyopenssl = "*"
 "pyasn1" = "*"
+bel = "*"
 
 [dev-packages]
 ptvsd = "*"

@@ -73,6 +73,32 @@ def get_term(term_id):
     return result
 
 
+def get_primary_term(term_id):
+    """Get primary term id using any term_id, alt_ids, obsolete_ids
+
+    Term ID has to match either the id or the alt_ids
+    """
+    search_body = {
+        "_source": ["id"],
+        "query": {
+            "bool": {
+                "should": [
+                    {"term": {"id": term_id}},
+                    {"term": {"alt_ids": term_id}},
+                    {"term": {"obsolete_ids": term_id}},
+                ]
+            }
+        }
+    }
+
+    result = es.search(index='terms', doc_type='term', body=search_body)
+
+    if len(result['hits']['hits']) > 0:
+        term_id = result['hits']['hits'][0]['_source']['id']
+
+    return term_id
+
+
 # TODO - not deployed/fully implemented
 def get_term_search(search_term, size, entity_types, annotation_types, species, namespaces):
     """Search for terms given search term
@@ -450,6 +476,7 @@ def get_equivalents(term_id: str, namespaces: List[str]=None) -> List[Mapping[st
         List[Mapping[str, str]]: e.g. [{'term_id': 'HGNC:5', 'namespace': 'EG'}]
     """
 
+    term_id = get_primary_term(term_id)
     term_id_key = bel.db.arangodb.arango_id_to_key(term_id)
     query = f"FOR vertex, edge IN 1..10 ANY 'equivalence_nodes/{term_id_key}' equivalence_edges RETURN DISTINCT {{term_id: vertex._key, namespace: vertex.namespace}}"
     cursor = belns_db.aql.execute(query)
@@ -480,6 +507,7 @@ def canonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = None
         str: return canonicalized term if available, else the original term_id
     """
 
+    term_id = get_primary_term(term_id)
     if not namespace_targets:
         namespace_targets = config['bel']['lang']['canonical']
 
@@ -513,6 +541,7 @@ def decanonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = No
         str: return decanonicalized term if available, else the original term_id
     """
 
+    term_id = get_primary_term(term_id)
     if not namespace_targets:
         namespace_targets = config['bel']['lang']['decanonical']
 
