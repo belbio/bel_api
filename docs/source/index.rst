@@ -10,21 +10,24 @@ The BEL.bio API provides a REST API for the BEL Language and BEL Content.
 
 Functionality provided:
 
--  BEL Namespace queries
--  BEL language parsing and validation [TODO]
--  BEL Nanopub management and validation [TODO]
--  BEL Edge creation from BEL Nanopubs [TODO]
--  BEL EdgeStore services [TODO]
+-  BEL Namespace (Term) queries
+-  BEL language parsing and validation
+-  BEL Nanopub validation
+-  BEL Edge creation from BEL Nanopubs
 
+`API Documentation`_ (also found at each API endpoint at /swaggerui)
+
+.. _API Documentation: https://api.bel.bio/swaggerui
 .. _BEL.bio: http://bel.bio
 .. _BEL: http://openbel.org/language/version_2.0/bel_specification_version_2.0.html
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
    :caption: Contents:
 
+   apidocs
    install
-   API Reference (Swagger) <http://api.bel.bio/swaggerui>
    link_contributing
    link_conduct
    devops

@@ -39,7 +39,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
-    'sphinx_autodoc_typehints',
+    # 'sphinx_autodoc_typehints',
     # 'sphinx.ext.githubpages'
     ]
 
@@ -95,7 +95,7 @@ html_theme_path = ["_themes", ]
 
 
 html_theme_options = {
-    'canonical_url': 'apidocs.bel.bio',
+    'canonical_url': 'api.bel.bio',
     'collapse_navigation': False,
     'sticky_navigation': True,
     'navigation_depth': 4,
@@ -110,7 +110,7 @@ html_favicon = '_static/images/favicon.png'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static', '../../images']
+html_static_path = ['_static', '../images']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.

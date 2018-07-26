@@ -75,7 +75,7 @@ docker_quickpush_plm:
 
 
 livedocs:
-	cd sphinx; sphinx-autobuild -q -p 0 --open-browser --delay 5 source build/html
+	cd docs; sphinx-autobuild -q -p 0 --open-browser --delay 5 source build/html
 
 
 tests: clean_pyc

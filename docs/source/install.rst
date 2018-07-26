@@ -9,7 +9,7 @@ The recommended way to use the BEL.bio API is to use the docker image. We publis
 Docker Compose
 ------------------
 
-.. include:: ../../../docker/docker-compose-image.yml
+.. include:: ../../docker/docker-compose-image.yml
     :code: yaml
 
 Development Installation

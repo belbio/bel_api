@@ -45,9 +45,10 @@ tags:
   description: Nanopub endpoints
 - name: Edges
   description: Edge endpoints
+- name: BelSpecs
+  description: BEL Language Specification endpoints
 - name: Utility
   description: Utility endpoints
-- name: BelSpecs
 - name: TODO
   description: These endpoints not implemented, only documented
 
@@ -637,13 +638,17 @@ paths:
       operationId: belspecList
       responses:
         '200':
-          description" Return list of available BEL Specifications
+          description: Return list of available BEL Specifications
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: string
+                type: object
+                properties:
+                  versions:
+                    type: array
+                    items:
+                      type: string
+
         default:
           description: Error
           content:
@@ -657,13 +662,30 @@ paths:
       tags:
         - BelSpecs
       operationId: belspecGet
+      parameters:
+        - name: version
+          in: path
+          description: BEL version string
+          required: true
+          schema:
+            type: string
+          example: 2.0.0
+
       responses:
         '200':
-          description" Return list of available BEL Specifications
+          description: Return list of available BEL Specifications
           content:
             application/json:
               schema:
                 type: object
+                properties:
+                  belspec:
+                    type: object
+                    description: JSON document of the BEL Specification
+                  versions:
+                    type: array
+                    items:
+                      type: string
         default:
           description: Error
           content:
@@ -674,16 +696,29 @@ paths:
       summary: Put a BEL Specification
       description: |
         Create a new or update a prior BEL Specification.
+
+        We use semantic versioning (https://semver.org). If you want to add
+        a custom BEL Spec to your API endpoint, please use a tag to the version
+        number you want to use.
+
+        If you try to use an official BEL Spec version number
+        (pulled from https://github.com/belbio/bel_specifications),
+        it will be overwritten by the official BEL Spec as part of the PUT/update/create
+        process.
       tags:
         - BelSpecs
       operationId: belspecPut
+      parameters:
+        - name: version
+          in: path
+          description: BEL version string
+          required: true
+          schema:
+            type: string
+          example: 2.0.0
       responses:
-        '200':
-          description" Return list of available BEL Specifications
-          content:
-            application/json:
-              schema:
-                type: object
+        '204':
+          description: Successful response
         default:
           description: Error
           content:
@@ -693,23 +728,44 @@ paths:
 
     delete:
       summary: Delete a BEL Specification
+      description: |
+        Deletes BEL specification - and then goes out to pull down the official
+        BEL Specifications from Github and regenerate the enhanced BEL Spec, EBNF
+        file and EBNF-based parser.
 
+        This means that you basically can't delete an official BEL Spec. It will
+        just be immediately replaced if you try to do so.
       tags:
         - BelSpecs
       operationId: belspecPut
+      parameters:
+        - name: version
+          in: path
+          description: BEL version string
+          required: true
+          schema:
+            type: string
+          example: 2.0.0
       responses:
         '200':
-          description" Return list of available BEL Specifications
+          description: Return list of available BEL Specifications
           content:
             application/json:
               schema:
                 type: object
+                properties:
+                  versions:
+                    type: array
+                    items:
+                      type: string
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
+
+
   /nanopubs/validate:
     post:
       summary: Nanopub Validate

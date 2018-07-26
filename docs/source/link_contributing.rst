@@ -1,4 +1,4 @@
 .. toctree::
     :titlesonly:
 
-.. include:: ../../../CONTRIBUTING.rst
+.. include:: ../../CONTRIBUTING.rst

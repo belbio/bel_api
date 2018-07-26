@@ -1,12 +1,9 @@
-Troubleshooting
------------------
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents:
+Troubleshooting
+=================
 
 Results not up to date
--------------------------------
+--------------------------
 
 .. note::
     Caching REST API Requests to external servers including Elasticsearch and ArangoDB using Requests CacheControl up to 1 day.
