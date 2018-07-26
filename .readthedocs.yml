@@ -3,7 +3,7 @@ formats:
     - epub
     - pdf
 
-requirements_file: requirements-doc.txt
+requirements_file: requirements-docs.txt
 
 build:
     image: latest
