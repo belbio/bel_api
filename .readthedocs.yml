@@ -3,11 +3,11 @@ formats:
     - epub
     - pdf
 
-# requirements_file: requirements_dev.txt
+requirements_file: requirements-doc.txt
 
 build:
     image: latest
 
 python:
     version: 3.6
-    # pip_install: true
+    setup_py_install: true

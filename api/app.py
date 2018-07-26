@@ -151,8 +151,8 @@ api.add_route('/orthologs/{gene_id:bel}', OrthologResource())  # GET
 api.add_route('/orthologs/{gene_id:bel}/{species}', OrthologResource())  # GET
 
 # BEL Specification routes
-api.add_route('/belspec', BelSpecResource())  # GET, PUT
-api.add_route('/belspec/{version}', BelSpecResource())  # GET, DELETE
+api.add_route('/belspec', BelSpecResource())  # GET listing
+api.add_route('/belspec/{version}', BelSpecResource())  # GET, PUT,  DELETE
 
 # Text routes
 api.add_route('/text/pubmed/{pmid}', PubmedResource())  # GET

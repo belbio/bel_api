@@ -1,8 +1,10 @@
 openapi: 3.0.0
 
 servers:
-  - description: Production server V1
-    url: https://api.bel.bio/v1
+  - description: Local BEL API
+    url: /
+  - description: Demo BEL API
+    url: https://api.bel.bio
 
 info:
   title: BELBio REST API
@@ -28,7 +30,7 @@ info:
 
   version: 0.2.5
   contact:
-    name: whayes@adsworks.com
+    name: whayes@biodati.com
     url: https://bel.bio
 
 security:
@@ -45,6 +47,7 @@ tags:
   description: Edge endpoints
 - name: Utility
   description: Utility endpoints
+- name: BelSpecs
 - name: TODO
   description: These endpoints not implemented, only documented
 
@@ -590,6 +593,123 @@ paths:
                       type: string
                       description: Error or warning message associated with term, optional
 
+  /bel/migrate12/{belstr}:
+    get:
+      summary: Migrate BEL 1 to 2.0.0
+      description: |
+        Migrate BEL 1 to BEL 2.0.0. You can provide any valid BEL 1 string
+        (subject, object, full statement or a BEL 1 function) to have it
+        updated to BEL 2.0.0.
+      tags:
+        - BEL
+      operationId: bel_migrate12
+      parameters:
+        - name: belstr
+          in: path
+          description: BEL string - subject, object or full BEL statement
+          required: true
+          schema:
+            type: string
+          example: 'cat(complex(p(HGNC:ITGAV), p(HGNC:ITGB5)))'
+
+      responses:
+        '200':
+          description: BEL string converted to BEL 2.0.0
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "act(complex(p(HGNC:ITGAV), p(HGNC:ITGB5)), ma(cat))"
+
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+  /belspec:
+    get:
+      summary: Get list of all BEL Specifications
+      description: Listing of all BEL Specifications
+      tags:
+        - BelSpecs
+      operationId: belspecList
+      responses:
+        '200':
+          description" Return list of available BEL Specifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+  /belspec/{version}:
+    get:
+      summary: Get a BEL Specification
+      tags:
+        - BelSpecs
+      operationId: belspecGet
+      responses:
+        '200':
+          description" Return list of available BEL Specifications
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+    put:
+      summary: Put a BEL Specification
+      description: |
+        Create a new or update a prior BEL Specification.
+      tags:
+        - BelSpecs
+      operationId: belspecPut
+      responses:
+        '200':
+          description" Return list of available BEL Specifications
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+    delete:
+      summary: Delete a BEL Specification
+
+      tags:
+        - BelSpecs
+      operationId: belspecPut
+      responses:
+        '200':
+          description" Return list of available BEL Specifications
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
   /nanopubs/validate:
     post:
       summary: Nanopub Validate
