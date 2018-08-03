@@ -43,6 +43,7 @@ from resources.nanopubs import NanopubValidateResource
 
 from resources.edges import EdgeResource
 from resources.edges import EdgesResource
+from resources.edges import EdgesFromNanopubResource
 
 from resources.terms import TermResource
 from resources.terms import TermsResource
@@ -149,6 +150,9 @@ api.add_route('/terms/types', TermTypesResource())  # GET
 api.add_route('/orthologs', OrthologResource())  # GET
 api.add_route('/orthologs/{gene_id:bel}', OrthologResource())  # GET
 api.add_route('/orthologs/{gene_id:bel}/{species}', OrthologResource())  # GET
+
+# Edges
+api.add_route('/edges/nanopub/', EdgesFromNanopubResource())  # GET
 
 # BEL Specification routes
 api.add_route('/belspec', BelSpecResource())  # GET listing

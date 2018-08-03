@@ -9,11 +9,12 @@ worker_class = "gevent"
 workers = multiprocessing.cpu_count() * 2 + 1
 
 if os.getenv('BELBIO_SERVER_MODE') == 'DEV':
-    workers = 4
+    workers = 3
     reload = True
     reload_extra_files = ['/belbio/belbio_conf.yml']
 else:
     preload_app = True
+
 
 # https://sebest.github.io/post/protips-using-gunicorn-inside-a-docker-image/
 

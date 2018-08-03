@@ -3,8 +3,27 @@ import services.edges
 import json
 import fastcache
 
+import bel.edge.edges
+
 import logging
 log = logging.getLogger(__name__)
+
+
+class EdgesFromNanopubResource(object):
+    """Edges from Nanopub"""
+
+    def on_get(self, req, resp):
+        """Build Edges from Nanopub"""
+
+        nanopub_url = req.get_param('nanopub_url', default=None)
+        orthologize_targets = req.get_param('orthologize_targets', default=[])
+
+        if not nanopub_url:
+            raise falcon.HTTPBadRequest(title='No nanopub to process', description=f"No nanopub in query params to process. Please check your submission.")
+
+        result = bel.edge.edges.process_nanopub(nanopub_url, orthologize_targets)
+        resp.media = {'edges': result}
+        resp.status = falcon.HTTP_200
 
 
 class EdgeResource(object):
