@@ -23,7 +23,6 @@ structlog = "*"
 timy = "*"
 ptvsd = "*"
 PyJWT = "*"
-celery = "*"# BEL module requirement - here for easier BEL->BELAPI dev
 tatsu = "*"
 fastcache = "*"
 falcon-swagger-ui = {git = "https://github.com/belbio/falcon-swagger-ui.git"}
@@ -36,6 +35,7 @@ lxml = "*"
 ndg-httpsclient = "*"
 pyopenssl = "*"
 "pyasn1" = "*"
+bel = "*"
 
 [dev-packages]
 ptvsd = "*"
