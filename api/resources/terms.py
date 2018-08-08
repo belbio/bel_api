@@ -106,7 +106,7 @@ class TermCompletionsResource(object):
 
         size = req.get_param('size', default=21)
         entity_types = req.get_param('entity_types', [])
-        species = req.get_param('species', [])
+        species = req.get_param('species_id', req.get_param('species', []))
         annotation_types = req.get_param('annotation_types', [])
         namespaces = req.get_param('namespaces', [])
 
