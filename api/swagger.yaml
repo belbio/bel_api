@@ -73,7 +73,15 @@ paths:
     get:
       summary: BEL Specification
       tags:
-        - BEL
+      - BEL
+      parameters:
+      - name: version
+        in: path
+        required: true
+        description: BEL Version
+        schema:
+          type: string
+        example: 2.0.0
       responses:
         '200':
           description: Successful response
@@ -126,6 +134,7 @@ paths:
         description: BEL Version
         schema:
           type: string
+        example: 2.0.0
       - name: text
         in: path
         required: true
@@ -210,22 +219,17 @@ paths:
       - TODO
       operationId: getBelValidate
       parameters:
-      - name: subject
+      - name: version
         in: path
         required: true
-        description: BEL Subject
+        description: BEL Version
         schema:
           type: string
-      - name: relation
+        example: 2.0.0
+      - name: statement
         in: path
         required: true
-        description: BEL Relationship
-        schema:
-          type: string
-      - name: object
-        in: path
-        required: true
-        description: BEL Object
+        description: BEL Assertion or Statement, can be also just be a BEL Subject or Object
         schema:
           type: string
       - name: ast
@@ -291,6 +295,13 @@ paths:
         - BEL
       operationId: getBelCanonicalize
       parameters:
+      - name: version
+        in: path
+        required: true
+        description: BEL Version
+        schema:
+          type: string
+        example: 2.0.0
       - name: bel_string
         in: path
         required: true
@@ -348,6 +359,13 @@ paths:
       - BEL
       operationId: getBelDecanonicalize
       parameters:
+      - name: version
+        in: path
+        required: true
+        description: BEL Version
+        schema:
+          type: string
+        example: 2.0.0
       - name: bel_string
         in: path
         required: true
@@ -411,6 +429,13 @@ paths:
       - TODO
       operationId: getBelOrthologize
       parameters:
+      - name: version
+        in: path
+        required: true
+        description: BEL Version
+        schema:
+          type: string
+        example: 2.0.0
       - name: bel_string
         in: path
         required: true
@@ -473,6 +498,13 @@ paths:
       - TODO
       operationId: getBelEdges
       parameters:
+      - name: version
+        in: path
+        required: true
+        description: BEL Version
+        schema:
+          type: string
+        example: 2.0.0
       - name: bel_string
         in: path
         required: true
@@ -539,7 +571,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{version}/editor/list:
+  /bel/{version}/editor/{list}:
     get:
       summary: Transform list of terms into BEL functions
       description: |
@@ -556,6 +588,13 @@ paths:
         - TODO
       operationId: getBelEditorList
       parameters:
+      - name: version
+        in: path
+        required: true
+        description: BEL Version
+        schema:
+          type: string
+        example: 2.0.0
       - name: list
         required: true
         in: query
@@ -670,7 +709,6 @@ paths:
           schema:
             type: string
           example: 2.0.0
-
       responses:
         '200':
           description: Return list of available BEL Specifications
