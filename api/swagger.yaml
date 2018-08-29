@@ -4,7 +4,7 @@ servers:
   - description: Local BEL API
     url: /
   - description: Demo BEL API
-    url: https://api.bel.bio
+    url: http://api.bel.bio
 
 info:
   title: BELBio REST API
@@ -68,27 +68,6 @@ paths:
                 type: array
                 items:
                   type: string
-
-  /bel/{version}/specification:
-    get:
-      summary: BEL Specification
-      tags:
-      - BEL
-      parameters:
-      - name: version
-        in: path
-        required: true
-        description: BEL Version
-        schema:
-          type: string
-        example: 2.0.0
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
 
   /bel/{version}/completion/{text}:
     get:
@@ -695,6 +674,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
+    put:
+      summary: Put a BEL Specification
+      description: |
+        Create a new or update a prior BEL Specification.
+
+        We use semantic versioning (https://semver.org). If you want to add
+        a custom BEL Spec to your API endpoint, please use a tag to the version
+        number you want to use.
+
+        If you try to use an official BEL Spec version number
+        (pulled from https://github.com/belbio/bel_specifications),
+        it will be overwritten by the official BEL Spec as part of the PUT/update/create
+        process.
+
+      tags:
+        - BelSpecs
+      operationId: belspecPut
+      parameters:
+        - name: force
+          in: query
+          description: |
+            Forces reprocessing of BEL Specifications including pulling the public
+            BEL Specifications from BEL.bio. Otherwise, it will only attempt to
+            re-download the BEL Specifications if more than 1 day old.
+          required: false
+          default: false
+          schema:
+            type: string
+      requestBody:
+        description: BEL Specification JSON document
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '204':
+          description: Successful response
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
   /belspec/{version}:
     get:
       summary: Get a BEL Specification
@@ -724,39 +748,6 @@ paths:
                     type: array
                     items:
                       type: string
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-    put:
-      summary: Put a BEL Specification
-      description: |
-        Create a new or update a prior BEL Specification.
-
-        We use semantic versioning (https://semver.org). If you want to add
-        a custom BEL Spec to your API endpoint, please use a tag to the version
-        number you want to use.
-
-        If you try to use an official BEL Spec version number
-        (pulled from https://github.com/belbio/bel_specifications),
-        it will be overwritten by the official BEL Spec as part of the PUT/update/create
-        process.
-      tags:
-        - BelSpecs
-      operationId: belspecPut
-      parameters:
-        - name: version
-          in: path
-          description: BEL version string
-          required: true
-          schema:
-            type: string
-          example: 2.0.0
-      responses:
-        '204':
-          description: Successful response
         default:
           description: Error
           content:
@@ -1149,6 +1140,7 @@ paths:
       - name: term_id
         in: path
         required: true
+        example: "HGNC:5"
         description: |
           Term ID (or alternate Term ID)
 
@@ -1160,18 +1152,31 @@ paths:
             an extra path component.
         schema:
           type: string
+      - name: primary
+        in: query
+        required: false
+        default: true
+        description: |
+          Only return primary (preferred namespace) IDs if true (default), otherwise
+          return all equivalent IDs including alternate IDs.
+        schema:
+          type: boolean
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties:
-                  type: string
-                example:
-                  EG: EG:207
-                  UP: UP:P31749
+                type: array
+                items:
+                  type: object
+                  properties:
+                    term_id:
+                      type: string
+                    namespace:
+                      type: string
+                    primary:
+                      type: boolean
         default:
           description: Error
           content:

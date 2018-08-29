@@ -38,6 +38,7 @@ class BelSpecResource(object):
     def on_put(self, req, resp):
         """Save BEL Spec onto server"""
 
+        force = req.get_param('force', False)
         belspec = req.media['belspec']
         fn_version = belspec['version'].replace('.', '_')
 
@@ -45,7 +46,7 @@ class BelSpecResource(object):
         with open(fn, 'w') as f:
             yaml.dump(belspec, f, indent=2)
 
-        bel.lang.bel_specification.update_specifications()
+        bel.lang.bel_specification.update_specifications(force=force)
 
         resp.status = falcon.HTTP_204
 
