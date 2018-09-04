@@ -5,8 +5,8 @@ import services.tasks
 
 from bel.Config import config
 
-import logging
-log = logging.getLogger(__name__)
+import structlog
+log = structlog.getLogger(__name__)
 
 
 class TasksResource(object):

@@ -4,7 +4,6 @@ from resources.status import SimpleStatusResource, HealthCheckResource, StatusRe
 from resources.swagger import SwaggerResource
 
 from resources.bel_lang import BelVersions
-from resources.bel_lang import BelSpecificationResource
 from resources.bel_lang import BelCompletion
 from resources.bel_lang import BelCanonicalize
 from resources.bel_lang import BelDecanonicalize

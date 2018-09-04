@@ -16,7 +16,7 @@ def register_swaggerui(api):
         SWAGGERUI_URL,
         SCHEMA_URL,
         page_title=page_title,
-        config={'supportedSubmitMethods': ['get'], }
+        config={'supportedSubmitMethods': ["get", "put", "post", "delete", "options", "head", "patch", "trace"], }
     )
 
 

@@ -5,23 +5,24 @@ import fastcache
 
 import bel.edge.edges
 
-import logging
-log = logging.getLogger(__name__)
+import structlog
+log = structlog.getLogger(__name__)
 
 
 class EdgesFromNanopubResource(object):
     """Edges from Nanopub"""
 
-    def on_get(self, req, resp):
-        """Build Edges from Nanopub"""
+    def on_post(self, req, resp):
+        """Build edge objects from nanopub"""
 
-        nanopub_url = req.get_param('nanopub_url', default=None)
-        orthologize_targets = req.get_param('orthologize_targets', default=[])
+        doc = json.load(req.bounded_stream)
+        if 'nanopub_url' in doc:
+            result = bel.edge.edges.process_nanopub(nanopub_url=doc['nanopub_url'], orthologize_targets=doc.get('orthologize_targets', []))
+        elif 'nanopub' in doc:
+            result = bel.edge.edges.process_nanopub(nanopub=doc, orthologize_targets=doc.get('orthologize_targets', []))
+        else:
+            raise falcon.HTTPBadRequest(title='No nanopub to process', description=f"No nanopub or nanopub_url in query params to process. Please check your submission.")
 
-        if not nanopub_url:
-            raise falcon.HTTPBadRequest(title='No nanopub to process', description=f"No nanopub in query params to process. Please check your submission.")
-
-        result = bel.edge.edges.process_nanopub(nanopub_url, orthologize_targets)
         resp.media = {'edges': result}
         resp.status = falcon.HTTP_200
 
@@ -49,31 +50,4 @@ class EdgeResource(object):
             description = 'No edge found for {}'.format(edge_id)
             resp.media = {'title': 'No Edge', 'message': description}
             resp.status = falcon.HTTP_404
-
-
-# TODO - Not implemented
-class EdgesResource(object):
-    """Edges endpoint"""
-
-    def on_get(self, req, resp):
-        """GET Edges from EdgeStore"""
-
-        # Query parameters
-        node_query = req.get_param('node_query', default='')
-        hops = req.get_param('hops', default=1)
-        direction = req.get_param('direction', default='ANY')
-        if direction not in ['ANY', 'INBOUND', 'OUTBOUND']:
-            message = "Query parameter: direction must be one of ('ANY', 'INBOUND', 'OUTBOUND')"
-            title = 'Bad query parameter'
-            raise falcon.HTTPBadRequest(title=title, description=message)
-
-        contains = req.get_param_as_bool('contains') or False
-        filters = req.get_param('filters', default=None)
-        limit = req.get_param_as_int('limit', min=1, max=1000) or 1000
-        offset = req.get_param_as_int('offset', min=0) or 0
-
-        (edges, facets) = services.edges.get_edges(node_query, hops=hops, direction=direction, contains=contains, filters=filters, limit=limit, offset=offset)
-
-        resp.media = {"edges": edges, "facets": facets, "edge_cnt": len(edges)}
-        resp.status = falcon.HTTP_200
 

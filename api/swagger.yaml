@@ -1152,15 +1152,6 @@ paths:
             an extra path component.
         schema:
           type: string
-      - name: primary
-        in: query
-        required: false
-        default: true
-        description: |
-          Only return primary (preferred namespace) IDs if true (default), otherwise
-          return all equivalent IDs including alternate IDs.
-        schema:
-          type: boolean
       responses:
         '200':
           description: Successful response

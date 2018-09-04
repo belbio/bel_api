@@ -319,7 +319,7 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
     }
 
     import json
-    log.info(f'DEBUG Completion search body {json.dumps(search_body)}')
+    log.debug(f'Completion search body {json.dumps(search_body)}')
 
     # Boost namespaces
     if config['bel_api'].get('search', False):
@@ -445,18 +445,22 @@ def get_equivalents(term_id: str, namespaces: List[str]=None) -> List[Mapping[st
     Args:
         term_id (str): term id
         namespaces (Mapping[str, Any]): filter resulting equivalents to listed namespaces, ordered by priority
-
+        primary: only return primary ids (preferred namespace ids) - default = True, otherwise return all equivalent ids
     Returns:
         List[Mapping[str, str]]: e.g. [{'term_id': 'HGNC:5', 'namespace': 'EG'}]
     """
 
     term_id_key = bel.db.arangodb.arango_id_to_key(term_id)
-    query = f"FOR vertex, edge IN 1..10 ANY 'equivalence_nodes/{term_id_key}' equivalence_edges RETURN DISTINCT {{term_id: vertex._key, namespace: vertex.namespace}}"
-    cursor = belns_db.aql.execute(query)
+    last_count = 0
+    for steps in [3, 4, 5, 6]:
+        query = f"FOR vertex, edge IN 1..{steps} ANY 'equivalence_nodes/{term_id_key}' equivalence_edges RETURN DISTINCT {{term_id: vertex.name, namespace: vertex.namespace, primary: vertex.primary}}"
+        cursor = belns_db.aql.execute(query, count=True, batch_size=50)
+        if cursor.count() == last_count:
+            equivalents = [document for document in cursor]
+            log.info(f'Equivalent query steps {steps}')
+            break
 
-    equivalents = {}
-    for record in cursor:
-        equivalents[record['namespace']] = record['term_id']
+    equivalents = [doc for doc in cursor]
 
     return equivalents
 
@@ -487,9 +491,9 @@ def canonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = None
         if re.match(start_ns, term_id):
             equivalents = get_equivalents(term_id)
             for target_ns in namespace_targets[start_ns]:
-                if target_ns in equivalents:
-                    term_id = equivalents[target_ns]
-                    break
+                for e in equivalents:
+                    if target_ns in e['namespace'] and e['primary']:
+                        return e['term_id']
 
     return term_id
 
@@ -521,9 +525,8 @@ def decanonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = No
             equivalents = get_equivalents(term_id)
             log.debug(f'Term: {term_id} Equiv: {equivalents}')
             for target_ns in namespace_targets[start_ns]:
-                log.debug(f'Checking target namespace: {target_ns}')
-                if target_ns in equivalents:
-                    term_id = equivalents[target_ns]
-                    break
+                for e in equivalents:
+                    if target_ns in e['namespace'] and e['primary']:
+                        return e['term_id']
 
     return term_id
