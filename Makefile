@@ -47,7 +47,8 @@ deploy_patch:
 docker_push:
 	@echo Deploying docker image to dockerhub $(VERSION)
 	docker build -t belbio/bel_api -t belbio/bel_api:$(VERSION) -f docker/Dockerfile-bel_api-image .
-	docker push belbio/bel_api
+	docker push belbio/bel_api:latest
+	docker push belbio/bel_api:$(VERSION)
 
 
 docker_quickpush:

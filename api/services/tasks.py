@@ -55,8 +55,8 @@ def nanopub_to_edge(nanopub_url: str, orthology_targets: List[str] = []):
 
 
 @celery_app.task()
-def add_namespace(resource_url):
+def add_namespace(resource_url: str, forceupdate: bool = False):
     """Add BEL resource_url to bel_resources queue"""
 
-    bel.resources.resource.load_resource(resource_url)
+    bel.resources.resource.load_resource(resource_url, forceupdate=forceupdate)
 

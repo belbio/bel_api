@@ -33,8 +33,9 @@ class ResourcesTasksResource(object):
         # add_orthology - load BEL orthology
 
         # BEL Resources loading
-        data = json.load(req.bounded_stream)
+        data = req.media
         resource_url = data.get('resource_url', None)
+        forceupdate = data.get('forceupdate', False)
 
         if not resource_url:
             raise falcon.HTTPBadRequest(
@@ -42,7 +43,7 @@ class ResourcesTasksResource(object):
                 "For resource task request, resource_url must be set",
             )
 
-        task_id = services.tasks.add_namespace.delay(resource_url)
+        task_id = services.tasks.add_namespace.delay(resource_url, forceupdate=forceupdate)
         message = "Check the Task Monitor UI for status"
         resp.media = {'title': 'BEL resource task submitted', 'task_id': str(task_id), 'message': message}
 
