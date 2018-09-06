@@ -1,2 +1,2 @@
-__version__ = "0.4.5"
+__version__ = "0.4.6"
 __name__ = "BELBIO API"
