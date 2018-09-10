@@ -85,8 +85,13 @@ class BelMigrate12(object):
 
     def on_get(self, req, resp, belstr):
 
-        belstr = bel.lang.migrate_1_2.migrate(belstr)
-
+        try:
+            belstr = bel.lang.migrate_1_2.migrate(belstr)
+        except Exception as e:
+            raise falcon.HTTPBadRequest(
+                "Cannot migrate",
+                "Syntax error - is the provided string valid BEL 1? You may have something like this kin(HGNC:AKT1) which is missing the p() around AKT1.",
+            )
         resp.media = {'bel': belstr}
         resp.status = falcon.HTTP_200
 

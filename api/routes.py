@@ -48,6 +48,11 @@ def add_routes(api):
     api.add_route('/bel/{version}/completion/{belstr:bel}', BelCompletion())  # GET
     api.add_route('/bel/{version}/canonicalize/{belstr:bel}', BelCanonicalize())  # GET
     api.add_route('/bel/{version}/decanonicalize/{belstr:bel}', BelDecanonicalize())  # GET
+    api.add_route('/bel/{version}/specification', BelSpecResource())   # Deprecated
+
+    # BEL Specification routes
+    api.add_route('/belspec', BelSpecResource())  # GET listing, PUT update
+    api.add_route('/belspec/{version}', BelSpecResource())  # GET, PUT,  DELETE
 
     # BEL1->2 Migration
     api.add_route('/bel/migrate12/{belstr:bel}', BelMigrate12())  # GET
@@ -80,10 +85,6 @@ def add_routes(api):
     api.add_route('/orthologs', OrthologResource())  # GET
     api.add_route('/orthologs/{gene_id:bel}', OrthologResource())  # GET
     api.add_route('/orthologs/{gene_id:bel}/{species}', OrthologResource())  # GET
-
-    # BEL Specification routes
-    api.add_route('/belspec', BelSpecResource())  # GET listing, PUT update
-    api.add_route('/belspec/{version}', BelSpecResource())  # GET, PUT,  DELETE
 
     # Text routes
     api.add_route('/text/pubmed/{pmid}', PubmedResource())  # GET

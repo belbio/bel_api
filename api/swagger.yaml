@@ -385,6 +385,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
+
+  /bel/{version}/specification:
+    get:
+      summary: Get a BEL Specification [DEPRECATED]
+      description: Duplicate of /belspec/{version} endpoint, will be removed in future version
+      tags:
+        - BEL
+      operationId: belspecGet
+      parameters:
+        - name: version
+          in: path
+          description: BEL version string
+          required: true
+          schema:
+            type: string
+          example: 2.0.0
+      responses:
+        '200':
+          description: Return BEL Specification for version given if available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  belspec:
+                    type: object
+                    description: JSON document of the BEL Specification
+                  versions:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
   /bel/{version}/orthologize/{species_id}/{bel_string}:
     get:
       summary: Orthologize BEL
@@ -735,7 +773,7 @@ paths:
           example: 2.0.0
       responses:
         '200':
-          description: Return list of available BEL Specifications
+          description: Return BEL Specification for version given if available
           content:
             application/json:
               schema:
