@@ -388,8 +388,10 @@ paths:
 
   /bel/{version}/specification:
     get:
-      summary: Get a BEL Specification [DEPRECATED]
-      description: Duplicate of /belspec/{version} endpoint, will be removed in future version
+      summary: Get the enhanced BEL Specification
+      description: |
+        Provide the enhanced BEL Specification, additional properties have been
+        created and added to make the Specification easier to use.
       tags:
         - BEL
       operationId: belspecGet

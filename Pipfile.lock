@@ -39,11 +39,11 @@
         },
         "bel": {
             "hashes": [
-                "sha256:2062f3151813c56a06d74d68f268a4db82701ab4fe354aec9acbc2e728398ff3",
-                "sha256:75758bf1a5d41bcddc31519622532d19cf697136f57b48404e03905cf1ae4d4b"
+                "sha256:490aae4be5c2f7e11fa72508a7296554a0a39149b47eb552f36bfc87baeebf2c",
+                "sha256:4989816a0734667bf7b4ac1da1a00c3f19e5550e22206eeb5a867f774c0d3835"
             ],
             "index": "pypi",
-            "version": "==0.12.3"
+            "version": "==0.12.4"
         },
         "billiard": {
             "hashes": [
