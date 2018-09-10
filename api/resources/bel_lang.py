@@ -96,3 +96,11 @@ class BelMigrate12(object):
         resp.status = falcon.HTTP_200
 
 
+class BelSpecificationResource(object):
+    """Get BEL Specification enhanced JSON object"""
+
+    def on_get(self, req, resp, version):
+
+        bel_specification = bel.lang.bel_specification.get_specification(version)
+        resp.media = bel_specification
+        resp.status = falcon.HTTP_200
