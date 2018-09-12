@@ -47,7 +47,7 @@ def get_species_object(species_id):
 
 
 def get_term(term_id):
-    """Get term using term_id
+    """Get first matching term using term_id
 
     Term ID has to match either the id or the alt_ids
     """
@@ -71,6 +71,32 @@ def get_term(term_id):
         result = None
 
     return result
+
+
+def get_terms(term_id):
+    """Get term(s) using term_id - given term_id may match multiple term records
+
+    Term ID has to match either the id, alt_ids or obsolete_ids
+    """
+    search_body = {
+        "query": {
+            "bool": {
+                "should": [
+                    {"term": {"id": term_id}},
+                    {"term": {"alt_ids": term_id}},
+                    {"term": {"obsolete_ids": term_id}},
+                ]
+            }
+        }
+    }
+
+    result = es.search(index='terms', doc_type='term', body=search_body)
+
+    results = []
+    for r in result['hits']['hits']:
+        results.append(r['_source'])
+
+    return results
 
 
 # TODO - not deployed/fully implemented
@@ -449,6 +475,17 @@ def get_equivalents(term_id: str, namespaces: List[str]=None) -> List[Mapping[st
     Returns:
         List[Mapping[str, str]]: e.g. [{'term_id': 'HGNC:5', 'namespace': 'EG'}]
     """
+
+    terms = get_terms(term_id)
+    if len(terms) == 0:
+        return []
+    elif len(terms) > 1:
+        raise falcon.HTTPBadRequest(
+            title='Too many primary term IDs returned',
+            description=f'Given term_id: {term_id} matches these term_ids{[term["id"] for term in terms]}',
+        )
+    else:
+        term_id = terms[0]['id']
 
     term_id_key = bel.db.arangodb.arango_id_to_key(term_id)
     last_count = 0
