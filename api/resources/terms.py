@@ -19,14 +19,22 @@ class TermResource(object):
         """
 
         if term_id is None:
-            resp.media = {'title': 'Term endpoint Error', 'message': 'Must provide a term id, e.g. /term/HGNC:AKT1'}
-            resp.status = falcon.HTTP_200
-            return
+            raise falcon.HTTPBadRequest(title='No term_id provided', description=f"Must provide a term_id")
 
-        term = terms.get_term(term_id)
-        if term:
-            resp.media = term
+        term_list = terms.get_terms(term_id)
+        if len(term_list) == 1:
+            resp.media = term_list[0]
             resp.status = falcon.HTTP_200
+        elif len(term_list) == 0:
+            raise falcon.HTTPNotFound(
+                title='Not found',
+                description=f'No term found for {term_id}'
+            )
+        elif len(term_list) > 1:
+            raise falcon.HTTPBadRequest(
+                title='Too many primary term IDs returned',
+                description=f'Given term_id: {term_id} matches these term_ids: {[term["id"] for term in term_list]}',
+            )
         else:
             description = 'No term found for {}'.format(term_id)
             resp.media = {'title': 'No Term', 'message': description}

@@ -482,7 +482,7 @@ def get_equivalents(term_id: str, namespaces: List[str]=None) -> List[Mapping[st
     elif len(terms) > 1:
         raise falcon.HTTPBadRequest(
             title='Too many primary term IDs returned',
-            description=f'Given term_id: {term_id} matches these term_ids{[term["id"] for term in terms]}',
+            description=f'Given term_id: {term_id} matches these term_ids: {[term["id"] for term in terms]}',
         )
     else:
         term_id = terms[0]['id']
