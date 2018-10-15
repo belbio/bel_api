@@ -28,7 +28,7 @@ info:
     **Note the Endpoints in the TODO section are only documented and
     not yet implemented**
 
-  version: 0.4.12
+  version: 0.4.13
   contact:
     name: whayes@biodati.com
     url: https://bel.bio
@@ -360,6 +360,59 @@ paths:
           into the EG or SP namespace returning original term if no canonical form
           exists. Priority of namespace conversion is determined by the order of the
           target namespaces listed.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  decanonicalized:
+                    type: string
+                  original:
+                    type: string
+                  messages:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+  /bel/{version}/validate/{bel_string}:
+    get:
+      summary: Validate BEL String
+      description: |
+        Validate BEL - either a BEL subject or object or full assertion (SRO)
+
+        Note: Any forward slashes '/' in the bel_string
+          need to be replaced with _FORWARDSLASH_
+          otherwise it will get interpreted as another path
+          component and will likely not match a valid
+          url path (e.g. if subject="p(GO:\"stupid/name\")" -
+          this will add an extra path parameter by mistake by
+          mis-interpreting the '/'.
+      tags:
+      - BEL
+      operationId: getBelValidate
+      parameters:
+      - name: version
+        in: path
+        required: true
+        description: BEL Version
+        schema:
+          type: string
+        example: 2.0.0
+      - name: bel_string
+        in: path
+        required: true
+        description: BEL String
         schema:
           type: string
       responses:
