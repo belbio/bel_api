@@ -8,6 +8,8 @@ from resources.bel_lang import BelCompletion
 from resources.bel_lang import BelCanonicalize
 from resources.bel_lang import BelDecanonicalize
 from resources.bel_lang import BelSpecificationResource
+from resources.bel_lang import BelValidationResource
+from resources.bel_lang import BelOrthologizeResource
 
 from resources.bel_lang import BelMigrate12
 
@@ -50,6 +52,8 @@ def add_routes(api):
     api.add_route('/bel/{version}/canonicalize/{belstr:bel}', BelCanonicalize())  # GET
     api.add_route('/bel/{version}/decanonicalize/{belstr:bel}', BelDecanonicalize())  # GET
     api.add_route('/bel/{version}/specification', BelSpecificationResource())   # Deprecated
+    api.add_route('/bel/{version}/validate/{belstr:bel}', BelValidationResource())  # GET
+    api.add_route('/bel/{version}/orthologize/{belstr:bel}/{species_id}', BelOrthologizeResource())  # GET
 
     # BEL Specification routes
     api.add_route('/belspec', BelSpecResource())  # GET listing, PUT update

@@ -17,12 +17,13 @@ class EdgesFromNanopubResource(object):
 
         doc = json.load(req.bounded_stream)
         if 'nanopub_url' in doc:
-            result = bel.edge.edges.process_nanopub(nanopub_url=doc['nanopub_url'], orthologize_targets=doc.get('orthologize_targets', []))
+            result = bel.edge.pipeline.process_nanopub(nanopub_url=doc['nanopub_url'], orthologize_targets=doc.get('orthologize_targets', []))
         elif 'nanopub' in doc:
-            result = bel.edge.edges.process_nanopub(nanopub=doc, orthologize_targets=doc.get('orthologize_targets', []))
+            result = bel.edge.edges.nanopub_to_edges(nanopub=doc, orthologize_targets=doc.get('orthologize_targets', []))
         else:
             raise falcon.HTTPBadRequest(title='No nanopub to process', description=f"No nanopub or nanopub_url in query params to process. Please check your submission.")
 
+        log.info(f'Result: {result}')
         resp.media = {'edges': result}
         resp.status = falcon.HTTP_200
 

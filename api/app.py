@@ -28,7 +28,6 @@ import routes
 # TODO - figure out how to run logging setup and belspec once on startup rather than
 #        every time a worker is initialized (moved bel.lang.bel_specification.update_specifications to bel/__init__.py)
 
-import bel.setup_logging
 import structlog
 log = structlog.getLogger('bel_api')
 

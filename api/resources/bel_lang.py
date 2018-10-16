@@ -104,3 +104,34 @@ class BelSpecificationResource(object):
         bel_specification = bel.lang.bel_specification.get_specification(version)
         resp.media = bel_specification
         resp.status = falcon.HTTP_200
+
+
+class BelValidationResource(object):
+    """Validate BEL"""
+
+    def on_get(self, req, resp, version, belstr):
+
+        bo = bel.lang.belobj.BEL(version, config['bel_api']['servers']['api_url'])
+        validated = bo.parse(belstr).semantic_validation()
+        if validated:
+            messages = validated.validation_messages
+        else:
+            messages = [["ERROR", "Cannot parse BEL string - possible bad function name"]]
+
+        resp.media = {'bel': belstr, 'messages': messages}
+        resp.status = falcon.HTTP_200
+
+
+class BelOrthologizeResource(object):
+    """Orthologize BEL"""
+
+    def on_get(self, req, resp, version, belstr, species_id):
+
+        bo = bel.lang.belobj.BEL(version, config['bel_api']['servers']['api_url'])
+        bo.parse(belstr).orthologize(species_id)
+
+        orthologized = bo.to_string()
+
+        resp.media = {'original': belstr, 'orthologized': orthologized}
+        resp.status = falcon.HTTP_200
+
