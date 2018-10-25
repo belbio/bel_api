@@ -195,7 +195,7 @@ paths:
           mis-interpreting the '/'.
 
       tags:
-      - TODO
+      - BEL
       operationId: getBelValidate
       parameters:
       - name: version
@@ -238,14 +238,6 @@ paths:
                         type: string
                       object:
                         type: string
-                  ast:
-                    type: object
-                    description: |
-                      If AST is requested (by query param), provide
-                      the AST along with the Edge subject, relation, and
-                      objects.
-                    additionalProperties:
-                      type: object
                   messages:
                     type: array
                     items:
@@ -498,7 +490,7 @@ paths:
           this will add an extra path parameter by mistake by
           mis-interpreting the '/'.
       tags:
-      - TODO
+      - BEL
       operationId: getBelOrthologize
       parameters:
       - name: version
@@ -550,98 +542,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{version}/edges/{bel_string}:
-    get:
-      summary: BEL Edges
-      description: |
-        Create BEL Edges
-
-        The call will create BEL Edges from the BEL string which can
-        be loaded into the edge store.
-
-        Note: Any forward slashes '/' in the bel_string
-          need to be replaced with _FORWARDSLASH_
-          otherwise it will get interpreted as another path
-          component and will likely not match a valid
-          url path (e.g. if subject="p(GO:\"stupid/name\")" -
-          this will add an extra path parameter by mistake by
-          mis-interpreting the '/'.
-      tags:
-      - TODO
-      operationId: getBelEdges
-      parameters:
-      - name: version
-        in: path
-        required: true
-        description: BEL Version
-        schema:
-          type: string
-        example: 2.0.0
-      - name: bel_string
-        in: path
-        required: true
-        description: BEL String
-        schema:
-          type: string
-      - name: computed_signatures
-        in: query
-        required: false
-        description: |
-          Default is to create all of the defined computed edges as
-          specified in the BEL Language Specification file.
-
-          You can specify which computed_signature steps will be performed
-          by specifying a comma-delimited list of computed_signature
-          keys. Example:
-
-              computed_signatures=componentOf,degradation,activity
-        schema:
-          type: string
-      - name: ast
-        in: query
-        required: false
-        description: |
-          If AST is requested, the abstract syntax tree of the
-          BEL Edges will be provided in the response.
-        schema:
-          type: boolean
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  edges:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        subject:
-                          type: string
-                        relation:
-                          type: string
-                        object:
-                          type: string
-                        ast:
-                          type: object
-                          description: |
-                            If AST is requested (by query param), provide
-                            the AST along with the Edge subject, relation, and
-                            objects.
-                          additionalProperties:
-                            type: object
-                  messages:
-                    type: array
-                    items:
-                      type: string
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
 
   /bel/{version}/editor/{list}:
     get:

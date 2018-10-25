@@ -118,7 +118,7 @@ class BelValidationResource(object):
         else:
             messages = [["ERROR", "Cannot parse BEL string - possible bad function name"]]
 
-        resp.media = {'bel': belstr, 'messages': messages}
+        resp.media = {'bel': belstr, 'valid': validated.parse_valid, 'messages': messages}
         resp.status = falcon.HTTP_200
 
 

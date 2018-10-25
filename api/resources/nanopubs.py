@@ -19,13 +19,12 @@ class NanopubValidateResource(object):
         try:
             data = json.load(req.bounded_stream)
         except ValueError as e:
-            raise falcon.HTTPUnprocessableEntity(title='Cannot process payload', description=f"Cannot process nanopub (maybe an encoding error? please use UTF-8 for JSON payload) error: {e}")
+            raise falcon.HTTPUnprocessableEntity(title='Cannot process payload', description=f"Cannot process nanopub (maybe an encoding error? please use UTF-8 for JSON payload) error: {str(e)}")
 
         log.info('Data', data=data)
         nanopub = data.get('nanopub', None)
         error_level = data.get('error_level', 'WARNING')
 
-        # TODO Why am I using nanopub['citation'] instead of nanopub['nanopub']?
         if nanopub:
             try:
                 results = bel.nanopub.validate.validate(nanopub, error_level)
@@ -34,10 +33,10 @@ class NanopubValidateResource(object):
                 resp.status = falcon.HTTP_200
             except Exception as e:
                 log.error(traceback.print_exc())
-                raise falcon.HTTPUnprocessableEntity(title='Cannot process nanopub', description=f"Cannot process nanopub: {e}")
+                raise falcon.HTTPUnprocessableEntity(title='Cannot process nanopub', validation_results=[], description=f"Cannot process nanopub: {str(e)}")
 
         else:
-            raise falcon.HTTPBadRequest(title='Cannot process nanopub', description=f"No nanopub in payload to process. Please check your submission.")
+            raise falcon.HTTPBadRequest(title='Cannot process nanopub', validation_results=[], description=f"No nanopub in payload to process. Please check your submission.")
 
 
 class EdgeResource(object):
