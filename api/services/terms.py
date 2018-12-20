@@ -73,6 +73,7 @@ def get_term(term_id):
     return result
 
 
+# TODO Refactor to use bel.terms.terms.get_terms
 def get_terms(term_id):
     """Get term(s) using term_id - given term_id may match multiple term records
 
@@ -463,6 +464,7 @@ def namespace_term_counts():
     return [{'namespace': r['key'], 'count': r['doc_count']} for r in results]
 
 
+# TODO Refactor to use bel.terms.terms.get_equivalents
 def get_equivalents(term_id: str, namespaces: List[str]=None) -> List[Mapping[str, str]]:
     """Get equivalents given ns:id and target namespaces
 

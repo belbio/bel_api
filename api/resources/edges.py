@@ -4,6 +4,7 @@ import json
 import fastcache
 
 import bel.edge.edges
+import bel.edge.pipeline
 
 import structlog
 log = structlog.getLogger(__name__)
@@ -23,8 +24,8 @@ class EdgesFromNanopubResource(object):
         else:
             raise falcon.HTTPBadRequest(title='No nanopub to process', description=f"No nanopub or nanopub_url in query params to process. Please check your submission.")
 
-        log.info(f'Result: {result}')
-        resp.media = {'edges': result}
+        log.debug(f'Result: {result}')
+        resp.media = result
         resp.status = falcon.HTTP_200
 
 

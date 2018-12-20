@@ -1,3 +1,5 @@
+api/cache.sqlite
+
 Dockerfile
 .dockerignore
 

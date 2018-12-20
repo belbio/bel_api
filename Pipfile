@@ -36,6 +36,7 @@ ndg-httpsclient = "*"
 pyopenssl = "*"
 "pyasn1" = "*"
 bel = "*"
+requests-cache = "*"
 
 [dev-packages]
 ptvsd = "*"

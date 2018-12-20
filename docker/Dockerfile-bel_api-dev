@@ -16,7 +16,6 @@ COPY Pipfile.lock Pipfile.lock
 # -- Install dependencies:
 RUN set -ex && pipenv install --deploy --system
 
-
 USER api
 
 # Volume mount ./api directory to /app in docker-compose file for development
