@@ -1,4 +1,5 @@
 import jwt
+import os
 from datetime import datetime, timedelta
 
 from bel.Config import config
@@ -6,7 +7,15 @@ from bel.Config import config
 import logging
 log = logging.getLogger(__name__)
 
-jwt_algorithm = 'HS256'
+jwt_secret_key = os.getenv('JWT_SECRET', None)
+
+
+def create_token():
+    """Create JWT token using Auth0 Secret Key"""
+
+    payload = {"name": "belapi"}
+    token = jwt.encode(payload, jwt_secret_key, algorithm='HS256')
+    return token
 
 
 def jwt_create(userid, payload, expiration=None):
@@ -15,6 +24,8 @@ def jwt_create(userid, payload, expiration=None):
         expiration:  number of seconds from now to expire token -- defaults to 3600 seconds
 
     """
+
+    jwt_algorithm = 'HS256'
 
     if expiration:
         exp = datetime.utcnow() + timedelta(seconds=expiration)
