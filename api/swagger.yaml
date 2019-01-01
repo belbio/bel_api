@@ -28,7 +28,7 @@ info:
     **Note the Endpoints in the TODO section are only documented and
     not yet implemented**
 
-  version: 0.4.19
+  version: 0.4.20
   contact:
     name: whayes@biodati.com
     url: https://bel.bio
@@ -1149,16 +1149,23 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    term_id:
+                type: object
+                properties:
+                  equivalents:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        term_id:
+                          type: string
+                        namespace:
+                          type: string
+                        primary:
+                          type: boolean
+                  errors:
+                    type: array
+                    items:
                       type: string
-                    namespace:
-                      type: string
-                    primary:
-                      type: boolean
         default:
           description: Error
           content:
@@ -1181,23 +1188,23 @@ paths:
         An example term_id to use is HGNC:AKT1 which will result in EG:207
         being returned.
       tags:
-      - Terminologies
+        - Terminologies
       operationId: getTermCanonicalized
       parameters:
-      - name: term_id
-        in: path
-        required: true
-        description: |
-          Term ID (or alternate Term ID)
+        - name: term_id
+          in: path
+          required: true
+          description: |
+            Term ID (or alternate Term ID)
 
-          Note: Any forward slashes '/' in term need to be replaced
-            with _FORWARDSLASH_ otherwise it will get interpreted as
-            another path component and will likely not match a valid
-            url path (e.g. if term_id="stupid/name" - this will look like
-            /terms/stupid/name and not match /terms/{term_id} since there is
-            an extra path component.
-        schema:
-          type: string
+            Note: Any forward slashes '/' in term need to be replaced
+              with _FORWARDSLASH_ otherwise it will get interpreted as
+              another path component and will likely not match a valid
+              url path (e.g. if term_id="stupid/name" - this will look like
+              /terms/stupid/name and not match /terms/{term_id} since there is
+              an extra path component.
+          schema:
+            type: string
       responses:
         '200':
           description: Successful response
@@ -1231,23 +1238,23 @@ paths:
         An example term_id to use is EG:207 which will result in HGNC:AKT1
         being returned.
       tags:
-      - Terminologies
+        - Terminologies
       operationId: getTermDecanonicalized
       parameters:
-      - name: term_id
-        in: path
-        required: true
-        description: |
-          Term ID (or alternate Term ID)
+        - name: term_id
+          in: path
+          required: true
+          description: |
+            Term ID (or alternate Term ID)
 
-          Note: Any forward slashes '/' in term need to be replaced
-            with _FORWARDSLASH_ otherwise it will get interpreted as
-            another path component and will likely not match a valid
-            url path (e.g. if term_id="stupid/name" - this will look like
-            /terms/stupid/name and not match /terms/{term_id} since there is
-            an extra path component.
-        schema:
-          type: string
+            Note: Any forward slashes '/' in term need to be replaced
+              with _FORWARDSLASH_ otherwise it will get interpreted as
+              another path component and will likely not match a valid
+              url path (e.g. if term_id="stupid/name" - this will look like
+              /terms/stupid/name and not match /terms/{term_id} since there is
+              an extra path component.
+          schema:
+            type: string
       responses:
         '200':
           description: Successful response
@@ -1276,8 +1283,8 @@ paths:
           * entity_types and associated term counts
           * context_types and associated term counts
       tags:
-      - Terminologies
-      - Utility
+        - Terminologies
+        - Utility
       operationId: getTermTypes
       responses:
         '200':
@@ -1342,23 +1349,23 @@ paths:
         Result: MGI:AKT1, TAX:10090
                 RGD:AKT1, TAX:10116
       tags:
-      - Terminologies
+        - Terminologies
       operationId: getOrthologs
       parameters:
-      - name: gene_id
-        in: path
-        required: true
-        description: |
-          Gene or Protein ID
+        - name: gene_id
+          in: path
+          required: true
+          description: |
+            Gene or Protein ID
 
-          Note: Any forward slashes '/' in term need to be replaced
-            with _FORWARDSLASH_ otherwise it will get interpreted as
-            another path component and will likely not match a valid
-            url path (e.g. if gene_id="stupid/name" - this will look like
-            /orthologs/stupid/name and not match /orthologs/{gene_id} since there is
-            an extra path component.
-        schema:
-          type: string
+            Note: Any forward slashes '/' in term need to be replaced
+              with _FORWARDSLASH_ otherwise it will get interpreted as
+              another path component and will likely not match a valid
+              url path (e.g. if gene_id="stupid/name" - this will look like
+              /orthologs/stupid/name and not match /orthologs/{gene_id} since
+              there is an extra path component.
+          schema:
+            type: string
       responses:
         '200':
           description: Successful response
@@ -1398,29 +1405,29 @@ paths:
         Example query gene_id=HGNC:A1BG  species_id: TAX:10090
         Result: MGI:A1bg
       tags:
-      - Terminologies
+        - Terminologies
       operationId: getOrthologsSpeciesId
       parameters:
-      - name: gene_id
-        in: path
-        required: true
-        description: |
-          Gene or Protein ID
+        - name: gene_id
+          in: path
+          required: true
+          description: |
+            Gene or Protein ID
 
-          Note: Any forward slashes '/' in term need to be replaced
-            with _FORWARDSLASH_ otherwise it will get interpreted as
-            another path component and will likely not match a valid
-            url path (e.g. if gene_id="stupid/name" - this will look like
-            /orthologs/stupid/name and not match /orthologs/{gene_id} since there is
-            an extra path component.
-        schema:
-          type: string
-      - name: species_id
-        in: path
-        required: true
-        description: Get orthologs with species_id for gene_id
-        schema:
-          type: string
+            Note: Any forward slashes '/' in term need to be replaced
+              with _FORWARDSLASH_ otherwise it will get interpreted as
+              another path component and will likely not match a valid
+              url path (e.g. if gene_id="stupid/name" - this will look like
+              /orthologs/stupid/name and not match /orthologs/{gene_id} since
+              there is an extra path component.
+          schema:
+            type: string
+        - name: species_id
+          in: path
+          required: true
+          description: Get orthologs with species_id for gene_id
+          schema:
+            type: string
       responses:
         '200':
           description: Successful response
@@ -1454,21 +1461,21 @@ paths:
         - Utility
       operationId: getPubmed
       parameters:
-      - name: pmid
-        in: path
-        required: true
-        description: Pubmed ID
-        schema:
-          type: integer
-      - name: pubmed_only
-        in: query
-        required: false
-        description: |
-          Only retrieve Pubmed data and not Pubtator annotations.
-          Pubmed responds in <100ms. Pubtator annotations may take
-          several seconds.
-        schema:
-          type: boolean
+        - name: pmid
+          in: path
+          required: true
+          description: Pubmed ID
+          schema:
+            type: integer
+        - name: pubmed_only
+          in: query
+          required: false
+          description: |
+            Only retrieve Pubmed data and not Pubtator annotations.
+            Pubmed responds in <100ms. Pubtator annotations may take
+            several seconds.
+          schema:
+            type: boolean
       responses:
         '200':
           description: Successful response
