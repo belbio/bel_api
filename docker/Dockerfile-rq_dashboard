@@ -1,5 +1,0 @@
-FROM python:3.6
-
-RUN pip install rq-dashboard==0.3.10
-
-ENTRYPOINT ["rq-dashboard"]

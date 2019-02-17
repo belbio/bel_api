@@ -1,6 +1,6 @@
 import elasticsearch
 import falcon
-from typing import Mapping, List
+from typing import Mapping, List, Union
 import re
 
 import bel.db.elasticsearch
@@ -46,6 +46,7 @@ def get_species_object(species_id):
     return {"id": species['id'], "label": species['label']}
 
 
+# TODO Refactor to use bel.terms.terms.get_terms
 def get_term(term_id):
     """Get first matching term using term_id
 
@@ -464,46 +465,6 @@ def namespace_term_counts():
     return [{'namespace': r['key'], 'count': r['doc_count']} for r in results]
 
 
-# TODO Refactor to use bel.terms.terms.get_equivalents
-def get_equivalents(term_id: str, namespaces: List[str]=None) -> List[Mapping[str, str]]:
-    """Get equivalents given ns:id and target namespaces
-
-    The target_namespaces list in the argument dictionary is ordered by priority.
-
-    Args:
-        term_id (str): term id
-        namespaces (Mapping[str, Any]): filter resulting equivalents to listed namespaces, ordered by priority
-        primary: only return primary ids (preferred namespace ids) - default = True, otherwise return all equivalent ids
-    Returns:
-        List[Mapping[str, str]]: e.g. [{'term_id': 'HGNC:5', 'namespace': 'EG'}]
-    """
-
-    terms = get_terms(term_id)
-    if len(terms) == 0:
-        return []
-    elif len(terms) > 1:
-        raise falcon.HTTPBadRequest(
-            title='Too many primary term IDs returned',
-            description=f'Given term_id: {term_id} matches these term_ids: {[term["id"] for term in terms]}',
-        )
-    else:
-        term_id = terms[0]['id']
-
-    term_id_key = bel.db.arangodb.arango_id_to_key(term_id)
-    last_count = 0
-    for steps in [3, 4, 5, 6]:
-        query = f"FOR vertex, edge IN 1..{steps} ANY 'equivalence_nodes/{term_id_key}' equivalence_edges RETURN DISTINCT {{term_id: vertex.name, namespace: vertex.namespace, primary: vertex.primary}}"
-        cursor = belns_db.aql.execute(query, count=True, batch_size=50)
-        if cursor.count() == last_count:
-            equivalents = [document for document in cursor]
-            log.info(f'Equivalent query steps {steps}')
-            break
-
-    equivalents = [doc for doc in cursor]
-
-    return equivalents
-
-
 def canonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = None) -> str:
     """Canonicalize term_id
 
@@ -528,7 +489,8 @@ def canonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = None
 
     for start_ns in namespace_targets:
         if re.match(start_ns, term_id):
-            equivalents = get_equivalents(term_id)
+            results = bel.terms.terms.get_equivalents(term_id)
+            equivalents = results['equivalents']
             for target_ns in namespace_targets[start_ns]:
                 for e in equivalents:
                     if target_ns in e['namespace'] and e['primary']:
@@ -561,7 +523,8 @@ def decanonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = No
 
     for start_ns in namespace_targets:
         if re.match(start_ns, term_id):
-            equivalents = get_equivalents(term_id)
+            results = bel.terms.terms.get_equivalents(term_id)
+            equivalents = results['equivalents']
             log.debug(f'Term: {term_id} Equiv: {equivalents}')
             for target_ns in namespace_targets[start_ns]:
                 for e in equivalents:

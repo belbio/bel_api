@@ -37,6 +37,7 @@ pyopenssl = "*"
 "pyasn1" = "*"
 bel = "*"
 requests-cache = "*"
+tavern = "*"
 
 [dev-packages]
 ptvsd = "*"

@@ -3,6 +3,8 @@ import services.terms as terms
 import json
 import fastcache
 
+import bel.terms.terms
+
 import logging
 log = logging.getLogger(__name__)
 
@@ -64,8 +66,8 @@ class TermEquivalentsResource(object):
     def on_get(self, req, resp, term_id):
         """GET User Profile"""
 
-        results = terms.get_equivalents(term_id)
-        resp.media = {'equivalents': results}
+        results = bel.terms.terms.get_equivalents(term_id)
+        resp.media = {'equivalents': results['equivalents'], 'errors': results['errors']}
         resp.status = falcon.HTTP_200
 
 

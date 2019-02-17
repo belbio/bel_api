@@ -1,0 +1,9 @@
+# common.yaml
+---
+
+name: Common test information
+description: Common test information
+
+variables:
+  api_url: http://belapi.dev.biodati.test
+  bel_version: 2.1.0

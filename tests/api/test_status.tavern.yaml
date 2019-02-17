@@ -1,0 +1,17 @@
+---
+
+test_name: Test the status endpoints
+
+includes:
+  - !include common.yaml  # already included in pytest.ini file
+
+stages:
+  - name: Simple status
+    request:
+      url: "{api_url}/simple_status"
+      method: GET
+    response:
+      status_code: 200
+      body:
+        message: Simple unauthenticated status API endpoint works
+

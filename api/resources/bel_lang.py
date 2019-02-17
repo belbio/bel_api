@@ -57,6 +57,7 @@ class BelCanonicalize(object):
         canon_belstr = bel_obj.parse(belstr).canonicalize(namespace_targets=namespace_targets).to_string()
 
         # TODO figure out how to handle naked namespace:val better
+        log.info(f'Canonicalize BEL string {canon_belstr}')
         if not canon_belstr:
             canon_belstr = terms.canonicalize(belstr)
 

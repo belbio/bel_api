@@ -80,7 +80,7 @@ livedocs:
 
 
 tests: clean_pyc
-	py.test -rs --cov=./api --cov-report html --cov-config .coveragerc -c tests/pytest.ini --color=yes --durations=10 --flakes --pep8 tests
+	BELBIO="/Users/william/studio/dev/conf" py.test -vv --tavern-beta-new-traceback -rs --cov=./api --cov-report html --cov-config .coveragerc -c tests/pytest.ini --color=yes --durations=10 --flakes --pep8 tests
 
 
 clean_pyc:
