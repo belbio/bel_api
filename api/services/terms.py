@@ -12,6 +12,7 @@ from bel.Config import config
 # log = logging.getLogger(__name__)
 
 import structlog
+
 log = structlog.getLogger()
 
 es = bel.db.elasticsearch.get_client()
@@ -27,23 +28,21 @@ def get_species_info(species_id):
     url_template = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&lvl=3&lin=f&keep=1&srchmode=1&unlock&id=<src_id>"
     search_body = {
         "_source": ["src_id", "id", "name", "label", "taxonomy_rank"],
-        "query": {
-            "term": {"id": species_id}
-        }
+        "query": {"term": {"id": species_id}},
     }
 
-    result = es.search(index='terms', doc_type='term', body=search_body)
-    src = result['hits']['hits'][0]['_source']
-    url = re.sub('(<src_id>)', src['src_id'], url_template)
-    src['url'] = url
-    del src['src_id']
+    result = es.search(index="terms", doc_type="term", body=search_body)
+    src = result["hits"]["hits"][0]["_source"]
+    url = re.sub("(<src_id>)", src["src_id"], url_template)
+    src["url"] = url
+    del src["src_id"]
     return src
 
 
 def get_species_object(species_id):
 
     species = get_species_info(species_id)
-    return {"id": species['id'], "label": species['label']}
+    return {"id": species["id"], "label": species["label"]}
 
 
 # TODO Refactor to use bel.terms.terms.get_terms
@@ -64,10 +63,10 @@ def get_term(term_id):
         }
     }
 
-    result = es.search(index='terms', doc_type='term', body=search_body)
+    result = es.search(index="terms", doc_type="term", body=search_body)
 
-    if len(result['hits']['hits']) > 0:
-        result = result['hits']['hits'][0]['_source']
+    if len(result["hits"]["hits"]) > 0:
+        result = result["hits"]["hits"][0]["_source"]
     else:
         result = None
 
@@ -92,11 +91,11 @@ def get_terms(term_id):
         }
     }
 
-    result = es.search(index='terms', doc_type='term', body=search_body)
+    result = es.search(index="terms", doc_type="term", body=search_body)
 
     results = []
-    for r in result['hits']['hits']:
-        results.append(r['_source'])
+    for r in result["hits"]["hits"]:
+        results.append(r["_source"])
 
     return results
 
@@ -127,60 +126,13 @@ def get_term_search(search_term, size, entity_types, annotation_types, species, 
             "bool": {
                 "minimum_should_match": 1,
                 "should": [
-                    {
-                        "match": {
-                            "id": {
-                                "query": "",
-                                "boost": 4
-                            }
-                        }
-                    },
-                    {
-                        "match": {
-                            "namespace_value": {
-                                "query": "",
-                                "boost": 4
-                            }
-                        }
-                    },
-                    {
-                        "match": {
-                            "name": {
-                                "query": "",
-                                "boost": 2
-                            }
-                        }
-                    },
-                    {
-                        "match": {
-                            "synonyms": {
-                                "query": ""
-                            }
-                        }
-                    },
-                    {
-                        "match": {
-                            "label": {
-                                "query": "",
-                                "boost": 4
-                            }
-                        }
-                    },
-                    {
-                        "match": {
-                            "alt_ids": {
-                                "query": "",
-                                "boost": 2
-                            }
-                        }
-                    },
-                    {
-                        "match": {
-                            "src_id": {
-                                "query": ""
-                            }
-                        }
-                    }
+                    {"match": {"id": {"query": "", "boost": 4}}},
+                    {"match": {"namespace_value": {"query": "", "boost": 4}}},
+                    {"match": {"name": {"query": "", "boost": 2}}},
+                    {"match": {"synonyms": {"query": ""}}},
+                    {"match": {"label": {"query": "", "boost": 4}}},
+                    {"match": {"alt_ids": {"query": "", "boost": 2}}},
+                    {"match": {"src_id": {"query": ""}}},
                 ],
                 "filter": filters,
             }
@@ -192,21 +144,23 @@ def get_term_search(search_term, size, entity_types, annotation_types, species, 
                 {"label": {}},
                 {"synonyms": {}},
                 {"alt_ids": {}},
-                {"src_id": {}}
+                {"src_id": {}},
             ]
-        }
+        },
     }
 
-    results = es.search(index='terms', doc_type='term', body=search_body)
+    results = es.search(index="terms", doc_type="term", body=search_body)
 
     search_results = []
-    for result in results['hits']['hits']:
-        search_results.append(result['_source'] + {'highlight': result['highlight']})
+    for result in results["hits"]["hits"]:
+        search_results.append(result["_source"] + {"highlight": result["highlight"]})
 
     return search_results
 
 
-def get_term_completions(completion_text, size, entity_types, annotation_types, species, namespaces):
+def get_term_completions(
+    completion_text, size, entity_types, annotation_types, species, namespaces
+):
     """Get Term completions filtered by additional requirements
 
     Args:
@@ -220,7 +174,7 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
     Returns:
         list of NSArgs
     """
-    log.info(f'Size: {size}')
+    log.info(f"Size: {size}")
     # Split out Namespace from namespace value to use namespace for filter
     #     and value for completion text
     matches = re.match('([A-Z]+):"?(.*)', completion_text)
@@ -264,7 +218,9 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
     # Species filter
     grp = False
     if entity_types:
-        grp = [et for et in entity_types if et in config['bel_api']['search']['species_entity_types']]
+        grp = [
+            et for et in entity_types if et in config["bel_api"]["search"]["species_entity_types"]
+        ]
 
     if grp and species:
         if isinstance(species, str):
@@ -276,104 +232,85 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
                 "bool": {
                     "should": [
                         {"bool": {"must_not": {"exists": {"field": "species_id"}}}},
-                        {"terms": {"species_id": species}}
+                        {"terms": {"species_id": species}},
                     ]
                 }
             }
         )
 
-    log.info(f'Term Filters {filters}')
+    log.info(f"Term Filters {filters}")
 
     search_body = {
-        "_source": ["id", "name", "label", "description", "species_id", "species_label", "entity_types", "annotation_types", "synonyms", ],
+        "_source": [
+            "id",
+            "name",
+            "label",
+            "description",
+            "species_id",
+            "species_label",
+            "entity_types",
+            "annotation_types",
+            "synonyms",
+        ],
         "size": size,
         "query": {
             "bool": {
                 "should": [
-                    {
-                        "match": {
-                            "id": {
-                                "query": completion_text,
-                                "boost": 6,
-                                "_name": "id"
-                            }
-                        }
-                    },
+                    {"match": {"id": {"query": completion_text, "boost": 6, "_name": "id"}}},
                     {
                         "match": {
                             "namespace_value": {
                                 "query": completion_text,
                                 "boost": 8,
-                                "_name": "namespace_value"
+                                "_name": "namespace_value",
                             }
                         }
                     },
+                    {"match": {"label": {"query": completion_text, "boost": 5, "_name": "label"}}},
                     {
                         "match": {
-                            "label": {
-                                "query": completion_text,
-                                "boost": 5,
-                                "_name": "label"
-                            }
+                            "synonyms": {"query": completion_text, "boost": 1, "_name": "synonyms"}
                         }
                     },
-                    {
-                        "match": {
-                            "synonyms": {
-                                "query": completion_text,
-                                "boost": 1,
-                                "_name": "synonyms"
-                            }
-                        }
-                    }
                 ],
                 "must": {
-                    "match": {
-                        "autocomplete": {
-                            "query": completion_text,
-                            "_name": "autocomplete"
-                        }
-                    }
+                    "match": {"autocomplete": {"query": completion_text, "_name": "autocomplete"}}
                 },
-                "filter": filters
+                "filter": filters,
             }
         },
-        "highlight": {
-            "fields": {
-                "autocomplete": {"type": "plain"},
-                "synonyms": {"type": "plain"}
-            }
-        }
+        "highlight": {"fields": {"autocomplete": {"type": "plain"}, "synonyms": {"type": "plain"}}},
     }
 
     import json
-    log.debug(f'Completion search body {json.dumps(search_body)}')
+
+    log.debug(f"Completion search body {json.dumps(search_body)}")
 
     # Boost namespaces
-    if config['bel_api'].get('search', False):
-        if config['bel_api']['search'].get('boost_namespaces', False):
-            if not isinstance(config['bel_api']['search']['boost_namespaces'], (list)):
-                log.warn('BEL config boost_namespaces is not an array (list)!')
+    if config["bel_api"].get("search", False):
+        if config["bel_api"]["search"].get("boost_namespaces", False):
+            if not isinstance(config["bel_api"]["search"]["boost_namespaces"], (list)):
+                log.warn("BEL config boost_namespaces is not an array (list)!")
             else:
                 boost_namespaces = {
                     "terms": {
-                        "namespace": config['bel_api']['search']['boost_namespaces'],
-                        "boost": 6
+                        "namespace": config["bel_api"]["search"]["boost_namespaces"],
+                        "boost": 6,
                     }
                 }
-                search_body['query']['bool']['should'].append(boost_namespaces)
+                search_body["query"]["bool"]["should"].append(boost_namespaces)
 
-    results = es.search(index='terms', doc_type='term', body=search_body)
+    results = es.search(index="terms", doc_type="term", body=search_body)
 
     # highlight matches
     completions = []
 
-    for result in results['hits']['hits']:
-        species_id = result['_source'].get('species_id', None)
-        species_label = result['_source'].get('species_label', None)
-        species = {'id': species_id, 'label': species_label}
-        entity_types = result['_source'].get('entity_types', None)
-        annotation_types = result['_source'].get('annotation_types', None)
+    for result in results["hits"]["hits"]:
+        species_id = result["_source"].get("species_id", None)
+        species_label = result["_source"].get("species_label", None)
+        species = {"id": species_id, "label": species_label}
+        entity_types = result["_source"].get("entity_types", None)
+        annotation_types = result["_source"].get("annotation_types", None)
         # Filter out duplicate matches
         matches = []
         matches_lower = []
@@ -383,16 +320,18 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
             matches.append(match)
             matches_lower.append(match.lower())
 
-        completions.append({
-            "id": result['_source']["id"],
-            "name": result['_source'].get('name', 'Missing Name'),
-            "label": result['_source'].get('label', 'Missing Label'),
-            "description": result['_source'].get('description', None),
-            "species": species,
-            "entity_types": entity_types,
-            "annotation_types": annotation_types,
-            "highlight": matches,
-        })
+        completions.append(
+            {
+                "id": result["_source"]["id"],
+                "name": result["_source"].get("name", "Missing Name"),
+                "label": result["_source"].get("label", "Missing Label"),
+                "description": result["_source"].get("description", None),
+                "species": species,
+                "entity_types": entity_types,
+                "annotation_types": annotation_types,
+                "highlight": matches,
+            }
+        )
 
     return completions
 
@@ -417,9 +356,9 @@ def term_types():
         }
     }
 
-    results = es.search(index='terms', doc_type='term', body=search_body, size=0)
+    results = es.search(index="terms", doc_type="term", body=search_body, size=0)
 
-    types = {'namespaces': {}, 'entity_types': {}, 'annotation_types': {}}
+    types = {"namespaces": {}, "entity_types": {}, "annotation_types": {}}
 
     aggs = {
         "namespace_term_counts": "namespaces",
@@ -427,8 +366,8 @@ def term_types():
         "annotation_type_counts": "annotation_types",
     }
     for agg in aggs:
-        for bucket in results['aggregations'][agg]['buckets']:
-            types[aggs[agg]][bucket['key']] = bucket['doc_count']
+        for bucket in results["aggregations"][agg]["buckets"]:
+            types[aggs[agg]][bucket["key"]] = bucket["doc_count"]
 
     return types
 
@@ -446,23 +385,20 @@ def namespace_term_counts():
     size = 100
 
     search_body = {
-        "aggs": {
-            "namespace_term_counts": {"terms": {"field": "namespace", "size": size}}
-        }
+        "aggs": {"namespace_term_counts": {"terms": {"field": "namespace", "size": size}}}
     }
 
     # Get term counts but raise error if elasticsearch is not available
     try:
-        results = es.search(index='terms', doc_type='term', body=search_body, size=0)
-        results = results['aggregations']['namespace_term_counts']['buckets']
+        results = es.search(index="terms", doc_type="term", body=search_body, size=0)
+        results = results["aggregations"]["namespace_term_counts"]["buckets"]
     except elasticsearch.ConnectionError as e:
         raise falcon.HTTPBadRequest(
-            title='Connection Refused',
-            description='Cannot access Elasticsearch',
+            title="Connection Refused", description="Cannot access Elasticsearch"
         )
 
     # return results
-    return [{'namespace': r['key'], 'count': r['doc_count']} for r in results]
+    return [{"namespace": r["key"], "count": r["doc_count"]} for r in results]
 
 
 def canonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = None) -> str:
@@ -485,16 +421,16 @@ def canonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = None
     """
 
     if not namespace_targets:
-        namespace_targets = config['bel']['lang']['canonical']
+        namespace_targets = config["bel"]["lang"]["canonical"]
 
     for start_ns in namespace_targets:
         if re.match(start_ns, term_id):
             results = bel.terms.terms.get_equivalents(term_id)
-            equivalents = results['equivalents']
+            equivalents = results["equivalents"]
             for target_ns in namespace_targets[start_ns]:
                 for e in equivalents:
-                    if target_ns in e['namespace'] and e['primary']:
-                        return e['term_id']
+                    if target_ns in e["namespace"] and e["primary"]:
+                        return e["term_id"]
 
     return term_id
 
@@ -519,16 +455,16 @@ def decanonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = No
     """
 
     if not namespace_targets:
-        namespace_targets = config['bel']['lang']['decanonical']
+        namespace_targets = config["bel"]["lang"]["decanonical"]
 
     for start_ns in namespace_targets:
         if re.match(start_ns, term_id):
             results = bel.terms.terms.get_equivalents(term_id)
-            equivalents = results['equivalents']
-            log.debug(f'Term: {term_id} Equiv: {equivalents}')
+            equivalents = results["equivalents"]
+            log.debug(f"Term: {term_id} Equiv: {equivalents}")
             for target_ns in namespace_targets[start_ns]:
                 for e in equivalents:
-                    if target_ns in e['namespace'] and e['primary']:
-                        return e['term_id']
+                    if target_ns in e["namespace"] and e["primary"]:
+                        return e["term_id"]
 
     return term_id
