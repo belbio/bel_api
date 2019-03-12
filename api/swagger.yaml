@@ -802,6 +802,14 @@ paths:
               required:
                 - "nanopub"
               properties:
+                response_type:
+                  type: string
+                  enum: [nanopub, validation]
+                  default: nanopub
+                  description: |
+                    response_type = nanopub (or unset) will return the entire nanopub with
+                    nanopub['nanopub']['metadata']['gd_validation'] = <validation_results>
+                    response_type = validation will just return {'validation_results': <validation_results>}
                 error_level:
                   type: "string"
                   enum: [ERROR, WARNING]
@@ -906,25 +914,28 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    level:
-                      type: string
-                      enum: [Error, Warning]
-                      default: WARNING
-                    section:
-                      type: string
-                      enum: [Assertion, Annotation, Structure]
-                    label:
-                      type: string
-                      description: Label which can be used in Elasticsearch faceting
-                    index:
-                      type: integer
-                      description: Index of Assertion or Annotation in Nanopub so one can associate an error with a specific Assertion or Annotation
-                    msg:
-                      type: string
+                type: object
+                properties:
+                  validation_results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        level:
+                          type: string
+                          enum: [Error, Warning]
+                          default: WARNING
+                        section:
+                          type: string
+                          enum: [Assertion, Annotation, Structure]
+                        label:
+                          type: string
+                          description: Label which can be used in Elasticsearch faceting
+                        index:
+                          type: integer
+                          description: Index of Assertion or Annotation in Nanopub so one can associate an error with a specific Assertion or Annotation
+                        msg:
+                          type: string
                 example:
                   validation_results:
                   - level: Error
