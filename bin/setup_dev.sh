@@ -13,6 +13,7 @@ git clone git@github.com:belbio/bel.git
 # Set up configuration
 curl ${URLROOT}/conf/dotenv.sample -o .env
 curl ${URLROOT}/conf/belbio_conf.yml.sample -o conf/belbio_conf.yml
+curl ${URLROOT}/conf/belbio_secrets.yml.sample -o conf/belbio_secrets.yml
 curl ${URLROOT}/conf/elasticsearch.yml -o conf/elasticsearch.yml
 touch conf/belbio_secrets.yml
 
