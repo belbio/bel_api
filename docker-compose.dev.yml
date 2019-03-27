@@ -1,0 +1,222 @@
+version: "3.2"
+
+volumes:
+  dev_arangodb_data:
+    driver: local
+  dev_elasticsearch_data:
+    driver: local
+  dev_rabbitmq_data:
+    driver: local
+
+networks:
+  biodati:
+    external: true
+
+services:
+  # BEL API - core requirement
+  # CELERY DOES NOT SUPPORT Python 3.7 yet - due to async keyword!!!!!!!!!!
+  belapi:
+    container_name: belapi
+    image: belbio/bel_api:localdev
+    build:
+      context: ./belapi
+      dockerfile: ./docker/Dockerfile-bel_api-dev
+    ports:
+      - "8000:8000"
+    environment:
+      - CELERY_BROKER=amqp://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
+      - CELERY_BACKEND=rpc://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
+      - SERVER_MODE=${BS_SERVER_MODE:?err}
+      - BELBIO_CONF=${BELBIO_CONF:?err}
+      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
+      - ARANGO_USER=${BS_ARANGO_USER}
+      - ARANGO_PASSWD=${BS_ARANGO_PASSWD}
+      - JWT_SECRET=${BS_Auth0_ClientSecret:?err}
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+      - arangodb
+    volumes:
+      - ./belapi/api:/app
+      # Add bel python package so it's editable
+      - ./bel/bel:/usr/local/lib/python3.6/site-packages/bel
+      # Add bel specifications folder for official and customer bel specs
+      - ./bel_specifications:/belbio/bel_specifications
+      - ./conf/belbio_conf.yml:/belbio/belbio_conf.yml
+      - ./conf/belbio_secrets.yml:/belbio/belbio_secrets.yml
+    networks:
+      biodati:
+    labels:
+      - traefik.enable=true
+      - traefik.backend=belapi
+      - traefik.frontend.rule=Host:belapi.${BS_HOST_NAME:?err};
+      - traefik.port=8000
+      - traefik.docker.network=biodati
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
+    restart: unless-stopped
+
+
+  # ArangoDB - document/graph store - core requirement
+  # http://localhost:8529
+  # Upgrading - run this first:  "docker-compose run --rm arangodb arangod --database.auto-upgrade"
+  arangodb:
+    container_name: arangodb
+    image: arangodb:3.4
+    command: --log.level info --log.level performance=info --log.level queries=info --log.level requests=warning
+    ports:
+      - "8529:8529"
+    volumes:
+      - dev_arangodb_data:/var/lib/arangodb3
+    environment:
+      - ARANGO_NO_AUTH=1
+      # - ARANGO_ROOT_PASSWORD=${BS_ARANGO_PASSWD:?err}
+    networks:
+      biodati:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10k"
+        max-file: "3"
+    healthcheck:
+      test: curl -f http://localhost:8529/_api/version || exit 1
+    restart: unless-stopped
+
+  # Elasticsearch 6.0
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    ports:
+      - "9200:9200"
+    volumes:
+      - dev_elasticsearch_data:/usr/share/elasticsearch/data
+      - ./conf/elasticsearch.yml:/conf/elasticsearch.yml
+    networks:
+      biodati:
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - xpack.security.enabled=false
+      - xpack.watcher.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 1g
+    logging:
+    #   driver: none
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
+    restart: unless-stopped
+
+  celery_worker:
+    image: belbio/bel_api:localdev
+    build:
+      context: .
+      dockerfile: ./belapi/docker/Dockerfile-bel_api-dev
+    volumes:
+      - ./belapi/api:/app
+      # Add bel python package so it's editable
+      - ./bel/bel:/usr/local/lib/python3.6/site-packages/bel
+      # Add bel specifications folder for official and customer bel specs
+      - ./bel_specifications:/belbio/bel_specifications
+      - ./conf/belbio_conf.yml:/belbio/belbio_conf.yml
+      - ./conf/belbio_secrets.yml:/belbio/belbio_secrets.yml
+    command: celery -A services.tasks:celery_app worker --loglevel=info
+    networks:
+      biodati:
+    environment:
+      - SERVER_MODE=${BS_SERVER_MODE:?err}
+      - CELERY_BROKER=amqp://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
+      - CELERY_BACKEND=rpc://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
+      - BELBIO_CONF=${BELBIO_CONF:?err}
+      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
+    depends_on:
+      - belapi
+      - rabbitmq
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
+    restart: unless-stopped
+
+  flower:
+    container_name: flower
+    image: belbio/bel_api:localdev
+    build:
+      context: .
+      dockerfile: ./belapi/docker/Dockerfile-bel_api-dev
+    environment:
+      - SERVER_MODE=${BS_SERVER_MODE:?err}
+      - CELERY_BROKER=amqp://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
+      - CELERY_BACKEND=rpc://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
+      - BELBIO_CONF=${BELBIO_CONF:?err}
+      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
+    ports:
+      - 5555:5555
+    volumes:
+      - ./belapi/api:/app
+      # Add bel python package so it's editable
+      - ./bel/bel:/usr/local/lib/python3.6/site-packages/bel
+      # Add bel specifications folder for official and customer bel specs
+      - ./bel_specifications:/belbio/bel_specifications
+      - ./conf/belbio_conf.yml:/belbio/belbio_conf.yml
+      - ./conf/belbio_secrets.yml:/belbio/belbio_secrets.yml
+    command:  flower -A services.tasks:celery_app --port=5555 --broker=amqp://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
+    networks:
+      biodati:
+    labels:
+      - traefik.enable=true
+      - traefik.backend=flower
+      - traefik.frontend.rule=Host:flower.${BS_HOST_NAME:?err}
+      - traefik.port=5555
+      - traefik.docker.network=biodati
+    depends_on:
+      - belapi
+      - rabbitmq
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
+    restart: unless-stopped
+
+  # Used by celery for a message queue
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    image: rabbitmq:3.6-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=${BS_RABBITMQ_USER:?err}
+      - RABBITMQ_DEFAULT_PASS=${BS_RABBITMQ_PASSWD:?err}
+      - RABBITMQ_VM_MEMORY_HIGH_WATERMARK=.2  # Allow up to 20% of RAM
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error}]
+    volumes:
+      - dev_rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      biodati:
+    labels:
+      - traefik.enable=true
+      - traefik.backend=rabbitmq
+      - traefik.frontend.rule=Host:rabbitmq.${BS_HOST_NAME:?err}
+      - traefik.port=15672
+      - traefik.docker.network=biodati
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5k"
+        max-file: "3"
+    restart: unless-stopped

@@ -1,0 +1,87 @@
+# YAML Configuration file for BELbio tools
+# Uses virtualenv for BELbio API and server for Elasticsearch/ArangoDB
+
+# Location of this file can be found in one of the following locations
+#   first found is the one that is used
+#   - ./belbio_conf.yml    (just a regular file in the local directory or any parent directory)
+#   - ~/.belbio_conf       (a dotfile in the home directory)
+
+
+# bel package settings
+bel:
+  lang:
+    default_bel_version: 2.0.0
+
+    # Location of BEL Language Specification yaml files for different versions
+    specifications: /belbio/bel_specifications
+
+    # Collect necessary files from belbio/bel_specifications repo if True
+    specification_github_repo: True
+
+    # Term Canonicalization and decanonicalization
+    # Note that we don't decanonicalize CHEBI (this is not necessarily a symmetric process)
+    canonical:
+      HGNC: ["EG", "SP"]
+      MGI: ["EG", "SP"]
+      RGD: ["EG", "SP"]
+      ZFIN: ["EG", "SP"]
+      SP: ["EG"]
+      CHEMBL: ["CHEBI"]
+
+    decanonical:
+      # EG will convert into the first valid namespace based on species
+      EG: ['HGNC', "MGI", 'RGD', "ZFIN", "SP"]
+      SP: ['HGNC', 'MGI', 'RGD', 'ZFIN']
+
+  nanopub:
+    # JSON Schema for BEL Nanopubs (in YAML format :)
+    schema_uri: https://raw.githubusercontent.com/belbio/schemas/master/schemas/nanopub_bel-1.0.0.yaml
+
+    # Rules to apply for computing BEL Edges from BEL Nanopubs
+    # pipeline_edge_rules: ["component_of", "degradation"]
+    pipeline_edge_rules: []  # If empty, don't filter out any of the compute rules
+
+# bel_api service settings
+bel_api:
+
+  # Should we require authentication in API?
+  authenticated: false
+
+  mail:
+    api: "https://api.mailgun.net/v3/mg.biodati.com"
+    # api_key: # Pulled from belbio_secrets.yml
+    admin_email: admin@biodati.com
+
+  search:
+    # Boost these namespace in term search results and completions
+    boost_namespaces: ['SFAM', 'HGNC', 'MGI', 'RGD', 'ZFIN', 'CHEBI', 'GO']
+
+    # Term completion only applies species filtering to following entity types
+    species_entity_types: ['Gene', 'Protein', 'RNA', 'Micro_RNA']
+
+  # For accessing localhost from docker on a mac, use special dns name 'docker.for.mac.localhost'
+  servers:
+    server_type: DEV
+
+    api_url: http://belapi.dev.biodati.test
+
+    elasticsearch: http://elasticsearch:9200
+
+    # arangodb_host: docker.for.mac.localhost
+    arangodb_host: arangodb
+    arangodb_protocol: http
+    arangodb_port: 8529
+    arangodb_username: ''
+    # arangodb_password - comes from secrets file or ENV variable - will be merged in as config['secrets']['bel_api']['servers']['arangodb_password']
+
+    nanopubstore: http://nanopubstore.dev.biodati.test
+
+  edges:
+    orthologize_targets: ["TAX:10090", "TAX:9606"]
+
+bel_resources:
+
+  # restrict collecting to listed species, empty array means collect everything
+  # species_list: ['TAX:9606', 'TAX:10090']
+  # species_list: ['TAX:9606', 'TAX:10090', 'TAX:10116']
+  species_list: []
