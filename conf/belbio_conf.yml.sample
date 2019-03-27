@@ -10,7 +10,7 @@
 # bel package settings
 bel:
   lang:
-    default_bel_version: 2.0.0
+    default_bel_version: 2.1.0
 
     # Location of BEL Language Specification yaml files for different versions
     specifications: /belbio/bel_specifications
@@ -63,12 +63,12 @@ bel_api:
   servers:
     server_type: DEV
 
-    api_url: http://belapi.dev.biodati.test
+    api_url: http://belapi.dev.belbio.test
 
-    elasticsearch: http://elasticsearch:9200
+    elasticsearch: http://bb_elasticsearch:9200
 
     # arangodb_host: docker.for.mac.localhost
-    arangodb_host: arangodb
+    arangodb_host: bb_arangodb
     arangodb_protocol: http
     arangodb_port: 8529
     arangodb_username: ''

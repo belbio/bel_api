@@ -9,33 +9,32 @@ volumes:
     driver: local
 
 networks:
-  biodati:
+  belbio:
     external: true
 
 services:
+
   # BEL API - core requirement
   # CELERY DOES NOT SUPPORT Python 3.7 yet - due to async keyword!!!!!!!!!!
-  belapi:
-    container_name: belapi
+  bb_belapi:
+    container_name: bb_belapi
     image: belbio/bel_api:localdev
     build:
       context: ./belapi
       dockerfile: ./docker/Dockerfile-bel_api-dev
-    ports:
-      - "8000:8000"
     environment:
-      - CELERY_BROKER=amqp://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
-      - CELERY_BACKEND=rpc://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
-      - SERVER_MODE=${BS_SERVER_MODE:?err}
+      - CELERY_BROKER=amqp://${RABBITMQ_USER:?err}:${RABBITMQ_PASSWD:?err}@rabbitmq:5672
+      - CELERY_BACKEND=rpc://${RABBITMQ_USER:?err}:${RABBITMQ_PASSWD:?err}@rabbitmq:5672
+      - SERVER_MODE=${SERVER_MODE:?err}
       - BELBIO_CONF=${BELBIO_CONF:?err}
       - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
-      - ARANGO_USER=${BS_ARANGO_USER}
-      - ARANGO_PASSWD=${BS_ARANGO_PASSWD}
-      - JWT_SECRET=${BS_Auth0_ClientSecret:?err}
+      - ARANGO_USER=${ARANGO_USER}
+      - ARANGO_PASSWD=${ARANGO_PASSWD}
+      - JWT_SECRET=${JWT_SECRET:?err}
     depends_on:
-      - rabbitmq
-      - elasticsearch
-      - arangodb
+      - bb_rabbitmq
+      - bb_elasticsearch
+      - bb_arangodb
     volumes:
       - ./belapi/api:/app
       # Add bel python package so it's editable
@@ -45,11 +44,11 @@ services:
       - ./conf/belbio_conf.yml:/belbio/belbio_conf.yml
       - ./conf/belbio_secrets.yml:/belbio/belbio_secrets.yml
     networks:
-      biodati:
+      belbio:
     labels:
       - traefik.enable=true
       - traefik.backend=belapi
-      - traefik.frontend.rule=Host:belapi.${BS_HOST_NAME:?err};
+      - traefik.frontend.rule=Host:belapi.${SERVICES_HOST_NAME:?err};
       - traefik.port=8000
       - traefik.docker.network=biodati
     logging:
@@ -63,8 +62,8 @@ services:
   # ArangoDB - document/graph store - core requirement
   # http://localhost:8529
   # Upgrading - run this first:  "docker-compose run --rm arangodb arangod --database.auto-upgrade"
-  arangodb:
-    container_name: arangodb
+  bb_arangodb:
+    container_name: bb_arangodb
     image: arangodb:3.4
     command: --log.level info --log.level performance=info --log.level queries=info --log.level requests=warning
     ports:
@@ -75,7 +74,7 @@ services:
       - ARANGO_NO_AUTH=1
       # - ARANGO_ROOT_PASSWORD=${BS_ARANGO_PASSWD:?err}
     networks:
-      biodati:
+      belbio:
     logging:
       driver: "json-file"
       options:
@@ -86,8 +85,8 @@ services:
     restart: unless-stopped
 
   # Elasticsearch 6.0
-  elasticsearch:
-    container_name: elasticsearch
+  bb_elasticsearch:
+    container_name: bb_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
     ports:
       - "9200:9200"
@@ -95,7 +94,7 @@ services:
       - dev_elasticsearch_data:/usr/share/elasticsearch/data
       - ./conf/elasticsearch.yml:/conf/elasticsearch.yml
     networks:
-      biodati:
+      belbio:
     environment:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
@@ -118,7 +117,7 @@ services:
         max-file: "3"
     restart: unless-stopped
 
-  celery_worker:
+  bb_celery_worker:
     image: belbio/bel_api:localdev
     build:
       context: .
@@ -133,16 +132,16 @@ services:
       - ./conf/belbio_secrets.yml:/belbio/belbio_secrets.yml
     command: celery -A services.tasks:celery_app worker --loglevel=info
     networks:
-      biodati:
+      belbio:
     environment:
-      - SERVER_MODE=${BS_SERVER_MODE:?err}
-      - CELERY_BROKER=amqp://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
-      - CELERY_BACKEND=rpc://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
+      - SERVER_MODE=${SERVER_MODE:?err}
+      - CELERY_BROKER=amqp://${RABBITMQ_USER:?err}:${RABBITMQ_PASSWD:?err}@rabbitmq:5672
+      - CELERY_BACKEND=rpc://${RABBITMQ_USER:?err}:${RABBITMQ_PASSWD:?err}@rabbitmq:5672
       - BELBIO_CONF=${BELBIO_CONF:?err}
       - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
     depends_on:
-      - belapi
-      - rabbitmq
+      - bb_belapi
+      - bb_rabbitmq
     logging:
       driver: "json-file"
       options:
@@ -150,16 +149,16 @@ services:
         max-file: "3"
     restart: unless-stopped
 
-  flower:
-    container_name: flower
+  bb_flower:
+    container_name: bb_flower
     image: belbio/bel_api:localdev
     build:
       context: .
       dockerfile: ./belapi/docker/Dockerfile-bel_api-dev
     environment:
-      - SERVER_MODE=${BS_SERVER_MODE:?err}
-      - CELERY_BROKER=amqp://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
-      - CELERY_BACKEND=rpc://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
+      - SERVER_MODE=${SERVER_MODE:?err}
+      - CELERY_BROKER=amqp://${RABBITMQ_USER:?err}:${RABBITMQ_PASSWD:?err}@rabbitmq:5672
+      - CELERY_BACKEND=rpc://${RABBITMQ_USER:?err}:${RABBITMQ_PASSWD:?err}@rabbitmq:5672
       - BELBIO_CONF=${BELBIO_CONF:?err}
       - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
     ports:
@@ -172,18 +171,18 @@ services:
       - ./bel_specifications:/belbio/bel_specifications
       - ./conf/belbio_conf.yml:/belbio/belbio_conf.yml
       - ./conf/belbio_secrets.yml:/belbio/belbio_secrets.yml
-    command:  flower -A services.tasks:celery_app --port=5555 --broker=amqp://${BS_RABBITMQ_USER:?err}:${BS_RABBITMQ_PASSWD:?err}@rabbitmq:5672
+    command:  flower -A services.tasks:celery_app --port=5555 --broker=amqp://${RABBITMQ_USER:?err}:${RABBITMQ_PASSWD:?err}@rabbitmq:5672
     networks:
-      biodati:
+      belbio:
     labels:
       - traefik.enable=true
       - traefik.backend=flower
-      - traefik.frontend.rule=Host:flower.${BS_HOST_NAME:?err}
+      - traefik.frontend.rule=Host:flower.${SERVICES_HOST_NAME:?err}
       - traefik.port=5555
       - traefik.docker.network=biodati
     depends_on:
-      - belapi
-      - rabbitmq
+      - bb_belapi
+      - bb_rabbitmq
     logging:
       driver: "json-file"
       options:
@@ -192,26 +191,23 @@ services:
     restart: unless-stopped
 
   # Used by celery for a message queue
-  rabbitmq:
-    container_name: rabbitmq
+  bb_rabbitmq:
+    container_name: bb_rabbitmq
     hostname: rabbitmq
     image: rabbitmq:3.6-management
     environment:
-      - RABBITMQ_DEFAULT_USER=${BS_RABBITMQ_USER:?err}
-      - RABBITMQ_DEFAULT_PASS=${BS_RABBITMQ_PASSWD:?err}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:?err}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWD:?err}
       - RABBITMQ_VM_MEMORY_HIGH_WATERMARK=.2  # Allow up to 20% of RAM
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error}]
     volumes:
       - dev_rabbitmq_data:/var/lib/rabbitmq
-    ports:
-      - 5672:5672
-      - 15672:15672
     networks:
-      biodati:
+      belbio:
     labels:
       - traefik.enable=true
       - traefik.backend=rabbitmq
-      - traefik.frontend.rule=Host:rabbitmq.${BS_HOST_NAME:?err}
+      - traefik.frontend.rule=Host:rabbitmq.${SERVICES_HOST_NAME:?err}
       - traefik.port=15672
       - traefik.docker.network=biodati
     logging:
@@ -220,3 +216,29 @@ services:
         max-size: "5k"
         max-file: "3"
     restart: unless-stopped
+
+  bb_traefik:
+    container_name: bb_traefik
+    image: traefik:1.7.4
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./conf/traefik.toml:/traefik.toml
+      - ./logs:/logs
+    networks:
+      belbio:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10k"
+        max-file: "3"
+    # network_mode: "host"
+    labels:
+      - traefik.enable=true
+      - traefik.backend=traefik
+      - traefik.frontend.rule=Host:traefik.${SERVICES_HOST_NAME:?err}
+      - traefik.port=8080
+      - traefik.docker.network=biodati
+    restart: "unless-stopped"
