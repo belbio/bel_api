@@ -39,6 +39,7 @@ bel = "*"
 requests-cache = "*"
 tavern = "*"
 celery = "*"
+"boto3" = "*"
 
 [dev-packages]
 ptvsd = "*"
