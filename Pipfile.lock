@@ -25,10 +25,10 @@
         },
         "asn1crypto": {
             "hashes": [
-                "sha256:2f1adbb7546ed199e3c90ef23ec95c5cf3585bac7d11fb7eb562a3fe89c64e87",
-                "sha256:9d5c20441baf0cb60a4ac34cc447c6c189024b6b4c6cd7877034f4965c464e49"
+                "sha256:d02bf8ea1b964a5ff04ac7891fe3a39150045d1e5e4fe99273ba677d11b92a04",
+                "sha256:f822954b90c4c44f002e2cd46d636ab630f1fe4df22c816a82b66505c404eb2a"
             ],
-            "version": "==0.24.0"
+            "version": "==1.0.0"
         },
         "atomicwrites": {
             "hashes": [
@@ -60,11 +60,11 @@
         },
         "bel": {
             "hashes": [
-                "sha256:55a88496f6be456f9673c6ad1897476765b5696e65ace445fc4c1a08d38d9dcc",
-                "sha256:cced1deab0f240c6d1b1646dd014b3ef9f8fadbe213a50e9e0617a4c3c392dcc"
+                "sha256:121d6b4300af7b9bf8b485cfd9a15079282bcc7c464627918afda812aeda48c1",
+                "sha256:c34e01e59fb6a6f899c0b834ac8127748d9f2b4c2e0c2b6d64dbca47d498ab6f"
             ],
             "index": "pypi",
-            "version": "==0.12.33"
+            "version": "==0.13.0"
         },
         "billiard": {
             "hashes": [
@@ -75,18 +75,18 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:0895805810df8cc49898fbeb61479c20c63a59fb6d3adf19f78fde90efec10a2",
-                "sha256:2f174f1e01d898ed940677a66404b7d30cbe92665b1fa2a5086eb64382ce2c41"
+                "sha256:60e711f1113be926bcec1cfe62fa336438d021ce834f4a5228beead3b4bc5142",
+                "sha256:8c9b9b2422c1baa84c0f331ee86ac4d265e1e7d321ce7ba58dbb863585c2191f"
             ],
             "index": "pypi",
-            "version": "==1.9.240"
+            "version": "==1.9.241"
         },
         "botocore": {
             "hashes": [
-                "sha256:040f5307387481501bf2db02dc55c6512553081b43642578687fc47ed8ec990b",
-                "sha256:7d30b4cc9546a126ccdc9d325a1c02d7f63ff3759b80c9e1f15fd544785e22a1"
+                "sha256:897415ec68b2cbb65a7d32965c456d332bb2eb936e533c9ad6064cd15e67c0c1",
+                "sha256:e35c2e6b8946be9063d7988b19dea2b6136b80c0e3469b6a076c574d5abca6b3"
             ],
-            "version": "==1.12.240"
+            "version": "==1.12.241"
         },
         "cachecontrol": {
             "hashes": [
@@ -1260,9 +1260,10 @@
         },
         "snowballstemmer": {
             "hashes": [
-                "sha256:713e53b79cbcf97bc5245a06080a33d54a77e7cce2f789c835a143bcdb5c033e"
+                "sha256:209f257d7533fdb3cb73bdbd24f436239ca3b2fa67d56f6ff88e86be08cc5ef0",
+                "sha256:df3bac3df4c2c01363f3dd2cfa78cce2840a79b9f1c2d2de9ce8d31683992f52"
             ],
-            "version": "==1.9.1"
+            "version": "==2.0.0"
         },
         "sphinx": {
             "hashes": [
