@@ -4,4 +4,6 @@ Dockerfile
 *.md
 !README.md
 
+api/cache.sqlite
+
 .git
