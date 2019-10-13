@@ -10,7 +10,7 @@ falcon-auth = "*"
 falcon-cors = "*"
 flower = "*"
 gevent = "*"
-greenlet = {version = "*", platform_python_implementation="=='CPython'"}
+greenlet = {version = "*",platform_python_implementation = "=='CPython'"}
 gunicorn = "*"
 itsdangerous = "*"
 json-logging-py = "*"
@@ -61,6 +61,7 @@ sphinx-autobuild = "*"
 sphinx-rtd-theme = "*"
 sphinxcontrib-napoleon = "*"
 twine = "*"
+isort = "*"
 
 [requires]
 python_version = "3.6"

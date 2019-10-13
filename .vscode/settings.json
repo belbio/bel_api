@@ -1,3 +1,30 @@
 {
-    "python.pythonPath": "${workspaceFolder}/.venv/bin/python"
+    "peacock.color": "#eaca7f",
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#f1dcab",
+        "activityBar.foreground": "#15202b",
+        "activityBar.inactiveForeground": "#15202b99",
+        "activityBarBadge.background": "#1ba47b",
+        "activityBarBadge.foreground": "#e7e7e7",
+        "titleBar.activeBackground": "#eaca7f",
+        "titleBar.inactiveBackground": "#eaca7f99",
+        "titleBar.activeForeground": "#15202b",
+        "titleBar.inactiveForeground": "#15202b99",
+        "statusBar.background": "#eaca7f",
+        "statusBarItem.hoverBackground": "#e3b853",
+        "statusBar.foreground": "#15202b"
+    },
+    "python.pythonPath": "/Users/william/.virtualenvs/belapi-mMRBMYQv/bin/python",
+    "python.analysis.openFilesOnly": false,
+    "python.analysis.memory.keepLibraryLocalVariables": true,
+    "python.autoComplete.addBrackets": true,
+    "python.venvPath": "~/.virtualenvs",
+    "python.testing.cwd": "${workspaceFolder}",
+    "python.testing.pytestEnabled": true,
+    "python.linting.pycodestylePath": "pep8",
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.linting.pycodestyleEnabled": false,
+    "python.sortImports.path": "/Users/william/.virtualenvs/belapi-mMRBMYQv/bin/isort",
+    "autoDocstring.docstringFormat": "google",
+    "python.formatting.blackPath": "/usr/local/bin/black"
 }

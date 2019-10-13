@@ -1,12 +1,14 @@
-import falcon
-import services.edges
 import json
-import fastcache
 import traceback
+import unicodedata
 
 import bel.nanopub.validate
-
+import falcon
+import fastcache
 import structlog
+
+import services.edges
+
 log = structlog.getLogger(__name__)
 
 
@@ -17,27 +19,41 @@ class NanopubValidateResource(object):
 
         # BEL Resources loading
         try:
-            data = json.load(req.bounded_stream)
+            data = req.stream.read(req.content_length or 0)
+            data = data.decode(encoding="utf-8")
+            data = data.replace("\u00a0", " ")  # get rid of non-breaking spaces
+            data = json.loads(data)
         except ValueError as e:
-            raise falcon.HTTPUnprocessableEntity(title='Cannot process payload', description=f"Cannot process nanopub (maybe an encoding error? please use UTF-8 for JSON payload) error: {e}")
+            raise falcon.HTTPUnprocessableEntity(
+                title="Cannot process payload",
+                description=f"Cannot process nanopub (maybe an encoding error? please use UTF-8 for JSON payload) error: {e}",
+            )
 
-        log.info('Data', data=data)
-        nanopub = data.get('nanopub', None)
-        error_level = data.get('error_level', 'WARNING')
+        log.info("Data", data=data)
+        nanopub = {}
+        if "nanopub" in data:
+            nanopub["nanopub"] = data.get("nanopub")
+        else:
+            nanopub = None
+        error_level = data.get("error_level", "WARNING")
 
-        # TODO Why am I using nanopub['citation'] instead of nanopub['nanopub']?
         if nanopub:
             try:
                 results = bel.nanopub.validate.validate(nanopub, error_level)
-                log.info(f'Results: {results}')
-                resp.media = {'validation_results': results}
+                log.debug(f"Results: {results}")
+                resp.media = {"validation_results": results}
                 resp.status = falcon.HTTP_200
             except Exception as e:
                 log.error(traceback.print_exc())
-                raise falcon.HTTPUnprocessableEntity(title='Cannot process nanopub', description=f"Cannot process nanopub: {e}")
+                raise falcon.HTTPUnprocessableEntity(
+                    title="Cannot process nanopub", description=f"Cannot process nanopub: {e}"
+                )
 
         else:
-            raise falcon.HTTPBadRequest(title='Cannot process nanopub', description=f"No nanopub in payload to process. Please check your submission.")
+            raise falcon.HTTPBadRequest(
+                title="Cannot process nanopub",
+                description=f"No nanopub in payload to process. Please check your submission.",
+            )
 
 
 class EdgeResource(object):
@@ -51,7 +67,10 @@ class EdgeResource(object):
         """
 
         if edge_id is None:
-            resp.media = {'title': 'EdgeStore endpoint Error', 'message': 'Must provide an edge id, e.g. /edges/139806548404171878991929958738371273692'}
+            resp.media = {
+                "title": "EdgeStore endpoint Error",
+                "message": "Must provide an edge id, e.g. /edges/139806548404171878991929958738371273692",
+            }
             resp.status = falcon.HTTP_200
             return
 
@@ -60,8 +79,8 @@ class EdgeResource(object):
             resp.media = edge
             resp.status = falcon.HTTP_200
         else:
-            description = 'No edge found for {}'.format(edge_id)
-            resp.media = {'title': 'No Edge', 'message': description}
+            description = "No edge found for {}".format(edge_id)
+            resp.media = {"title": "No Edge", "message": description}
             resp.status = falcon.HTTP_404
 
 
@@ -72,21 +91,28 @@ class EdgesResource(object):
         """GET Edges from EdgeStore"""
 
         # Query parameters
-        node_query = req.get_param('node_query', default='')
-        hops = req.get_param('hops', default=1)
-        direction = req.get_param('direction', default='ANY')
-        if direction not in ['ANY', 'INBOUND', 'OUTBOUND']:
+        node_query = req.get_param("node_query", default="")
+        hops = req.get_param("hops", default=1)
+        direction = req.get_param("direction", default="ANY")
+        if direction not in ["ANY", "INBOUND", "OUTBOUND"]:
             message = "Query parameter: direction must be one of ('ANY', 'INBOUND', 'OUTBOUND')"
-            title = 'Bad query parameter'
+            title = "Bad query parameter"
             raise falcon.HTTPBadRequest(title=title, description=message)
 
-        contains = req.get_param_as_bool('contains') or False
-        filters = req.get_param('filters', default=None)
-        limit = req.get_param_as_int('limit', min=1, max=1000) or 1000
-        offset = req.get_param_as_int('offset', min=0) or 0
+        contains = req.get_param_as_bool("contains") or False
+        filters = req.get_param("filters", default=None)
+        limit = req.get_param_as_int("limit", min=1, max=1000) or 1000
+        offset = req.get_param_as_int("offset", min=0) or 0
 
-        (edges, facets) = services.edges.get_edges(node_query, hops=hops, direction=direction, contains=contains, filters=filters, limit=limit, offset=offset)
+        (edges, facets) = services.edges.get_edges(
+            node_query,
+            hops=hops,
+            direction=direction,
+            contains=contains,
+            filters=filters,
+            limit=limit,
+            offset=offset,
+        )
 
         resp.media = {"edges": edges, "facets": facets, "edge_cnt": len(edges)}
         resp.status = falcon.HTTP_200
-
