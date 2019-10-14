@@ -706,7 +706,7 @@ paths:
 
       responses:
         '200':
-          description: Successful response
+          description: Successful response returns the nanopub object with nanopub.metadata.gd_validation = [\<list of validation messages\>]
           content:
             application/json:
               schema:
@@ -730,36 +730,38 @@ paths:
                     msg:
                       type: string
                 example:
-                  validation_results:
-                  - level: Error
-                    section: Structure
-                    label: Error-Structure
-                    msg: 'Missing or badly formed type - must have nanopub["type"] = {"name": <name>,
-                      "version": <version}'
-                    msg_html: 'Missing or badly formed type - must have nanopub["type"] = {"name": <name>,
-                      "version": <version}'
-                  - level: Error
-                    section: Assertion
-                    label: Error-Assertion
-                    index: 0
-                    msg: "Failed parse at position 25. Check that you have have closed your parenthesis\
-                      \ correctly before this point.\npath(MESH:therosclerosis positiveCorrelation bo(GO:\"\
-                      lipid oxidation\")\n                         ^"
-                    msg_html: Failed parse at position 25. Check that you have have closed your parenthesis
-                      correctly before this point.<br />path(MESH:therosclerosis positiveCorrelation
-                      bo(GO:"lipid oxidation")<br />                         ^
-                  - level: Warning
-                    section: Annotation
-                    index: 0
-                    label: Warning-Annotation
-                    msg: 'Annotation term: MESH:artery not found in database'
-                    msg_html: 'Annotation term: MESH:artery not found in database'
-                  - level: Warning
-                    section: Annotation
-                    index: 2
-                    label: Warning-Annotation
-                    msg: 'Annotation term: Review not found in database'
-                    msg_html: 'Annotation term: Review not found in database'
+                  nanopub:
+                    metadata:
+                      gd_validation:
+                      - level: Error
+                        section: Structure
+                        label: Error-Structure
+                        msg: 'Missing or badly formed type - must have nanopub["type"] = {"name": <name>,
+                          "version": <version}'
+                        msg_html: 'Missing or badly formed type - must have nanopub["type"] = {"name": <name>,
+                          "version": <version}'
+                      - level: Error
+                        section: Assertion
+                        label: Error-Assertion
+                        index: 0
+                        msg: "Failed parse at position 25. Check that you have have closed your parenthesis\
+                          \ correctly before this point.\npath(MESH:therosclerosis positiveCorrelation bo(GO:\"\
+                          lipid oxidation\")\n                         ^"
+                        msg_html: Failed parse at position 25. Check that you have have closed your parenthesis
+                          correctly before this point.<br />path(MESH:therosclerosis positiveCorrelation
+                          bo(GO:"lipid oxidation")<br />                         ^
+                      - level: Warning
+                        section: Annotation
+                        index: 0
+                        label: Warning-Annotation
+                        msg: 'Annotation term: MESH:artery not found in database'
+                        msg_html: 'Annotation term: MESH:artery not found in database'
+                      - level: Warning
+                        section: Annotation
+                        index: 2
+                        label: Warning-Annotation
+                        msg: 'Annotation term: Review not found in database'
+                        msg_html: 'Annotation term: Review not found in database'
 
         default:
           description: Error

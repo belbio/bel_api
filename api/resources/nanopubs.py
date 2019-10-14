@@ -29,7 +29,6 @@ class NanopubValidateResource(object):
                 description=f"Cannot process nanopub (maybe an encoding error? please use UTF-8 for JSON payload) error: {e}",
             )
 
-        log.info("Data", data=data)
         nanopub = {}
         if "nanopub" in data:
             nanopub["nanopub"] = data.get("nanopub")
@@ -40,8 +39,9 @@ class NanopubValidateResource(object):
         if nanopub:
             try:
                 results = bel.nanopub.validate.validate(nanopub, error_level)
-                log.debug(f"Results: {results}")
-                resp.media = {"validation_results": results}
+                nanopub["nanopub"]["metadata"]["gd_validation"] = results
+                log.debug(f"Validation Results: {results}")
+                resp.media = nanopub
                 resp.status = falcon.HTTP_200
             except Exception as e:
                 log.error(traceback.print_exc())
