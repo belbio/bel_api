@@ -1,78 +1,79 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import gevent.monkey
-gevent.monkey.patch_all()
-
 import os
 import sys
 
-import falcon
-from falcon_cors import CORS
-from falcon_auth import FalconAuthMiddleware, JWTAuthBackend
+import bel.lang.bel_specification
 
 # import logging
 # import logging.config
 # # from pythonjsonlogger import jsonlogger
 import bel.setup_logging
-import bel.lang.bel_specification
-
-from bel.Config import config
-
-import services.swaggerui
-
-from middleware.stats import FalconStatsMiddleware
-from middleware.field_converters import BelConverter
-import middleware.falcon_exceptions
-
-from resources.status import SimpleStatusResource, HealthCheckResource, StatusResource, VersionResource
-from resources.swagger import SwaggerResource
-
-from resources.bel_lang import BelVersions
-from resources.bel_lang import BelSpecificationResource
-from resources.bel_lang import BelCompletion
-from resources.bel_lang import BelCanonicalize
-from resources.bel_lang import BelDecanonicalize
-
-from resources.bel_lang import BelMigrate12
-
-from resources.tasks import PipelineTasksResource
-from resources.tasks import ResourcesTasksResource
-
-from resources.nanopubs import NanopubValidateResource
-
-from resources.edges import EdgeResource
-from resources.edges import EdgesResource
-
-from resources.terms import TermResource
-from resources.terms import TermsResource
-from resources.terms import TermCompletionsResource
-from resources.terms import TermEquivalentsResource
-from resources.terms import TermCanonicalizeResource
-from resources.terms import TermDecanonicalizeResource
-from resources.terms import TermTypesResource
-
-from resources.orthology import OrthologResource
-
-from resources.belspec import BelSpecResource
-
-from resources.pubmed import PubmedResource
-
-# Setup logging
-module_fn = os.path.basename(__file__)
-module_fn = module_fn.replace('.py', '')
+import falcon
+import gevent.monkey
 
 # TODO - figure out how to run logging setup and belspec once on startup rather than
 #        every time a worker is initialized (moved bel.lang.bel_specification.update_specifications to bel/__init__.py)
 import structlog
-log = structlog.getLogger('bel_api')
+from bel.Config import config
+from falcon_auth import FalconAuthMiddleware, JWTAuthBackend
+from falcon_cors import CORS
 
-cors = CORS(allow_all_origins=True, allow_all_methods=True, allow_all_headers=True, allow_credentials_all_origins=True)
+import middleware.falcon_exceptions
+import services.swaggerui
+from middleware.field_converters import BelConverter
+from middleware.stats import FalconStatsMiddleware
+from resources.bel_lang import (
+    BelCanonicalize,
+    BelCompletion,
+    BelDecanonicalize,
+    BelMigrate12,
+    BelSpecificationResource,
+    BelVersions,
+)
+from resources.belspec import BelSpecResource
+from resources.nanopubs import NanopubValidateResource
+from resources.orthology import OrthologResource
+from resources.pubmed import PubmedResource
+from resources.status import (
+    HealthCheckResource,
+    SimpleStatusResource,
+    StatusResource,
+    VersionResource,
+)
+from resources.swagger import SwaggerResource
+from resources.tasks import ResourcesTasksResource
+from resources.terms import (
+    TermCanonicalizeResource,
+    TermCompletionsResource,
+    TermDecanonicalizeResource,
+    TermEquivalentsResource,
+    TermResource,
+    TermsResource,
+    TermTypesResource,
+)
+
+gevent.monkey.patch_all()
+
+
+# Setup logging
+module_fn = os.path.basename(__file__)
+module_fn = module_fn.replace(".py", "")
+
+log = structlog.getLogger("bel_api")
+
+cors = CORS(
+    allow_all_origins=True,
+    allow_all_methods=True,
+    allow_all_headers=True,
+    allow_credentials_all_origins=True,
+)
 
 stats_middleware = FalconStatsMiddleware()
 
 # Allow requiring authentication via JWT
-if config['bel_api']['authenticated']:
+if config["bel_api"]["authenticated"]:
 
     # Loads user data from JWT
     def user_loader(payload):
@@ -81,19 +82,19 @@ if config['bel_api']['authenticated']:
 
     auth_backend = JWTAuthBackend(
         user_loader=user_loader,
-        secret_key=config['secrets']['bel_api']['shared_secret'],
-        required_claims=['exp', 'iat'],
+        secret_key=config["secrets"]["bel_api"]["shared_secret"],
+        required_claims=["exp", "iat"],
     )
     auth_middleware = FalconAuthMiddleware(
         auth_backend,
-        exempt_routes=['/simple_status', '/healthcheck', '/version', ],
-        exempt_methods=['HEAD']
+        exempt_routes=["/simple_status", "/healthcheck", "/version"],
+        exempt_methods=["HEAD"],
     )
 
-    api = application = falcon.API(middleware=[stats_middleware, auth_middleware, cors.middleware, ])
+    api = application = falcon.API(middleware=[stats_middleware, auth_middleware, cors.middleware])
 
 else:
-    api = application = falcon.API(middleware=[stats_middleware, cors.middleware, ])
+    api = application = falcon.API(middleware=[stats_middleware, cors.middleware])
 
 # Add exception handling
 middleware.falcon_exceptions.register_defaults(api)
@@ -105,67 +106,63 @@ services.swaggerui.register_swaggerui(api)
 # Router converter for BEL Expressions and NSArgs
 #   converts_FORWARDSLASH_ to / after URI template fields are extracted
 #
-api.router_options.converters['bel'] = BelConverter
+api.router_options.converters["bel"] = BelConverter
 
 # Routes  ###############
 # Add routes to skip authentication in common/middleware:AuthMiddleware.skip_routes list
 
 # BEL Language routes
-api.add_route('/bel/versions', BelVersions())  # GET
-api.add_route('/bel/{version}/specification', BelSpecificationResource())  # GET
-api.add_route('/bel/{version}/completion', BelCompletion())  # GET
-api.add_route('/bel/{version}/completion/{belstr:bel}', BelCompletion())  # GET
-api.add_route('/bel/{version}/canonicalize/{belstr:bel}', BelCanonicalize())  # GET
-api.add_route('/bel/{version}/decanonicalize/{belstr:bel}', BelDecanonicalize())  # GET
+api.add_route("/bel/versions", BelVersions())  # GET
+api.add_route("/bel/{version}/specification", BelSpecificationResource())  # GET
+api.add_route("/bel/{version}/completion", BelCompletion())  # GET
+api.add_route("/bel/{version}/completion/{belstr:bel}", BelCompletion())  # GET
+api.add_route("/bel/{version}/canonicalize/{belstr:bel}", BelCanonicalize())  # GET
+api.add_route("/bel/{version}/decanonicalize/{belstr:bel}", BelDecanonicalize())  # GET
 
 # BEL1->2 Migration
-api.add_route('/bel/migrate12/{belstr:bel}', BelMigrate12())  # GET
+api.add_route("/bel/migrate12/{belstr:bel}", BelMigrate12())  # GET
 
 # api.add_route('/bel/{version}/functions', BelSpecificationResource())  # GET
 # api.add_route('/bel/{version}/relations', BelSpecificationResource())  # GET
 
-# EdgeStore routes
-api.add_route('/edges/{edge_id}', EdgeResource())  # GET
-
 # Nanopub routes
-api.add_route('/nanopubs/validate', NanopubValidateResource())  # POST
+api.add_route("/nanopubs/validate", NanopubValidateResource())  # POST
 
 # Task routes
-api.add_route('/tasks/pipeline', PipelineTasksResource())  # POST
-api.add_route('/tasks/resources', ResourcesTasksResource())  # POST
+api.add_route("/tasks/resources", ResourcesTasksResource())  # POST
 
 
 # Term routes
-api.add_route('/terms', TermsResource())  # GET
-api.add_route('/terms/completions/{completion_text:bel}', TermCompletionsResource())
+api.add_route("/terms", TermsResource())  # GET
+api.add_route("/terms/completions/{completion_text:bel}", TermCompletionsResource())
 
-api.add_route('/terms/{term_id:bel}', TermResource())  # GET
-api.add_route('/terms/{term_id:bel}/equivalents', TermEquivalentsResource())  # GET
-api.add_route('/terms/{term_id:bel}/canonicalized', TermCanonicalizeResource())  # GET
-api.add_route('/terms/{term_id:bel}/decanonicalized', TermDecanonicalizeResource())  # GET
-api.add_route('/terms/types', TermTypesResource())  # GET
+api.add_route("/terms/{term_id:bel}", TermResource())  # GET
+api.add_route("/terms/{term_id:bel}/equivalents", TermEquivalentsResource())  # GET
+api.add_route("/terms/{term_id:bel}/canonicalized", TermCanonicalizeResource())  # GET
+api.add_route("/terms/{term_id:bel}/decanonicalized", TermDecanonicalizeResource())  # GET
+api.add_route("/terms/types", TermTypesResource())  # GET
 
 # Orthology routes
-api.add_route('/orthologs', OrthologResource())  # GET
-api.add_route('/orthologs/{gene_id:bel}', OrthologResource())  # GET
-api.add_route('/orthologs/{gene_id:bel}/{species}', OrthologResource())  # GET
+api.add_route("/orthologs", OrthologResource())  # GET
+api.add_route("/orthologs/{gene_id:bel}", OrthologResource())  # GET
+api.add_route("/orthologs/{gene_id:bel}/{species}", OrthologResource())  # GET
 
 # BEL Specification routes
-api.add_route('/belspec', BelSpecResource())  # GET, PUT
-api.add_route('/belspec/{version}', BelSpecResource())  # GET, DELETE
+api.add_route("/belspec", BelSpecResource())  # GET, PUT
+api.add_route("/belspec/{version}", BelSpecResource())  # GET, DELETE
 
 # Text routes
-api.add_route('/text/pubmed/{pmid}', PubmedResource())  # GET
+api.add_route("/text/pubmed/{pmid}", PubmedResource())  # GET
 
 # Status endpoints - used to check that API is running correctly
-api.add_route('/simple_status', SimpleStatusResource())  # GET un-authenticated
-api.add_route('/healthcheck', HealthCheckResource())  # GET un-authenticated
-api.add_route('/status', StatusResource())  # GET authenticated
-api.add_route('/version', VersionResource())  # version
-api.add_route('/swagger', SwaggerResource())
+api.add_route("/simple_status", SimpleStatusResource())  # GET un-authenticated
+api.add_route("/healthcheck", HealthCheckResource())  # GET un-authenticated
+api.add_route("/status", StatusResource())  # GET authenticated
+api.add_route("/version", VersionResource())  # version
+api.add_route("/swagger", SwaggerResource())
 
 # Useful for debugging problems in your API; works with pdb.set_trace()
-if __name__ == '__main__':
+if __name__ == "__main__":
     from wsgiref import simple_server
 
     host = "127.0.0.1"

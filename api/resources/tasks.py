@@ -1,11 +1,11 @@
-import falcon
 import json
+import logging
+
+import falcon
+from bel.Config import config
 
 import services.tasks
 
-from bel.Config import config
-
-import logging
 log = logging.getLogger(__name__)
 
 
@@ -34,39 +34,17 @@ class ResourcesTasksResource(object):
 
         # BEL Resources loading
         data = json.load(req.bounded_stream)
-        resource_url = data.get('resource_url', None)
+        resource_url = data.get("resource_url", None)
 
         if not resource_url:
             raise falcon.HTTPBadRequest(
-                "No resource_url set",
-                "For resource task request, resource_url must be set",
+                "No resource_url set", "For resource task request, resource_url must be set"
             )
 
         task_id = services.tasks.add_namespace.delay(resource_url)
         message = "Check the Task Monitor UI for status"
-        resp.media = {'title': 'BEL resource task submitted', 'task_id': str(task_id), 'message': message}
-
-
-class PipelineTasksResource(object):
-    """Nanopub -> Edge pipeline tasks endpoint"""
-
-    def on_post(self, req, resp):
-        """POST Task - queue Pipeline Tasks"""
-
-        # BEL Pipeline (Nanopub -> Edge conversion)
-        start_dt = req.get_param('start_dt', default=None)
-        log.info(f'Start_dt: {start_dt}')
-        nanopubstore_url = req.get_param('nanopubstore_url', default=config['bel_api']['servers']['nanopubstore'])
-        orthologize_targets = req.get_param('orthologize_targets', default=[])
-
-        submitted_cnt = services.tasks.queue_nanopubs(nanopubstore_url, start_dt, orthologize_targets=orthologize_targets)
-        log.info(f'Submitted {submitted_cnt} nanopubs to queue')
-        if submitted_cnt >= 0:
-            message = f"Check the Task Monitor UI for status. Submitted {submitted_cnt} Nanopubs to queue."
-            resp.media = {'title': 'Nanopubs queued for BEL Pipeline', 'message': message, 'submitted_cnt': submitted_cnt}
-            resp.status = falcon.HTTP_200
-        else:
-            resp.status = falcon.HTTP_400
-            resp.media
-
-
+        resp.media = {
+            "title": "BEL resource task submitted",
+            "task_id": str(task_id),
+            "message": message,
+        }
