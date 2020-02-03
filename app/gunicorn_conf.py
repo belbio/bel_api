@@ -1,6 +1,7 @@
-import os
-import multiprocessing
 import logging
+import multiprocessing
+import os
+
 # import bel.lang.bel_specification
 
 logger = logging.getLogger(__name__)
@@ -8,10 +9,10 @@ logger = logging.getLogger(__name__)
 worker_class = "gevent"
 workers = multiprocessing.cpu_count() * 2 + 1
 
-if os.getenv('BELBIO_SERVER_MODE') == 'DEV':
+if os.getenv("SERVER_MODE") == "LOCALDEV":
     workers = 4
     reload = True
-    reload_extra_files = ['/belbio/belbio_conf.yml']
+    reload_extra_files = ["/belbio/belbio_conf.yml", "/opt/venv/src/bel"]
 else:
     preload_app = True
 
@@ -27,6 +28,5 @@ else:
 
 for k, v in os.environ.items():
     if k.startswith("GUNICORN_"):
-        key = k.split('_', 1)[1].lower()
+        key = k.split("_", 1)[1].lower()
         locals()[key] = v
-

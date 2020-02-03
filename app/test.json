@@ -1,0 +1,99 @@
+{
+  "error_level": "WARNING",
+  "nanopub": {
+    "type": {
+      "name": "BEL",
+      "version": "2.0.0"
+    },
+    "schema_uri": "http://json.schemastore.org/nanopub_bel-1.0.0.json",
+    "assertions": [
+      {
+        "object": null,
+        "relation": null,
+        "subject": "complexAbundance(proteinAbundance(HGNC:HBP1), proteinAbundance(HGNC:RB1))"
+      },
+      {
+        "object": null,
+        "relation": null,
+        "subject": "complexAbundance(proteinAbundance(HGNC:HBP1), proteinAbundance(HGNC:RBL2))"
+      }
+    ],
+    "evidence": "As described below, we and other groups reisolated HBP1 as an RB and p130 interacting protein (Lavender et al., 1997; Tevosian et al., 1997",
+    "annotations": [
+      {
+        "type": "Species",
+        "id": "TAX:10090",
+        "label": "mouse"
+      },
+      {
+        "id": "TAX:10116",
+        "label": "rat",
+        "type": "Species"
+      },
+      {
+        "id": "DO:cancer",
+        "label": "cancer",
+        "type": "Disease"
+      },
+      {
+        "id": "MESH:\"Extravascular Lung Water\"",
+        "label": "Extravascular Lung Water",
+        "type": "Anatomy"
+      },
+      {
+        "id": "Review",
+        "label": "Review",
+        "type": "TextLocation"
+      },
+      {
+        "id": "MESH:\"Cells, Cultured\"",
+        "label": "Cells, Cultured",
+        "type": "Cell"
+      },
+      {
+        "id": "MESH:\"Blood Cells\"",
+        "label": "Blood Cells",
+        "type": "Anatomy"
+      },
+      {
+        "id": "CLO:\"HeLa cell\"",
+        "label": "HeLa cell",
+        "type": "CellLine"
+      },
+      {
+        "id": "MESH:\"Cell Membrane\"",
+        "label": "Cell Membrane",
+        "type": "CellStructure"
+      }
+    ],
+    "citation": {
+      "authors": [
+        "Yee, Amy S",
+        "Paulson, Eric K",
+        "McDevitt, Michael A",
+        "Rieger-Christ, Kimberly",
+        "Summerhayes, Ian",
+        "Berasi, Stephen P",
+        "Kim, Jiyoung",
+        "Huang, Chun-Yin",
+        "Zhang, Xiaowei"
+      ],
+      "database": {
+        "id": "15225871",
+        "name": "PubMed"
+      },
+      "reference": "Gene",
+      "source_name": "Gene",
+      "title": "The HBP1 transcriptional repressor and the p38 MAP kinase: unlikely partners in G1 regulation and tumor suppression.",
+      "abstract": "No Abstract Loaded."
+    },
+    "metadata": {
+      "gd_createTS": "2018-03-12T20:27:00.346",
+      "gd_creator": "Selventa",
+      "gd_published": true,
+      "gd_updateTS": "2018-04-09T23:41:00.678Z",
+      "project": "Wonderland",
+      "statement_group": "Group 22"
+    }
+  }
+}

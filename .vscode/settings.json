@@ -2,6 +2,7 @@
     "peacock.color": "#eaca7f",
     "workbench.colorCustomizations": {
         "activityBar.background": "#f1dcab",
+        "activityBar.activeBorder": "#1ba47b",
         "activityBar.foreground": "#15202b",
         "activityBar.inactiveForeground": "#15202b99",
         "activityBarBadge.background": "#1ba47b",
@@ -14,7 +15,7 @@
         "statusBarItem.hoverBackground": "#e3b853",
         "statusBar.foreground": "#15202b"
     },
-    "python.pythonPath": "/Users/william/.virtualenvs/belapi-mMRBMYQv/bin/python",
+    "python.pythonPath": ".venv/bin/python",
     "python.analysis.openFilesOnly": false,
     "python.analysis.memory.keepLibraryLocalVariables": true,
     "python.autoComplete.addBrackets": true,

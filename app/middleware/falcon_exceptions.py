@@ -17,5 +17,5 @@ def internal_error_handler(ex, req, resp, params):
         raise
 
 
-def register_defaults(api):
-    api.add_error_handler(Exception, internal_error_handler)
+def register_defaults(app):
+    app.add_error_handler(Exception, internal_error_handler)

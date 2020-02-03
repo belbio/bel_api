@@ -111,3 +111,8 @@ ENV/
 belbio_conf.yml
 belbio_secrets.yml
 .pytest_cache
+
+# Mac
+.DS_Store
+
+

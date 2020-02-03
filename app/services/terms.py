@@ -1,17 +1,16 @@
+import re
+from typing import List, Mapping
+
+import bel.db.arangodb
+import bel.db.elasticsearch
 import elasticsearch
 import falcon
-from typing import Mapping, List
-import re
-
-import bel.db.elasticsearch
-import bel.db.arangodb
-
+import structlog
 from bel.Config import config
 
 # import logging
 # log = logging.getLogger(__name__)
 
-import structlog
 log = structlog.getLogger()
 
 es = bel.db.elasticsearch.get_client()
@@ -343,9 +342,6 @@ def get_term_completions(completion_text, size, entity_types, annotation_types, 
             }
         }
     }
-
-    import json
-    log.info(f'DEBUG Completion search body {json.dumps(search_body)}')
 
     # Boost namespaces
     if config['bel_api'].get('search', False):

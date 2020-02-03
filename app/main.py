@@ -91,82 +91,82 @@ if config["bel_api"]["authenticated"]:
         exempt_methods=["HEAD"],
     )
 
-    api = application = falcon.API(middleware=[stats_middleware, auth_middleware, cors.middleware])
+    app = application = falcon.API(middleware=[stats_middleware, auth_middleware, cors.middleware])
 
 else:
-    api = application = falcon.API(middleware=[stats_middleware, cors.middleware])
+    app = application = falcon.API(middleware=[stats_middleware, cors.middleware])
 
 # Add exception handling
-middleware.falcon_exceptions.register_defaults(api)
+middleware.falcon_exceptions.register_defaults(app)
 
 # Add Swagger UI
-services.swaggerui.register_swaggerui(api)
+services.swaggerui.register_swaggerui(app)
 
 
 # Router converter for BEL Expressions and NSArgs
 #   converts_FORWARDSLASH_ to / after URI template fields are extracted
 #
-api.router_options.converters["bel"] = BelConverter
+app.router_options.converters["bel"] = BelConverter
 
 # Routes  ###############
 # Add routes to skip authentication in common/middleware:AuthMiddleware.skip_routes list
 
 # BEL Language routes
-api.add_route("/bel/versions", BelVersions())  # GET
-api.add_route("/bel/{version}/specification", BelSpecificationResource())  # GET
-api.add_route("/bel/{version}/completion", BelCompletion())  # GET
-api.add_route("/bel/{version}/completion/{belstr:bel}", BelCompletion())  # GET
-api.add_route("/bel/{version}/canonicalize/{belstr:bel}", BelCanonicalize())  # GET
-api.add_route("/bel/{version}/decanonicalize/{belstr:bel}", BelDecanonicalize())  # GET
+app.add_route("/bel/versions", BelVersions())  # GET
+app.add_route("/bel/{version}/specification", BelSpecificationResource())  # GET
+app.add_route("/bel/{version}/completion", BelCompletion())  # GET
+app.add_route("/bel/{version}/completion/{belstr:bel}", BelCompletion())  # GET
+app.add_route("/bel/{version}/canonicalize/{belstr:bel}", BelCanonicalize())  # GET
+app.add_route("/bel/{version}/decanonicalize/{belstr:bel}", BelDecanonicalize())  # GET
 
 # BEL1->2 Migration
-api.add_route("/bel/migrate12/{belstr:bel}", BelMigrate12())  # GET
+app.add_route("/bel/migrate12/{belstr:bel}", BelMigrate12())  # GET
 
-# api.add_route('/bel/{version}/functions', BelSpecificationResource())  # GET
-# api.add_route('/bel/{version}/relations', BelSpecificationResource())  # GET
+# app.add_route('/bel/{version}/functions', BelSpecificationResource())  # GET
+# app.add_route('/bel/{version}/relations', BelSpecificationResource())  # GET
 
 # Nanopub routes
-api.add_route("/nanopubs/validate", NanopubValidateResource())  # POST
+app.add_route("/nanopubs/validate", NanopubValidateResource())  # POST
 
 # Task routes
-api.add_route("/tasks/resources", ResourcesTasksResource())  # POST
+app.add_route("/tasks/resources", ResourcesTasksResource())  # POST
 
 
 # Term routes
-api.add_route("/terms", TermsResource())  # GET
-api.add_route("/terms/completions/{completion_text:bel}", TermCompletionsResource())
+app.add_route("/terms", TermsResource())  # GET
+app.add_route("/terms/completions/{completion_text:bel}", TermCompletionsResource())
 
-api.add_route("/terms/{term_id:bel}", TermResource())  # GET
-api.add_route("/terms/{term_id:bel}/equivalents", TermEquivalentsResource())  # GET
-api.add_route("/terms/{term_id:bel}/canonicalized", TermCanonicalizeResource())  # GET
-api.add_route("/terms/{term_id:bel}/decanonicalized", TermDecanonicalizeResource())  # GET
-api.add_route("/terms/types", TermTypesResource())  # GET
+app.add_route("/terms/{term_id:bel}", TermResource())  # GET
+app.add_route("/terms/{term_id:bel}/equivalents", TermEquivalentsResource())  # GET
+app.add_route("/terms/{term_id:bel}/canonicalized", TermCanonicalizeResource())  # GET
+app.add_route("/terms/{term_id:bel}/decanonicalized", TermDecanonicalizeResource())  # GET
+app.add_route("/terms/types", TermTypesResource())  # GET
 
 # Orthology routes
-api.add_route("/orthologs", OrthologResource())  # GET
-api.add_route("/orthologs/{gene_id:bel}", OrthologResource())  # GET
-api.add_route("/orthologs/{gene_id:bel}/{species}", OrthologResource())  # GET
+app.add_route("/orthologs", OrthologResource())  # GET
+app.add_route("/orthologs/{gene_id:bel}", OrthologResource())  # GET
+app.add_route("/orthologs/{gene_id:bel}/{species}", OrthologResource())  # GET
 
 # BEL Specification routes
-api.add_route("/belspec", BelSpecResource())  # GET, PUT
-api.add_route("/belspec/{version}", BelSpecResource())  # GET, DELETE
+app.add_route("/belspec", BelSpecResource())  # GET, PUT
+app.add_route("/belspec/{version}", BelSpecResource())  # GET, DELETE
 
 # Text routes
-api.add_route("/text/pubmed/{pmid}", PubmedResource())  # GET
+app.add_route("/text/pubmed/{pmid}", PubmedResource())  # GET
 
-# Status endpoints - used to check that API is running correctly
-api.add_route("/simple_status", SimpleStatusResource())  # GET un-authenticated
-api.add_route("/healthcheck", HealthCheckResource())  # GET un-authenticated
-api.add_route("/status", StatusResource())  # GET authenticated
-api.add_route("/version", VersionResource())  # version
-api.add_route("/swagger", SwaggerResource())
+# Status endpoints - used to check that app is running correctly
+app.add_route("/simple_status", SimpleStatusResource())  # GET un-authenticated
+app.add_route("/healthcheck", HealthCheckResource())  # GET un-authenticated
+app.add_route("/status", StatusResource())  # GET authenticated
+app.add_route("/version", VersionResource())  # version
+app.add_route("/swagger", SwaggerResource())
 
-# Useful for debugging problems in your API; works with pdb.set_trace()
+# Useful for debugging problems in your app; works with pdb.set_trace()
 if __name__ == "__main__":
     from wsgiref import simple_server
 
     host = "127.0.0.1"
     port = 8181
-    httpd = simple_server.make_server(host, port, api)
+    httpd = simple_server.make_server(host, port, app)
     print("Serving on {}:{}".format(host, port))
     httpd.serve_forever()
