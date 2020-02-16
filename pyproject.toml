@@ -37,11 +37,11 @@ lxml = "*"
 ndg-httpsclient = "*"
 pyopenssl = "*"
 "pyasn1" = "*"
-bel = {git = "https://github.com/belbio/bel.git", rev = "bel2"}
 httpx = "*"
 bump2version = "^1.0.0"
 flake8 = "^3.7.9"
 cachetools = "^4.0.0"
+bel = {git = "https://github.com/belbio/bel.git", branch = "bel2"}
 
 [tool.poetry.dev-dependencies]
 ptvsd = "*"

@@ -22,7 +22,7 @@ ENV PATH="$POETRY_PATH/bin:$VENV_PATH/bin:$PATH" \
 # add non-priviledged user  TODO - keep keeping permission denied error trying to start app
 # RUN adduser --uid 1000 --disabled-password --gecos '' --no-create-home appuser
 
-RUN apt-get -qy update
+RUN apt-get -qy update && apt-get install --no-install-recommends -y git
 
 
 FROM base as poetryprod
@@ -61,8 +61,9 @@ RUN rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
 COPY --from=poetryprod $VENV_PATH $VENV_PATH
 COPY ./app /app
+COPY ./bel /opt/venv/src/bel
 
 # RUN chown appuser.appuser -R /app
 # USER appuser
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80", "-c", "/app/gunicorn_conf.py", "main:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "-c", "/app/gunicorn_conf.py", "main:app"]

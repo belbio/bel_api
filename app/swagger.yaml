@@ -1425,6 +1425,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
+  /ping:
+    get:
+      summary: Ping Server
+      description: Is server up and running - unauthenticated
+      tags:
+      - Utility
+      security: []
+      operationId: getPing
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: Simple unauthenticated API endpoint works
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
   /version:
     get:
       summary: Version

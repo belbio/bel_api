@@ -1,11 +1,11 @@
-import falcon
 import copy
 
-from bel.Config import config
-import services.terms as terms
-
+import falcon
 # import logging
 import structlog
+from bel.Config import config
+
+import services.terms as terms
 
 log = structlog.getLogger(__name__)
 
@@ -28,6 +28,16 @@ class HealthCheckResource(object):
             "message": "Simple unauthenticated health status check",
             "up": True,
         }
+        resp.status = falcon.HTTP_200
+
+
+
+class PingResource(object):
+    """Check service - no authentication/token required"""
+
+    def on_get(self, req, resp):
+
+        resp.media = {"running": True}
         resp.status = falcon.HTTP_200
 
 
@@ -93,4 +103,3 @@ def get_versions() -> dict:
         pass
 
     return versions
-

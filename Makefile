@@ -66,13 +66,19 @@ bumprelease:
 	git push
 	git push --tags
 
-docker_pushdev: bumpbuild
+docker_pushdev:
 	@echo Deploying docker DEV image to dockerhub $(VERSION)
 	# git checkout develop
 
-	docker build -t biodati/belapi:dev -t biodati/belapi:$(VERSION) -f ./docker/Dockerfile.prod .
-	docker push biodati/belapi:dev
-	docker push biodati/belapi:$(VERSION)
+	docker build -t belbio/belapi:dev -t belbio/belapi:$(VERSION) -f ./docker/Dockerfile.dev .
+	docker push belbio/belapi:dev
+	docker push belbio/belapi:$(VERSION)
+
+	ssh thor "cd docker && docker-compose pull belapi"
+	ssh thor "cd docker && docker-compose stop belapi"
+	ssh thor "cd docker && docker-compose rm -f belapi"
+	ssh thor "cd docker && docker-compose up -d belapi"
+	@say -v Karen "Finished the BEL A P I docker deployment"
 
 # 	ssh dev "cd docker; bash -ic dp userstore"
 
@@ -90,9 +96,9 @@ docker_pushprod:
 		exit 1; \
 	fi
 
-	docker build -t biodati/belapi:latest -t biodati/belapi:$(VERSION) -f ./docker/Dockerfile.prod .
-	docker push biodati/belapi:latest
-	docker push biodati/belapi:$(VERSION)
+	docker build -t belbio/belapi:latest -t belbio/belapi:$(VERSION) -f ./docker/Dockerfile.prod .
+	docker push belbio/belapi:latest
+	docker push belbio/belapi:$(VERSION)
 
 
 # docker_push:

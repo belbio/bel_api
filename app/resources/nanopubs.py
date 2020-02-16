@@ -4,7 +4,6 @@ import unicodedata
 
 import bel.nanopub.validate
 import falcon
-import fastcache
 import structlog
 
 log = structlog.getLogger(__name__)

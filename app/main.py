@@ -5,14 +5,12 @@ import os
 import sys
 
 import bel.lang.bel_specification
-
 # import logging
 # import logging.config
 # # from pythonjsonlogger import jsonlogger
 import bel.setup_logging
 import falcon
 import gevent.monkey
-
 # TODO - figure out how to run logging setup and belspec once on startup rather than
 #        every time a worker is initialized (moved bel.lang.bel_specification.update_specifications to bel/__init__.py)
 import structlog
@@ -24,35 +22,22 @@ import middleware.falcon_exceptions
 import services.swaggerui
 from middleware.field_converters import BelConverter
 from middleware.stats import FalconStatsMiddleware
-from resources.bel_lang import (
-    BelCanonicalize,
-    BelCompletion,
-    BelDecanonicalize,
-    BelMigrate12,
-    BelSpecificationResource,
-    BelVersions,
-)
+from resources.bel_lang import (BelCanonicalize, BelCompletion,
+                                BelDecanonicalize, BelMigrate12,
+                                BelSpecificationResource, BelVersions)
 from resources.belspec import BelSpecResource
 from resources.nanopubs import NanopubValidateResource
 from resources.orthology import OrthologResource
 from resources.pubmed import PubmedResource
-from resources.status import (
-    HealthCheckResource,
-    SimpleStatusResource,
-    StatusResource,
-    VersionResource,
-)
+from resources.status import (HealthCheckResource, PingResource,
+                              SimpleStatusResource, StatusResource,
+                              VersionResource)
 from resources.swagger import SwaggerResource
 from resources.tasks import ResourcesTasksResource
-from resources.terms import (
-    TermCanonicalizeResource,
-    TermCompletionsResource,
-    TermDecanonicalizeResource,
-    TermEquivalentsResource,
-    TermResource,
-    TermsResource,
-    TermTypesResource,
-)
+from resources.terms import (TermCanonicalizeResource, TermCompletionsResource,
+                             TermDecanonicalizeResource,
+                             TermEquivalentsResource, TermResource,
+                             TermsResource, TermTypesResource)
 
 gevent.monkey.patch_all()
 
@@ -160,6 +145,7 @@ app.add_route("/healthcheck", HealthCheckResource())  # GET un-authenticated
 app.add_route("/status", StatusResource())  # GET authenticated
 app.add_route("/version", VersionResource())  # version
 app.add_route("/swagger", SwaggerResource())
+app.add_route("/ping", PingResource())
 
 # Useful for debugging problems in your app; works with pdb.set_trace()
 if __name__ == "__main__":

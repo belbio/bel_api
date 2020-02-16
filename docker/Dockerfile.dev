@@ -23,7 +23,7 @@ ENV PATH="$POETRY_PATH/bin:$VENV_PATH/bin:$PATH" \
 # add non-priviledged user  TODO - keep keeping permission denied error trying to start app
 # RUN adduser --uid 1000 --disabled-password --gecos '' --no-create-home appuser
 
-RUN apt-get -qy update && apt-get install --no-install-recommends -y git
+RUN apt-get -qy update && apt-get install --no-install-recommends -y git dnsutils curl
 
 
 FROM base as poetrydev
@@ -66,6 +66,7 @@ RUN rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
 COPY --from=poetrydev $VENV_PATH $VENV_PATH
 COPY ./app /app
+COPY ./bel /opt/venv/src/bel
 
 # RUN chown appuser.appuser -R /app
 # USER appuser

@@ -1,16 +1,18 @@
-import falcon
-import services.terms as terms
 import json
-import fastcache
-
 import logging
+
+import falcon
+
+import cachetools
+import services.terms as terms
+
 log = logging.getLogger(__name__)
 
 
 class TermResource(object):
     """Term endpoint"""
 
-    @fastcache.clru_cache(maxsize=500)
+    @cachetools.cached(cachetools.TTLCache(maxsize=512, ttl=600))
     def on_get(self, req, resp, term_id=None):
         """GET Term using term_id
 
@@ -121,11 +123,8 @@ class TermTypesResource(object):
     Get facet counts for each (top 100 for each)
     """
 
-    @fastcache.clru_cache(maxsize=500)
+    @cachetools.cached(cachetools.TTLCache(maxsize=512, ttl=600))
     def on_get(self, req, resp):
         """ Get stats """
 
         resp.media = terms.term_types()
-        resp.status = falcon.HTTP_200
-
-
