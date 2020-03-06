@@ -1,10 +1,8 @@
 openapi: 3.0.0
 
 servers:
-  - description: Local BEL API
-    url: /
-  - description: Demo BEL API
-    url: http://api.bel.bio
+  - description: Production server V1
+    url: https://api.bel.bio/v1
 
 info:
   title: BELBio REST API
@@ -28,9 +26,9 @@ info:
     **Note the Endpoints in the TODO section are only documented and
     not yet implemented**
 
-  version: 0.4.28
+  version: 0.5.1
   contact:
-    name: whayes@biodati.com
+    name: whayes@adsworks.com
     url: https://bel.bio
 
 security:
@@ -43,8 +41,8 @@ tags:
   description: Namespace and Annotation terminology endpoints
 - name: Nanopubs
   description: Nanopub endpoints
-- name: BelSpecs
-  description: BEL Language Specification endpoints
+- name: Edges
+  description: Edge endpoints
 - name: Utility
   description: Utility endpoints
 - name: TODO
@@ -66,6 +64,19 @@ paths:
                 type: array
                 items:
                   type: string
+
+  /bel/{version}/specification:
+    get:
+      summary: BEL Specification
+      tags:
+        - BEL
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
 
   /bel/{version}/completion/{text}:
     get:
@@ -111,7 +122,6 @@ paths:
         description: BEL Version
         schema:
           type: string
-        example: 2.0.0
       - name: text
         in: path
         required: true
@@ -193,20 +203,25 @@ paths:
           mis-interpreting the '/'.
 
       tags:
-      - BEL
+      - TODO
       operationId: getBelValidate
       parameters:
-      - name: version
+      - name: subject
         in: path
         required: true
-        description: BEL Version
+        description: BEL Subject
         schema:
           type: string
-        example: 2.0.0
-      - name: statement
+      - name: relation
         in: path
         required: true
-        description: BEL Assertion or Statement, can be also just be a BEL Subject or Object
+        description: BEL Relationship
+        schema:
+          type: string
+      - name: object
+        in: path
+        required: true
+        description: BEL Object
         schema:
           type: string
       - name: ast
@@ -236,6 +251,14 @@ paths:
                         type: string
                       object:
                         type: string
+                  ast:
+                    type: object
+                    description: |
+                      If AST is requested (by query param), provide
+                      the AST along with the Edge subject, relation, and
+                      objects.
+                    additionalProperties:
+                      type: object
                   messages:
                     type: array
                     items:
@@ -264,13 +287,6 @@ paths:
         - BEL
       operationId: getBelCanonicalize
       parameters:
-      - name: version
-        in: path
-        required: true
-        description: BEL Version
-        schema:
-          type: string
-        example: 2.0.0
       - name: bel_string
         in: path
         required: true
@@ -328,13 +344,6 @@ paths:
       - BEL
       operationId: getBelDecanonicalize
       parameters:
-      - name: version
-        in: path
-        required: true
-        description: BEL Version
-        schema:
-          type: string
-        example: 2.0.0
       - name: bel_string
         in: path
         required: true
@@ -375,99 +384,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
-  /bel/{version}/validate/{bel_string}:
-    get:
-      summary: Validate BEL String
-      description: |
-        Validate BEL - either a BEL subject or object or full assertion (SRO)
-
-        Note: Any forward slashes '/' in the bel_string
-          need to be replaced with _FORWARDSLASH_
-          otherwise it will get interpreted as another path
-          component and will likely not match a valid
-          url path (e.g. if subject="p(GO:\"stupid/name\")" -
-          this will add an extra path parameter by mistake by
-          mis-interpreting the '/'.
-      tags:
-      - BEL
-      operationId: getBelValidate
-      parameters:
-      - name: version
-        in: path
-        required: true
-        description: BEL Version
-        schema:
-          type: string
-        example: 2.0.0
-      - name: bel_string
-        in: path
-        required: true
-        description: BEL String
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  decanonicalized:
-                    type: string
-                  original:
-                    type: string
-                  messages:
-                    type: array
-                    items:
-                      type: string
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-
-
-  /bel/{version}/specification:
-    get:
-      summary: Get the enhanced BEL Specification
-      description: |
-        Provide the enhanced BEL Specification, additional properties have been
-        created and added to make the Specification easier to use.
-      tags:
-        - BEL
-      operationId: belspecGet
-      parameters:
-        - name: version
-          in: path
-          description: BEL version string
-          required: true
-          schema:
-            type: string
-          example: 2.0.0
-      responses:
-        '200':
-          description: Return BEL Specification for version given if available
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  belspec:
-                    type: object
-                    description: JSON document of the BEL Specification
-                  versions:
-                    type: array
-                    items:
-                      type: string
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-
   /bel/{version}/orthologize/{species_id}/{bel_string}:
     get:
       summary: Orthologize BEL
@@ -488,16 +404,9 @@ paths:
           this will add an extra path parameter by mistake by
           mis-interpreting the '/'.
       tags:
-      - BEL
+      - TODO
       operationId: getBelOrthologize
       parameters:
-      - name: version
-        in: path
-        required: true
-        description: BEL Version
-        schema:
-          type: string
-        example: 2.0.0
       - name: bel_string
         in: path
         required: true
@@ -540,8 +449,93 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 
+  /bel/{version}/edges/{bel_string}:
+    get:
+      summary: BEL Edges
+      description: |
+        Create BEL Edges
 
-  /bel/{version}/editor/{list}:
+        The call will create BEL Edges from the BEL string which can
+        be loaded into the edge store.
+
+        Note: Any forward slashes '/' in the bel_string
+          need to be replaced with _FORWARDSLASH_
+          otherwise it will get interpreted as another path
+          component and will likely not match a valid
+          url path (e.g. if subject="p(GO:\"stupid/name\")" -
+          this will add an extra path parameter by mistake by
+          mis-interpreting the '/'.
+      tags:
+      - TODO
+      operationId: getBelEdges
+      parameters:
+      - name: bel_string
+        in: path
+        required: true
+        description: BEL String
+        schema:
+          type: string
+      - name: computed_signatures
+        in: query
+        required: false
+        description: |
+          Default is to create all of the defined computed edges as
+          specified in the BEL Language Specification file.
+
+          You can specify which computed_signature steps will be performed
+          by specifying a comma-delimited list of computed_signature
+          keys. Example:
+
+              computed_signatures=componentOf,degradation,activity
+        schema:
+          type: string
+      - name: ast
+        in: query
+        required: false
+        description: |
+          If AST is requested, the abstract syntax tree of the
+          BEL Edges will be provided in the response.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  edges:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        subject:
+                          type: string
+                        relation:
+                          type: string
+                        object:
+                          type: string
+                        ast:
+                          type: object
+                          description: |
+                            If AST is requested (by query param), provide
+                            the AST along with the Edge subject, relation, and
+                            objects.
+                          additionalProperties:
+                            type: object
+                  messages:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+
+  /bel/{version}/editor/list:
     get:
       summary: Transform list of terms into BEL functions
       description: |
@@ -558,13 +552,6 @@ paths:
         - TODO
       operationId: getBelEditorList
       parameters:
-      - name: version
-        in: path
-        required: true
-        description: BEL Version
-        schema:
-          type: string
-        example: 2.0.0
       - name: list
         required: true
         in: query
@@ -603,189 +590,6 @@ paths:
                       type: string
                       description: Error or warning message associated with term, optional
 
-  /bel/migrate12/{belstr}:
-    get:
-      summary: Migrate BEL 1 to 2.0.0
-      description: |
-        Migrate BEL 1 to BEL 2.0.0. You can provide any valid BEL 1 string
-        (subject, object, full statement or a BEL 1 function) to have it
-        updated to BEL 2.0.0.
-      tags:
-        - BEL
-      operationId: bel_migrate12
-      parameters:
-        - name: belstr
-          in: path
-          description: BEL string - subject, object or full BEL statement
-          required: true
-          schema:
-            type: string
-          example: 'cat(complex(p(HGNC:ITGAV), p(HGNC:ITGB5)))'
-
-      responses:
-        '200':
-          description: BEL string converted to BEL 2.0.0
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "act(complex(p(HGNC:ITGAV), p(HGNC:ITGB5)), ma(cat))"
-
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-
-  /belspec:
-    get:
-      summary: Get list of all BEL Specifications
-      description: Listing of all BEL Specifications
-      tags:
-        - BelSpecs
-      operationId: belspecList
-      responses:
-        '200':
-          description: Return list of available BEL Specifications
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  versions:
-                    type: array
-                    items:
-                      type: string
-
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-
-    put:
-      summary: Put a BEL Specification
-      description: |
-        Create a new or update a prior BEL Specification.
-
-        We use semantic versioning (https://semver.org). If you want to add
-        a custom BEL Spec to your API endpoint, please use a tag to the version
-        number you want to use.
-
-        If you try to use an official BEL Spec version number
-        (pulled from https://github.com/belbio/bel_specifications),
-        it will be overwritten by the official BEL Spec as part of the PUT/update/create
-        process.
-
-      tags:
-        - BelSpecs
-      operationId: belspecPut
-      parameters:
-        - name: force
-          in: query
-          description: |
-            Forces reprocessing of BEL Specifications including pulling the public
-            BEL Specifications from BEL.bio. Otherwise, it will only attempt to
-            re-download the BEL Specifications if more than 1 day old.
-          required: false
-          default: false
-          schema:
-            type: string
-      requestBody:
-        description: BEL Specification JSON document
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        '204':
-          description: Successful response
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-
-  /belspec/{version}:
-    get:
-      summary: Get a BEL Specification
-      tags:
-        - BelSpecs
-      operationId: belspecGet
-      parameters:
-        - name: version
-          in: path
-          description: BEL version string
-          required: true
-          schema:
-            type: string
-          example: 2.0.0
-      responses:
-        '200':
-          description: Return BEL Specification for version given if available
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  belspec:
-                    type: object
-                    description: JSON document of the BEL Specification
-                  versions:
-                    type: array
-                    items:
-                      type: string
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-
-    delete:
-      summary: Delete a BEL Specification
-      description: |
-        Deletes BEL specification - and then goes out to pull down the official
-        BEL Specifications from Github and regenerate the enhanced BEL Spec, EBNF
-        file and EBNF-based parser.
-
-        This means that you basically can't delete an official BEL Spec. It will
-        just be immediately replaced if you try to do so.
-      tags:
-        - BelSpecs
-      operationId: belspecPut
-      parameters:
-        - name: version
-          in: path
-          description: BEL version string
-          required: true
-          schema:
-            type: string
-          example: 2.0.0
-      responses:
-        '200':
-          description: Return list of available BEL Specifications
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  versions:
-                    type: array
-                    items:
-                      type: string
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorModel'
-
-
   /nanopubs/validate:
     post:
       summary: Nanopub Validate
@@ -802,14 +606,6 @@ paths:
               required:
                 - "nanopub"
               properties:
-                response_type:
-                  type: string
-                  enum: [nanopub, validation]
-                  default: nanopub
-                  description: |
-                    response_type = nanopub (or unset) will return the entire nanopub with
-                    nanopub['nanopub']['metadata']['gd_validation'] = <validation_results>
-                    response_type = validation will just return {'validation_results': <validation_results>}
                 error_level:
                   type: "string"
                   enum: [ERROR, WARNING]
@@ -914,28 +710,25 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  validation_results:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        level:
-                          type: string
-                          enum: [Error, Warning]
-                          default: WARNING
-                        section:
-                          type: string
-                          enum: [Assertion, Annotation, Structure]
-                        label:
-                          type: string
-                          description: Label which can be used in Elasticsearch faceting
-                        index:
-                          type: integer
-                          description: Index of Assertion or Annotation in Nanopub so one can associate an error with a specific Assertion or Annotation
-                        msg:
-                          type: string
+                type: array
+                items:
+                  type: object
+                  properties:
+                    level:
+                      type: string
+                      enum: [Error, Warning]
+                      default: WARNING
+                    section:
+                      type: string
+                      enum: [Assertion, Annotation, Structure]
+                    label:
+                      type: string
+                      description: Label which can be used in Elasticsearch faceting
+                    index:
+                      type: integer
+                      description: Index of Assertion or Annotation in Nanopub so one can associate an error with a specific Assertion or Annotation
+                    msg:
+                      type: string
                 example:
                   validation_results:
                   - level: Error
@@ -1142,7 +935,6 @@ paths:
       - name: term_id
         in: path
         required: true
-        example: "HGNC:5"
         description: |
           Term ID (or alternate Term ID)
 
@@ -1161,22 +953,11 @@ paths:
             application/json:
               schema:
                 type: object
-                properties:
-                  equivalents:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        term_id:
-                          type: string
-                        namespace:
-                          type: string
-                        primary:
-                          type: boolean
-                  errors:
-                    type: array
-                    items:
-                      type: string
+                additionalProperties:
+                  type: string
+                example:
+                  EG: EG:207
+                  UP: UP:P31749
         default:
           description: Error
           content:
@@ -1199,23 +980,23 @@ paths:
         An example term_id to use is HGNC:AKT1 which will result in EG:207
         being returned.
       tags:
-        - Terminologies
+      - Terminologies
       operationId: getTermCanonicalized
       parameters:
-        - name: term_id
-          in: path
-          required: true
-          description: |
-            Term ID (or alternate Term ID)
+      - name: term_id
+        in: path
+        required: true
+        description: |
+          Term ID (or alternate Term ID)
 
-            Note: Any forward slashes '/' in term need to be replaced
-              with _FORWARDSLASH_ otherwise it will get interpreted as
-              another path component and will likely not match a valid
-              url path (e.g. if term_id="stupid/name" - this will look like
-              /terms/stupid/name and not match /terms/{term_id} since there is
-              an extra path component.
-          schema:
-            type: string
+          Note: Any forward slashes '/' in term need to be replaced
+            with _FORWARDSLASH_ otherwise it will get interpreted as
+            another path component and will likely not match a valid
+            url path (e.g. if term_id="stupid/name" - this will look like
+            /terms/stupid/name and not match /terms/{term_id} since there is
+            an extra path component.
+        schema:
+          type: string
       responses:
         '200':
           description: Successful response
@@ -1249,23 +1030,23 @@ paths:
         An example term_id to use is EG:207 which will result in HGNC:AKT1
         being returned.
       tags:
-        - Terminologies
+      - Terminologies
       operationId: getTermDecanonicalized
       parameters:
-        - name: term_id
-          in: path
-          required: true
-          description: |
-            Term ID (or alternate Term ID)
+      - name: term_id
+        in: path
+        required: true
+        description: |
+          Term ID (or alternate Term ID)
 
-            Note: Any forward slashes '/' in term need to be replaced
-              with _FORWARDSLASH_ otherwise it will get interpreted as
-              another path component and will likely not match a valid
-              url path (e.g. if term_id="stupid/name" - this will look like
-              /terms/stupid/name and not match /terms/{term_id} since there is
-              an extra path component.
-          schema:
-            type: string
+          Note: Any forward slashes '/' in term need to be replaced
+            with _FORWARDSLASH_ otherwise it will get interpreted as
+            another path component and will likely not match a valid
+            url path (e.g. if term_id="stupid/name" - this will look like
+            /terms/stupid/name and not match /terms/{term_id} since there is
+            an extra path component.
+        schema:
+          type: string
       responses:
         '200':
           description: Successful response
@@ -1294,8 +1075,8 @@ paths:
           * entity_types and associated term counts
           * context_types and associated term counts
       tags:
-        - Terminologies
-        - Utility
+      - Terminologies
+      - Utility
       operationId: getTermTypes
       responses:
         '200':
@@ -1360,23 +1141,23 @@ paths:
         Result: MGI:AKT1, TAX:10090
                 RGD:AKT1, TAX:10116
       tags:
-        - Terminologies
+      - Terminologies
       operationId: getOrthologs
       parameters:
-        - name: gene_id
-          in: path
-          required: true
-          description: |
-            Gene or Protein ID
+      - name: gene_id
+        in: path
+        required: true
+        description: |
+          Gene or Protein ID
 
-            Note: Any forward slashes '/' in term need to be replaced
-              with _FORWARDSLASH_ otherwise it will get interpreted as
-              another path component and will likely not match a valid
-              url path (e.g. if gene_id="stupid/name" - this will look like
-              /orthologs/stupid/name and not match /orthologs/{gene_id} since
-              there is an extra path component.
-          schema:
-            type: string
+          Note: Any forward slashes '/' in term need to be replaced
+            with _FORWARDSLASH_ otherwise it will get interpreted as
+            another path component and will likely not match a valid
+            url path (e.g. if gene_id="stupid/name" - this will look like
+            /orthologs/stupid/name and not match /orthologs/{gene_id} since there is
+            an extra path component.
+        schema:
+          type: string
       responses:
         '200':
           description: Successful response
@@ -1416,29 +1197,29 @@ paths:
         Example query gene_id=HGNC:A1BG  species_id: TAX:10090
         Result: MGI:A1bg
       tags:
-        - Terminologies
+      - Terminologies
       operationId: getOrthologsSpeciesId
       parameters:
-        - name: gene_id
-          in: path
-          required: true
-          description: |
-            Gene or Protein ID
+      - name: gene_id
+        in: path
+        required: true
+        description: |
+          Gene or Protein ID
 
-            Note: Any forward slashes '/' in term need to be replaced
-              with _FORWARDSLASH_ otherwise it will get interpreted as
-              another path component and will likely not match a valid
-              url path (e.g. if gene_id="stupid/name" - this will look like
-              /orthologs/stupid/name and not match /orthologs/{gene_id} since
-              there is an extra path component.
-          schema:
-            type: string
-        - name: species_id
-          in: path
-          required: true
-          description: Get orthologs with species_id for gene_id
-          schema:
-            type: string
+          Note: Any forward slashes '/' in term need to be replaced
+            with _FORWARDSLASH_ otherwise it will get interpreted as
+            another path component and will likely not match a valid
+            url path (e.g. if gene_id="stupid/name" - this will look like
+            /orthologs/stupid/name and not match /orthologs/{gene_id} since there is
+            an extra path component.
+        schema:
+          type: string
+      - name: species_id
+        in: path
+        required: true
+        description: Get orthologs with species_id for gene_id
+        schema:
+          type: string
       responses:
         '200':
           description: Successful response
@@ -1472,21 +1253,21 @@ paths:
         - Utility
       operationId: getPubmed
       parameters:
-        - name: pmid
-          in: path
-          required: true
-          description: Pubmed ID
-          schema:
-            type: integer
-        - name: pubmed_only
-          in: query
-          required: false
-          description: |
-            Only retrieve Pubmed data and not Pubtator annotations.
-            Pubmed responds in <100ms. Pubtator annotations may take
-            several seconds.
-          schema:
-            type: boolean
+      - name: pmid
+        in: path
+        required: true
+        description: Pubmed ID
+        schema:
+          type: integer
+      - name: pubmed_only
+        in: query
+        required: false
+        description: |
+          Only retrieve Pubmed data and not Pubtator annotations.
+          Pubmed responds in <100ms. Pubtator annotations may take
+          several seconds.
+        schema:
+          type: boolean
       responses:
         '200':
           description: Successful response

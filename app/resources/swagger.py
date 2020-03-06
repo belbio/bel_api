@@ -1,7 +1,6 @@
 import falcon
-import yaml
-
 import structlog
+import yaml
 
 log = structlog.getLogger(__name__)
 
