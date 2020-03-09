@@ -1,4 +1,4 @@
-import requests
+from bel.utils import http_client
 
 from bel.Config import config
 
@@ -13,6 +13,6 @@ def send_mail(mail_to: str, subject: str, msg: str, mail_from: str = config['bel
         "text": msg,
     }
 
-    request = requests.post(f"{config['bel_api']['mail']['api']}/messages", auth=('api', config['secrets']['bel_api']['mail']['api_key']), data=data)
+    request = http_client.post(f"{config['bel_api']['mail']['api']}/messages", auth=('api', config['secrets']['bel_api']['mail']['api_key']), data=data)
     return request
 
