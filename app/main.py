@@ -47,6 +47,10 @@ from resources.terms import (TermCanonicalizeResource, TermCompletionsResource,
                              TermEquivalentsResource, TermResource,
                              TermsResource, TermTypesResource)
 
+# import logging_tree
+# from logging_tree import printout
+# printout()
+
 
 # Setup logging
 module_fn = os.path.basename(__file__)
