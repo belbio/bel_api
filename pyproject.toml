@@ -41,7 +41,7 @@ httpx = "*"
 bump2version = "^1.0.0"
 flake8 = "^3.7.9"
 cachetools = "^4.0.0"
-bel = {git = "https://github.com/belbio/bel.git", branch = "develop"}
+bel = {git = "https://github.com/belbio/bel.git", branch = "master"}
 logging_tree = "^1.8.1"
 
 [tool.poetry.dev-dependencies]
@@ -109,4 +109,3 @@ known_third_party = ["arango", "cityhash", "click", "dateutil", "elasticsearch",
 [build-system]
 requires = ["poetry>=1.0.0"]
 build-backend = "poetry.masonry.api"
-
