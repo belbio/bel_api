@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+""" BEL API
+
+   isort:skip_file
+"""
+
 import os
 import sys
+
+import gevent.monkey
+gevent.monkey.patch_all()
 
 import bel.lang.bel_specification
 # import logging
@@ -10,7 +18,7 @@ import bel.lang.bel_specification
 # # from pythonjsonlogger import jsonlogger
 import bel.setup_logging
 import falcon
-import gevent.monkey
+
 # TODO - figure out how to run logging setup and belspec once on startup rather than
 #        every time a worker is initialized (moved bel.lang.bel_specification.update_specifications to bel/__init__.py)
 import structlog
@@ -39,7 +47,9 @@ from resources.terms import (TermCanonicalizeResource, TermCompletionsResource,
                              TermEquivalentsResource, TermResource,
                              TermsResource, TermTypesResource)
 
-gevent.monkey.patch_all()
+# import logging_tree
+# from logging_tree import printout
+# printout()
 
 
 # Setup logging

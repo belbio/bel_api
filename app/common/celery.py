@@ -5,9 +5,6 @@ from kombu import Queue
 
 import bel.setup_logging
 
-from structlog import get_logger
-log = get_logger()
-
 CELERY_BROKER = os.environ.get('CELERY_BROKER')
 CELERY_BACKEND = os.environ.get('CELERY_BACKEND')
 

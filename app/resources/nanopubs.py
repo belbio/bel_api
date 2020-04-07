@@ -14,6 +14,12 @@ class NanopubValidateResource(object):
 
     def on_post(self, req, resp):
 
+        # Validate nanopub only using cached assertions/annotations
+        # complete - fill in any missing assertion/annotation validations
+        # force - redo all validations
+        # cached - only return cached/pre-generated validations
+        validation_level = req.get_param('validation_level', default="complete")  
+
         # BEL Resources loading
         try:
             data = req.stream.read(req.content_length or 0)
@@ -31,13 +37,12 @@ class NanopubValidateResource(object):
             nanopub["nanopub"] = data.get("nanopub")
         else:
             nanopub = None
+        
         error_level = data.get("error_level", "WARNING")
 
         if nanopub:
             try:
-                results = bel.nanopub.validate.validate(nanopub, error_level)
-                nanopub["nanopub"]["metadata"]["gd_validation"] = results
-                log.debug(f"Validation Results: {results}")
+                nanopub = bel.nanopub.validate.validate(nanopub, error_level=error_level, validation_level=validation_level)
                 resp.media = nanopub
                 resp.status = falcon.HTTP_200
             except Exception as e:

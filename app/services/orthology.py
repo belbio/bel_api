@@ -12,7 +12,6 @@ arangodb_client = bel.db.arangodb.get_client()
 belns_db = bel.db.arangodb.get_belns_handle(arangodb_client)
 
 
-# TODO Refactor to use bel.terms.orthologs.get_orthologs
 def get_ortholog(gene_id: str, tax_id: str = None) -> List[str]:
     """Get orthologs for given gene_id and species
 

@@ -96,6 +96,8 @@ class TermCompletionsResource(object):
 
     """Get NSArgs that match completion request"""
 
+    # TODO https://github.com/belbio/bel/issues/88 - fix when upgrading to FastAPI
+    
     def on_get(self, req, resp, completion_text):
         """GET List of Terms
 

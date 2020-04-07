@@ -477,6 +477,7 @@ def get_equivalents(term_id: str, namespaces: List[str]=None) -> List[Mapping[st
     query = f"FOR vertex, edge IN 1..10 ANY 'equivalence_nodes/{term_id_key}' equivalence_edges RETURN DISTINCT {{term_id: vertex._key, namespace: vertex.namespace}}"
     cursor = belns_db.aql.execute(query)
 
+    # TODO - handle multiple equivalents from same namespace
     equivalents = {}
     for record in cursor:
         equivalents[record['namespace']] = record['term_id']
@@ -507,6 +508,7 @@ def canonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = None
     if not namespace_targets:
         namespace_targets = config['bel']['lang']['canonical']
 
+    # TODO - handle multiple equivalents from same namespace - determine approach to select just one for canonicalization
     for start_ns in namespace_targets:
         if re.match(start_ns, term_id):
             equivalents = get_equivalents(term_id)
@@ -541,6 +543,7 @@ def decanonicalize(term_id: str, namespace_targets: Mapping[str, List[str]] = No
     if not namespace_targets:
         namespace_targets = config['bel']['lang']['decanonical']
 
+    # TODO - handle multiple equivalents from same namespace - determine approach to select just one for decanonicalization
     for start_ns in namespace_targets:
         if re.match(start_ns, term_id):
             equivalents = get_equivalents(term_id)
