@@ -21,7 +21,10 @@ class TermResource(object):
         """
 
         if term_id is None:
-            resp.media = {'title': 'Term endpoint Error', 'message': 'Must provide a term id, e.g. /term/HGNC:AKT1'}
+            resp.media = {
+                "title": "Term endpoint Error",
+                "message": "Must provide a term id, e.g. /term/HGNC:AKT1",
+            }
             resp.status = falcon.HTTP_200
             return
 
@@ -30,8 +33,8 @@ class TermResource(object):
             resp.media = term
             resp.status = falcon.HTTP_200
         else:
-            description = 'No term found for {}'.format(term_id)
-            resp.media = {'title': 'No Term', 'message': description}
+            description = "No term found for {}".format(term_id)
+            resp.media = {"title": "No Term", "message": description}
             resp.status = falcon.HTTP_404
 
 
@@ -48,7 +51,7 @@ class TermsResource(object):
             Results:
                 List[Mapping[str, Any]]: list of terms
         """
-        resp.media = {'title': 'Terms GET query', 'message': 'To be implemented.'}
+        resp.media = {"title": "Terms GET query", "message": "To be implemented."}
         resp.status = falcon.HTTP_200
 
 
@@ -59,7 +62,7 @@ class TermEquivalentsResource(object):
         """GET User Profile"""
 
         results = terms.get_equivalents(term_id)
-        resp.media = {'equivalents': results}
+        resp.media = {"equivalents": results}
         resp.status = falcon.HTTP_200
 
 
@@ -69,11 +72,11 @@ class TermCanonicalizeResource(object):
     def on_get(self, req, resp, term_id):
         """GET User Profile"""
 
-        namespace_targets = req.get_param('namespace_targets')
+        namespace_targets = req.get_param("namespace_targets")
         if namespace_targets:
             namespace_targets = json.loads(namespace_targets)
         term_id = terms.canonicalize(term_id, namespace_targets=namespace_targets)
-        resp.media = {'term_id': term_id}
+        resp.media = {"term_id": term_id}
         resp.status = falcon.HTTP_200
 
 
@@ -83,21 +86,20 @@ class TermDecanonicalizeResource(object):
     def on_get(self, req, resp, term_id):
         """GET User Profile"""
 
-        namespace_targets = req.get_param('namespace_targets')
+        namespace_targets = req.get_param("namespace_targets")
         if namespace_targets:
             namespace_targets = json.loads(namespace_targets)
 
         term_id = terms.decanonicalize(term_id)
-        resp.media = {'term_id': term_id}
+        resp.media = {"term_id": term_id}
         resp.status = falcon.HTTP_200
 
 
 class TermCompletionsResource(object):
-
     """Get NSArgs that match completion request"""
 
     # TODO https://github.com/belbio/bel/issues/88 - fix when upgrading to FastAPI
-    
+
     def on_get(self, req, resp, completion_text):
         """GET List of Terms
 
@@ -108,14 +110,48 @@ class TermCompletionsResource(object):
                 List[Mapping[str, Any]]: list of terms
         """
 
-        size = req.get_param('size', default=21)
-        entity_types = req.get_param('entity_types', [])
-        species = req.get_param('species', [])
-        annotation_types = req.get_param('annotation_types', [])
-        namespaces = req.get_param('namespaces', [])
+        log.info("Here 1")
+        log.info(f"Here {completion_text}")
+        log.info("Here 2")
 
-        completions = terms.get_term_completions(completion_text, size, entity_types, annotation_types, species, namespaces)
-        resp.media = {'completion_text': completion_text, 'completions': completions}
+        size = req.get_param("size")
+        entity_types = req.get_param("entity_types")
+        species = req.get_param("species")
+        annotation_types = req.get_param("annotation_types")
+        namespaces = req.get_param("namespaces")
+
+        if not size:
+            size = 21
+        if not entity_types:
+            entity_types = []
+        else:
+            entity_types = [et.strip() for et in entity_types.split(",")]
+        if not species:
+            species = []
+        else:
+            species = [a.strip() for a in species.split(",")]
+        if not annotation_types:
+            annotation_types = []
+        else:
+            annotation_types = [a.strip() for a in annotation_types.split(",")]
+        if not namespaces:
+            namespaces = []
+        else:
+            namespaces = [a.strip() for a in namespaces.split(",")]
+
+        # log.info(
+        #     f"Term Completion endpoint",
+        #     completion_text=completion_text,
+        #     size=size,
+        #     species=species,
+        #     namespace=namespaces,
+        #     entity_types=entity_types,
+        # )
+
+        completions = terms.get_term_completions(
+            completion_text, size, entity_types, annotation_types, species, namespaces
+        )
+        resp.media = {"completion_text": completion_text, "completions": completions}
         resp.status = falcon.HTTP_200
 
 
