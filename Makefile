@@ -100,6 +100,7 @@ docker_pushprod:
 	docker push belbio/belapi:latest
 	docker push belbio/belapi:$(VERSION)
 
+	@say -v Karen "Finished publishing the production BEL A P I docker image"
 
 # docker_push:
 # 	@echo Deploying docker image to dockerhub $(VERSION)
