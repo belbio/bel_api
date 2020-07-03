@@ -10,9 +10,11 @@ import os
 import sys
 
 import gevent.monkey
+
 gevent.monkey.patch_all()
 
 import bel.lang.bel_specification
+
 # import logging
 # import logging.config
 # # from pythonjsonlogger import jsonlogger
@@ -30,22 +32,36 @@ import middleware.falcon_exceptions
 import services.swaggerui
 from middleware.field_converters import BelConverter
 from middleware.stats import FalconStatsMiddleware
-from resources.bel_lang import (BelCanonicalize, BelCompletion,
-                                BelDecanonicalize, BelMigrate12,
-                                BelSpecificationResource, BelVersions)
+from resources.bel_lang import (
+    BelCanonicalize,
+    BelCompletion,
+    BelDecanonicalize,
+    BelMigrate12,
+    BelSpecificationResource,
+    BelVersions,
+)
 from resources.belspec import BelSpecResource
 from resources.nanopubs import NanopubValidateResource
 from resources.orthology import OrthologResource
 from resources.pubmed import PubmedResource
-from resources.status import (HealthCheckResource, PingResource,
-                              SimpleStatusResource, StatusResource,
-                              VersionResource)
+from resources.status import (
+    HealthCheckResource,
+    PingResource,
+    SimpleStatusResource,
+    StatusResource,
+    VersionResource,
+)
 from resources.swagger import SwaggerResource
 from resources.tasks import ResourcesTasksResource
-from resources.terms import (TermCanonicalizeResource, TermCompletionsResource,
-                             TermDecanonicalizeResource,
-                             TermEquivalentsResource, TermResource,
-                             TermsResource, TermTypesResource)
+from resources.terms import (
+    TermCanonicalizeResource,
+    TermCompletionsResource,
+    TermDecanonicalizeResource,
+    TermEquivalentsResource,
+    TermResource,
+    TermsResource,
+    TermTypesResource,
+)
 
 # import logging_tree
 # from logging_tree import printout
@@ -128,8 +144,9 @@ app.add_route("/tasks/resources", ResourcesTasksResource())  # POST
 
 
 # Term routes
+app.add_route("/terms/completions/{completion_text}", TermCompletionsResource())
 app.add_route("/terms", TermsResource())  # GET
-app.add_route("/terms/completions/{completion_text:bel}", TermCompletionsResource())
+
 
 app.add_route("/terms/{term_id:bel}", TermResource())  # GET
 app.add_route("/terms/{term_id:bel}/equivalents", TermEquivalentsResource())  # GET

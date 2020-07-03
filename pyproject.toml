@@ -65,7 +65,6 @@ sphinx-autobuild = "*"
 sphinx-rtd-theme = "*"
 sphinxcontrib-napoleon = "*"
 twine = "*"
-isort = "*"
 pylint = "*"
 
 
