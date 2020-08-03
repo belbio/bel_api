@@ -61,7 +61,6 @@ RUN rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
 COPY --from=poetryprod $VENV_PATH $VENV_PATH
 COPY ./app /app
-COPY ./bel /opt/venv/src/bel
 
 # RUN chown appuser.appuser -R /app
 # USER appuser
